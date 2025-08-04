@@ -21,7 +21,14 @@ import {
   Shield,
   ChevronRight,
   ChevronDown,
-  Sparkles
+  Sparkles,
+  Activity,
+  DollarSign,
+  Target,
+  FileBarChart,
+  ClipboardCheck,
+  FileText,
+  LineChart
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -97,21 +104,21 @@ const optimizeSection: NavigationItem[] = [
     icon: BarChart3,
     children: [
       { name: 'Dashboard', href: '/evaluation', icon: BarChart3 },
-      { name: 'Agents', href: '/evaluation/agents', icon: BarChart3 },
-      { name: 'Reports', href: '/evaluation/reports', icon: BarChart3 },
-      { name: 'Criteria', href: '/evaluation/criteria', icon: BarChart3 },
+      { name: 'Agents', href: '/evaluation/agents', icon: Bot },
+      { name: 'Reports', href: '/evaluation/reports', icon: FileBarChart },
+      { name: 'Criteria', href: '/evaluation/criteria', icon: ClipboardCheck },
     ]
   },
   {
     name: 'Analytics',
     href: '/analytics',
-    icon: TrendingUp,
+    icon: LineChart,
     children: [
-      { name: 'Overview', href: '/analytics', icon: TrendingUp },
-      { name: 'Performance', href: '/analytics/performance', icon: TrendingUp },
-      { name: 'Usage', href: '/analytics/usage', icon: TrendingUp },
-      { name: 'Costs', href: '/analytics/costs', icon: TrendingUp },
-      { name: 'ROI', href: '/analytics/roi', icon: TrendingUp },
+      { name: 'Overview', href: '/analytics', icon: LineChart },
+      { name: 'Performance', href: '/analytics/performance', icon: Activity },
+      { name: 'Usage', href: '/analytics/usage', icon: Users },
+      { name: 'Costs', href: '/analytics/costs', icon: DollarSign },
+      { name: 'ROI', href: '/analytics/roi', icon: Target },
     ]
   },
 ]
