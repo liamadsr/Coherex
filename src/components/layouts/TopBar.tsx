@@ -16,12 +16,15 @@ import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useTheme } from 'next-themes'
 import { useAuth } from '@/contexts/auth-context'
+import { AIAssistantToggle } from '@/components/ai-assistant/AIAssistantToggle'
 
 interface TopBarProps {
   onSidebarToggle: () => void
+  onAIAssistantToggle: () => void
   sidebarOpen: boolean
   sidebarCollapsed: boolean
   isDesktop: boolean
+  aiAssistantOpen: boolean
   user?: {
     name: string
     email: string
@@ -29,7 +32,7 @@ interface TopBarProps {
   }
 }
 
-export function TopBar({ onSidebarToggle, sidebarOpen, sidebarCollapsed, isDesktop }: TopBarProps) {
+export function TopBar({ onSidebarToggle, onAIAssistantToggle, sidebarOpen, sidebarCollapsed, isDesktop, aiAssistantOpen }: TopBarProps) {
   const [searchValue, setSearchValue] = useState('')
   const { theme, setTheme } = useTheme()
   const { user, logout } = useAuth()
@@ -123,6 +126,12 @@ export function TopBar({ onSidebarToggle, sidebarOpen, sidebarCollapsed, isDeskt
             <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
             <span className="sr-only">Toggle theme</span>
           </Button>
+
+          {/* AI Assistant toggle */}
+          <AIAssistantToggle 
+            onClick={onAIAssistantToggle}
+            isOpen={aiAssistantOpen}
+          />
 
           {/* Notifications */}
           <DropdownMenu>

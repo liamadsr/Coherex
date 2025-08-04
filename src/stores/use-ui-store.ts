@@ -56,12 +56,15 @@ export const useUIStore = () => {
 
   return {
     sidebarOpen: store.sidebarOpen,
+    aiAssistantOpen: store.aiAssistantOpen,
     theme: store.theme,
     notifications: store.notifications,
     
     // Actions
     toggleSidebar: store.toggleSidebar,
     setSidebarOpen: store.setSidebarOpen,
+    toggleAIAssistant: store.toggleAIAssistant,
+    setAIAssistantOpen: store.setAIAssistantOpen,
     setTheme: applyTheme,
     notify,
     markNotificationRead,

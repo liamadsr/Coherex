@@ -6,13 +6,15 @@ import { TopBar } from './TopBar'
 import { Breadcrumbs } from './Breadcrumbs'
 import { Toaster } from '@/components/ui/sonner'
 import { useUIStore } from '@/stores'
+import { AIAssistantPanel } from '@/components/ai-assistant/AIAssistantPanel'
+import { cn } from '@/lib/utils'
 
 interface MainLayoutProps {
   children: React.ReactNode
 }
 
 export function MainLayout({ children }: MainLayoutProps) {
-  const { sidebarOpen, setSidebarOpen, toggleSidebar: toggleSidebarStore } = useUIStore()
+  const { sidebarOpen, setSidebarOpen, toggleSidebar: toggleSidebarStore, aiAssistantOpen, toggleAIAssistant } = useUIStore()
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [isDesktop, setIsDesktop] = useState(false)
 
@@ -64,9 +66,11 @@ export function MainLayout({ children }: MainLayoutProps) {
         {/* Top bar */}
         <TopBar 
           onSidebarToggle={toggleSidebar} 
+          onAIAssistantToggle={toggleAIAssistant}
           sidebarOpen={sidebarOpen}
           sidebarCollapsed={sidebarCollapsed}
           isDesktop={isDesktop}
+          aiAssistantOpen={aiAssistantOpen}
         />
 
         {/* Breadcrumbs */}
@@ -74,12 +78,35 @@ export function MainLayout({ children }: MainLayoutProps) {
           <Breadcrumbs />
         </div>
 
-        {/* Main content */}
-        <main className="flex-1">
-          <div className="h-full">
-            {children}
+        {/* Content area with AI Assistant */}
+        <div className="flex-1 flex relative">
+          {/* Page content with padding for AI panel */}
+          <main className="flex-1">
+            <div className={cn(
+              "h-full transition-all duration-300",
+              aiAssistantOpen ? "mr-96" : "mr-0"
+            )}>
+              {children}
+            </div>
+          </main>
+
+          {/* AI Assistant Panel - Fixed position */}
+          <div
+            className={cn(
+              "fixed right-0 transition-all duration-300 z-40",
+              aiAssistantOpen ? "w-96" : "w-0"
+            )}
+            style={{ 
+              top: 'calc(57px + 65px)',  // TopBar height + Breadcrumbs height
+              height: 'calc(100vh - 57px - 65px)'
+            }}
+          >
+            <AIAssistantPanel 
+              isOpen={aiAssistantOpen}
+              onClose={toggleAIAssistant}
+            />
           </div>
-        </main>
+        </div>
       </div>
 
       {/* Toast notifications */}
