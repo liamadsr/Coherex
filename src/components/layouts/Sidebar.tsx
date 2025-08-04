@@ -62,20 +62,6 @@ const navigation: NavigationItem[] = [
     icon: MessageSquare,
   },
   {
-    name: 'Channels',
-    href: '/channels',
-    icon: MessageSquare,
-    children: [
-      { name: 'Overview', href: '/channels', icon: MessageSquare },
-      { name: 'Email', href: '/channels/email', icon: MessageSquare },
-      { name: 'Slack', href: '/channels/slack', icon: MessageSquare },
-      { name: 'Teams', href: '/channels/teams', icon: MessageSquare },
-      { name: 'SMS', href: '/channels/sms', icon: MessageSquare },
-      { name: 'Voice', href: '/channels/voice', icon: MessageSquare },
-      { name: 'Web Chat', href: '/channels/web-chat', icon: MessageSquare },
-    ]
-  },
-  {
     name: 'Knowledge',
     href: '/knowledge',
     icon: Brain,
@@ -94,8 +80,6 @@ const navigation: NavigationItem[] = [
     children: [
       { name: 'Marketplace', href: '/integrations', icon: Plug },
       { name: 'Connected', href: '/integrations/connected', icon: Plug },
-      { name: 'Enterprise', href: '/integrations/enterprise', icon: Plug },
-      { name: 'Custom', href: '/integrations/custom', icon: Plug },
     ]
   },
   {
