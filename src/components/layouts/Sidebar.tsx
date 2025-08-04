@@ -367,16 +367,6 @@ export function Sidebar({ isOpen, onToggle, isDesktop = false }: SidebarProps) {
         {/* Navigation */}
         <div className="flex-1 overflow-y-auto">
           <nav className="p-3 space-y-4">
-            {/* Create Section */}
-            <div>
-              <h3 className="px-2.5 mb-2 text-xs font-semibold text-gray-500 dark:text-gray-400 tracking-wider h-5">
-                {isOpen ? 'Create' : ''}
-              </h3>
-              <div className="space-y-1.5">
-                {createSection.map(item => renderNavItem(item))}
-              </div>
-            </div>
-
             {/* Manage Section */}
             <div>
               <h3 className="px-2.5 mb-2 text-xs font-semibold text-gray-500 dark:text-gray-400 tracking-wider h-5">
@@ -384,6 +374,16 @@ export function Sidebar({ isOpen, onToggle, isDesktop = false }: SidebarProps) {
               </h3>
               <div className="space-y-1.5">
                 {manageSection.map(item => renderNavItem(item))}
+              </div>
+            </div>
+
+            {/* Create Section */}
+            <div>
+              <h3 className="px-2.5 mb-2 text-xs font-semibold text-gray-500 dark:text-gray-400 tracking-wider h-5">
+                {isOpen ? 'Create' : ''}
+              </h3>
+              <div className="space-y-1.5">
+                {createSection.map(item => renderNavItem(item))}
               </div>
             </div>
 
