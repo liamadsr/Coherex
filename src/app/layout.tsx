@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Blockwork - AI Agent Platform",
+  title: "coherex - AI Agent Platform",
   description: "Create, orchestrate, and manage AI agents that work together as digital employees",
 };
 

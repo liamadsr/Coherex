@@ -42,7 +42,7 @@ const integrationConfigs: Record<string, any> = {
   slack: {
     name: 'Slack',
     icon: '💜',
-    description: 'Connect Blockwork to your Slack workspace',
+    description: 'Connect coherex to your Slack workspace',
     fields: [
       { id: 'workspace', label: 'Workspace URL', type: 'text', placeholder: 'your-workspace.slack.com', required: true },
       { id: 'token', label: 'Bot User OAuth Token', type: 'password', placeholder: 'xoxb-...', required: true },
@@ -250,7 +250,7 @@ export default function IntegrationConnectPage() {
                     <Shield className="h-4 w-4" />
                     <AlertTitle>Secure Authentication</AlertTitle>
                     <AlertDescription>
-                      You'll be redirected to {config.name} to authorize Blockwork. 
+                      You'll be redirected to {config.name} to authorize coherex. 
                       We never store your {config.name} password.
                     </AlertDescription>
                   </Alert>
@@ -437,7 +437,7 @@ export default function IntegrationConnectPage() {
                   <Label>Webhook URL</Label>
                   <div className="flex space-x-2">
                     <Input
-                      value={`https://app.blockwork.ai/webhooks/${integrationId}`}
+                      value={`https://app.coherex.ai/webhooks/${integrationId}`}
                       readOnly
                       className="flex-1"
                     />
@@ -445,7 +445,7 @@ export default function IntegrationConnectPage() {
                       variant="outline"
                       size="sm"
                       onClick={() => {
-                        navigator.clipboard.writeText(`https://app.blockwork.ai/webhooks/${integrationId}`)
+                        navigator.clipboard.writeText(`https://app.coherex.ai/webhooks/${integrationId}`)
                         toast.success('Webhook URL copied!')
                       }}
                     >

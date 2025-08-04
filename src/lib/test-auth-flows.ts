@@ -16,7 +16,7 @@ export async function testAuthFlows() {
   // Test 1: Login flow
   try {
     console.log('1. Testing login flow...')
-    const loginResult = await mockApi.login('test@blockwork.ai', 'password123')
+    const loginResult = await mockApi.login('test@coherex.ai', 'password123')
     if (loginResult.success && loginResult.data?.token) {
       results.login = true
       console.log('✅ Login flow: PASSED')
@@ -32,7 +32,7 @@ export async function testAuthFlows() {
   try {
     console.log('\n2. Testing signup flow...')
     const signupResult = await mockApi.signup({
-      email: 'newuser@blockwork.ai',
+      email: 'newuser@coherex.ai',
       password: 'securePassword123!',
       fullName: 'Test User',
       organizationName: 'Test Org',
@@ -52,7 +52,7 @@ export async function testAuthFlows() {
   // Test 3: Forgot password flow
   try {
     console.log('\n3. Testing forgot password flow...')
-    const forgotResult = await mockApi.forgotPassword('test@blockwork.ai')
+    const forgotResult = await mockApi.forgotPassword('test@coherex.ai')
     if (forgotResult.success) {
       results.forgotPassword = true
       console.log('✅ Forgot password flow: PASSED')

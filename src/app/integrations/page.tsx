@@ -456,7 +456,7 @@ export default function IntegrationsPage() {
             <div>
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Integrations</h1>
               <p className="text-gray-600 dark:text-gray-400 mt-1">
-                Connect Blockwork to your favorite tools and services
+                Connect coherex to your favorite tools and services
               </p>
             </div>
             <Button 

@@ -49,7 +49,7 @@ export const stableAgents: Agent[] = Array.from({ length: 20 }, (_, i) => ({
 export const stableUsers: User[] = [
   {
     id: 'user-1',
-    email: 'test@blockwork.ai',
+    email: 'test@coherex.ai',
     name: 'Test User',
     role: 'admin',
     avatar: faker.image.avatar(),
@@ -71,12 +71,12 @@ export const stableUsers: User[] = [
 
 export const stableOrganization: Organization = {
   id: 'org-1',
-  name: 'Blockwork Demo',
-  domain: 'blockwork.ai',
+  name: 'coherex Demo',
+  domain: 'coherex.ai',
   logo: faker.image.url(),
   plan: 'enterprise',
   settings: {
-    allowedDomains: ['blockwork.ai'],
+    allowedDomains: ['coherex.ai'],
     ssoEnabled: true,
     mfaRequired: false
   },

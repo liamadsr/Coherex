@@ -118,7 +118,7 @@ function VerifyEmailContent() {
                 Email verified successfully!
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Your email has been verified. You can now access all features of Blockwork.
+                Your email has been verified. You can now access all features of coherex.
               </p>
               {email && (
                 <p className="text-sm text-gray-500 dark:text-gray-500">
@@ -143,7 +143,7 @@ function VerifyEmailContent() {
             <Alert>
               <CheckCircle className="h-4 w-4" />
               <AlertDescription>
-                Welcome to Blockwork! Your account is now fully activated and ready to use.
+                Welcome to coherex! Your account is now fully activated and ready to use.
               </AlertDescription>
             </Alert>
           </motion.div>

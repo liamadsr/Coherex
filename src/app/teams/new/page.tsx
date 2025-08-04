@@ -67,11 +67,11 @@ const teamTypeOptions = [
 
 // Mock team members - in real app would come from API
 const mockMembers = [
-  { id: 'member-1', name: 'John Doe', email: 'john@blockwork.ai', avatar: '', role: 'Admin' },
-  { id: 'member-2', name: 'Jane Smith', email: 'jane@blockwork.ai', avatar: '', role: 'Manager' },
-  { id: 'member-3', name: 'Bob Johnson', email: 'bob@blockwork.ai', avatar: '', role: 'Member' },
-  { id: 'member-4', name: 'Alice Williams', email: 'alice@blockwork.ai', avatar: '', role: 'Member' },
-  { id: 'member-5', name: 'Charlie Brown', email: 'charlie@blockwork.ai', avatar: '', role: 'Member' },
+  { id: 'member-1', name: 'John Doe', email: 'john@coherex.ai', avatar: '', role: 'Admin' },
+  { id: 'member-2', name: 'Jane Smith', email: 'jane@coherex.ai', avatar: '', role: 'Manager' },
+  { id: 'member-3', name: 'Bob Johnson', email: 'bob@coherex.ai', avatar: '', role: 'Member' },
+  { id: 'member-4', name: 'Alice Williams', email: 'alice@coherex.ai', avatar: '', role: 'Member' },
+  { id: 'member-5', name: 'Charlie Brown', email: 'charlie@coherex.ai', avatar: '', role: 'Member' },
 ]
 
 export default function CreateTeamPage() {

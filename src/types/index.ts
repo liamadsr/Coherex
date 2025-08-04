@@ -1,4 +1,4 @@
-// Core Types for Blockwork Platform
+// Core Types for coherex Platform
 
 import { ComponentType } from 'react'
 

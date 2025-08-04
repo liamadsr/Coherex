@@ -45,14 +45,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const checkAuth = async () => {
       try {
         // In a real app, this would check for a valid session/token
-        const storedAuth = localStorage.getItem('blockwork-auth')
+        const storedAuth = localStorage.getItem('coherex-auth')
         if (storedAuth) {
           const { user, organization } = JSON.parse(storedAuth)
           
           // Validate that user and organization exist and have required properties
           if (!user || !user.id || !organization) {
             console.warn('Invalid stored auth data, clearing...')
-            localStorage.removeItem('blockwork-auth')
+            localStorage.removeItem('coherex-auth')
             setAuthState(prev => ({ ...prev, isLoading: false }))
             return
           }
@@ -86,7 +86,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const { user, organization } = response.data
         
         // Store auth data
-        localStorage.setItem('blockwork-auth', JSON.stringify({ user, organization }))
+        localStorage.setItem('coherex-auth', JSON.stringify({ user, organization }))
         
         // Set auth cookie for middleware (in a real app, this would be an httpOnly cookie set by the server)
         document.cookie = `auth-token=mock-token-${user.id}; path=/; max-age=${7 * 24 * 60 * 60}` // 7 days
@@ -120,7 +120,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const { user, organization } = response.data
         
         // Store auth data
-        localStorage.setItem('blockwork-auth', JSON.stringify({ user, organization }))
+        localStorage.setItem('coherex-auth', JSON.stringify({ user, organization }))
         
         // Set auth cookie for middleware (in a real app, this would be an httpOnly cookie set by the server)
         document.cookie = `auth-token=mock-token-${user.id}; path=/; max-age=${7 * 24 * 60 * 60}` // 7 days
@@ -143,7 +143,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [router])
 
   const logout = useCallback(() => {
-    localStorage.removeItem('blockwork-auth')
+    localStorage.removeItem('coherex-auth')
     
     // Clear auth cookie
     document.cookie = 'auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT'
@@ -161,7 +161,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const updateUser = useCallback((user: User) => {
     setAuthState(prev => {
       const newState = { ...prev, user }
-      localStorage.setItem('blockwork-auth', JSON.stringify({ 
+      localStorage.setItem('coherex-auth', JSON.stringify({ 
         user, 
         organization: prev.organization 
       }))

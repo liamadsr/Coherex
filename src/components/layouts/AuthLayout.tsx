@@ -27,7 +27,7 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
                 <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center mr-4">
                   <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg" />
                 </div>
-                <h1 className="text-3xl font-bold text-white">Blockwork</h1>
+                <h1 className="text-3xl font-bold text-white">coherex</h1>
               </div>
               
               <h2 className="text-4xl xl:text-5xl font-bold text-white mb-6 leading-tight">
@@ -74,7 +74,7 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
               <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center mr-3">
                 <div className="w-6 h-6 bg-white rounded-md" />
               </div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Blockwork</h1>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">coherex</h1>
             </div>
 
             <motion.div

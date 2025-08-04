@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   LayoutDashboard, 
@@ -392,10 +393,14 @@ export function Sidebar({ isOpen, onToggle, isDesktop = false }: SidebarProps) {
         <div className="flex items-center justify-between p-4 border-b border-sidebar-border">
           {isOpen && (
             <div className="flex items-center">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mr-3">
-                <div className="w-5 h-5 bg-white rounded-sm" />
-              </div>
-              <h1 className="text-xl font-bold text-sidebar-foreground">Blockwork</h1>
+              <Image
+                src="/images/coherex-Dark-1024x1024@2x.png"
+                alt="COHEREX Logo"
+                width={32}
+                height={32}
+                className="mr-2"
+              />
+              <h1 className="text-xl font-bold text-sidebar-foreground">COHEREX</h1>
             </div>
           )}
         </div>

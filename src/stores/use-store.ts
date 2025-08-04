@@ -285,7 +285,7 @@ export const useStore = create<StoreState>()(
         clearNotifications: () => set((state) => { state.notifications = [] }),
       })),
       {
-        name: 'blockwork-store',
+        name: 'coherex-store',
         partialize: (state) => ({
           // Only persist UI preferences and filters
           sidebarOpen: state.sidebarOpen,
@@ -296,7 +296,7 @@ export const useStore = create<StoreState>()(
       }
     ),
     {
-      name: 'BlockworkStore',
+      name: 'coherexStore',
     }
   )
 )

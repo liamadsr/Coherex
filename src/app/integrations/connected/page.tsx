@@ -46,7 +46,7 @@ const connectedIntegrations = [
     status: 'connected' as const,
     lastSync: new Date(Date.now() - 1000 * 60 * 5), // 5 minutes ago
     config: {
-      subdomain: 'blockwork',
+      subdomain: 'coherex',
       apiKey: '•••••••••••••••k7f9',
       syncInterval: 300, // 5 minutes
     },
@@ -65,7 +65,7 @@ const connectedIntegrations = [
     status: 'connected' as const,
     lastSync: new Date(Date.now() - 1000 * 60 * 60), // 1 hour ago
     config: {
-      workspace: 'blockwork.slack.com',
+      workspace: 'coherex.slack.com',
       channels: ['#support', '#general', '#sales'],
       token: '•••••••••••••••p3m2',
     },
@@ -86,7 +86,7 @@ const connectedIntegrations = [
     config: {
       smtp: 'smtp.gmail.com',
       port: 587,
-      username: 'support@blockwork.ai',
+      username: 'support@coherex.ai',
     },
     metrics: {
       totalSynced: 890,
@@ -333,7 +333,7 @@ export default function ConnectedIntegrationsPage() {
             <p className="text-gray-600 dark:text-gray-400 mb-4">
               {searchQuery 
                 ? 'Try adjusting your search query' 
-                : 'Add integrations to connect Blockwork with your tools'}
+                : 'Add integrations to connect coherex with your tools'}
             </p>
             <Button onClick={() => router.push('/integrations')}>
               Browse Integrations

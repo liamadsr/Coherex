@@ -121,7 +121,7 @@ const mcpServers = [
     status: 'stopped' as const,
     version: '1.0.0',
     endpoint: 'npx -y @modelcontextprotocol/server-postgres',
-    args: ['postgresql://localhost:5432/blockwork'],
+    args: ['postgresql://localhost:5432/coherex'],
     tools: [
       { name: 'query', description: 'Execute SQL queries' },
       { name: 'list_tables', description: 'List all tables in database' },
@@ -135,7 +135,7 @@ const mcpServers = [
       errors: 0,
     },
     config: {
-      connectionString: 'postgresql://localhost:5432/blockwork',
+      connectionString: 'postgresql://localhost:5432/coherex',
       sslMode: 'require',
       poolSize: 10,
     },
@@ -193,7 +193,7 @@ const mcpServers = [
     },
     config: {
       token: '•••••••••••••••',
-      workspace: 'blockwork.slack.com',
+      workspace: 'coherex.slack.com',
     },
     error: 'Authentication failed: Invalid token',
     lastActive: new Date(Date.now() - 1000 * 60 * 60),

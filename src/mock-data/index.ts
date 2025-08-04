@@ -410,7 +410,7 @@ export const mockApi = {
     await delay(1000)
     
     // Accept test credentials or any email/password for demo
-    const validEmails = ['test@blockwork.ai', 'admin@blockwork.ai', 'demo@blockwork.ai']
+    const validEmails = ['test@coherex.ai', 'admin@coherex.ai', 'demo@coherex.ai']
     const isValidLogin = validEmails.includes(email) || email.includes('@')
     
     if (!isValidLogin) {
@@ -429,7 +429,7 @@ export const mockApi = {
         user: {
           ...user,
           email: email,
-          name: email === 'test@blockwork.ai' ? 'Test User' : email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1)
+          name: email === 'test@coherex.ai' ? 'Test User' : email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1)
         },
         organization: stableOrganization,
         token: faker.string.alphanumeric(64)

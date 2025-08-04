@@ -190,7 +190,7 @@ function LoginForm() {
             Use any email and password to sign in (this is a frontend demo)
           </p>
           <div className="mt-2 space-y-1 text-xs text-blue-600 dark:text-blue-400">
-            <div>Email: demo@blockwork.ai</div>
+            <div>Email: demo@coherex.ai</div>
             <div>Password: password123</div>
           </div>
         </div>
