@@ -598,62 +598,66 @@ export default function NewAgentPage() {
                   )}
                 </div>
               </CardContent>
-              <div className="p-4">
-                <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-full p-2">
-                  {/* Text input */}
-                  <Textarea
-                    placeholder="Chat with your agent..."
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    onKeyPress={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault()
-                        handleSendMessage()
-                      }
-                    }}
-                    className="w-full min-h-[40px] resize-none bg-transparent border-0 px-4 py-2 focus:outline-none focus:ring-0 focus:border-0 outline-none placeholder-gray-500 text-sm"
-                    rows={1}
-                    style={{ outline: 'none', boxShadow: 'none' }}
-                  />
-
-                  {/* Controls row */}
-                  <div className="flex items-center justify-between px-2 pt-1">
-                    {/* Attachment button */}
+              <div className="p-4 border-t border-gray-200 dark:border-gray-800">
+                <div className="flex items-center gap-2">
+                  {/* Text input with attachment button */}
+                  <div className="flex-1 relative flex items-center">
                     <button
                       type="button"
-                      className="h-8 w-8 text-gray-400 hover:text-gray-600 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-full flex items-center justify-center transition-colors"
+                      className="absolute left-3 z-10 h-8 w-8 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md flex items-center justify-center transition-colors"
                     >
                       <Paperclip className="h-4 w-4" />
                     </button>
+                    
+                    <Textarea
+                      placeholder="Test your agent configuration..."
+                      value={inputValue}
+                      onChange={(e) => setInputValue(e.target.value)}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault()
+                          handleSendMessage()
+                        }
+                      }}
+                      className="w-full min-h-[40px] max-h-[120px] resize-none bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg pl-12 pr-4 py-2.5 text-sm placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      rows={1}
+                    />
+                  </div>
 
-                    <div className="flex items-center space-x-2">
-                      {/* Auto-clear toggle */}
-                      <button
-                        type="button"
-                        className={`flex items-center space-x-1.5 h-8 px-3 rounded-full text-xs font-medium transition-all ${
-                          autoClear 
-                            ? 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300' 
-                            : 'text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
-                        }`}
-                        onClick={() => setAutoClear(!autoClear)}
-                      >
-                        <RefreshCw className="h-3 w-3" />
-                        <span>Auto-clear</span>
-                      </button>
+                  {/* Controls */}
+                  <div className="flex items-center gap-2">
+                    {/* Auto-clear toggle */}
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className={`h-10 px-3 ${
+                        autoClear 
+                          ? 'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600' 
+                          : ''
+                      }`}
+                      onClick={() => setAutoClear(!autoClear)}
+                    >
+                      <RefreshCw className="h-4 w-4 mr-2" />
+                      Auto-clear
+                    </Button>
 
-                      {/* Send button */}
-                      <button
-                        onClick={handleSendMessage}
-                        disabled={!inputValue.trim() || isThinking}
-                        className={`h-8 w-8 rounded-full transition-colors flex items-center justify-center ${
-                          !inputValue.trim() || isThinking
-                            ? 'bg-gray-300 dark:bg-gray-600 text-gray-400 dark:text-gray-500 cursor-not-allowed'
-                            : 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 hover:bg-black dark:hover:bg-white'
-                        }`}
-                      >
-                        <ArrowUp className="h-4 w-4" />
-                      </button>
-                    </div>
+                    {/* Send button */}
+                    <Button
+                      onClick={handleSendMessage}
+                      disabled={!inputValue.trim() || isThinking}
+                      size="sm"
+                      className="h-10 px-4 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isThinking ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <>
+                          <Send className="h-4 w-4 mr-2" />
+                          Send
+                        </>
+                      )}
+                    </Button>
                   </div>
                 </div>
               </div>
