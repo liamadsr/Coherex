@@ -77,10 +77,6 @@ const navigation: NavigationItem[] = [
     name: 'Integrations',
     href: '/integrations',
     icon: Plug,
-    children: [
-      { name: 'Marketplace', href: '/integrations', icon: Plug },
-      { name: 'Connected', href: '/integrations/connected', icon: Plug },
-    ]
   },
   {
     name: 'MCP',
