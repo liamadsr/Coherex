@@ -70,8 +70,8 @@ export function MainLayout({ children }: MainLayoutProps) {
         <TopBar />
 
         {/* Breadcrumbs with toggle buttons */}
-        <div className="flex items-center justify-between px-6 py-4 bg-gray-100 dark:bg-gray-950">
-          <div className="flex items-center space-x-4">
+        <div className="flex items-center justify-between px-6 py-2 bg-gray-100 dark:bg-gray-950">
+          <div className="flex items-center space-x-3">
             {/* Sidebar toggle */}
             <Button
               variant="ghost"
@@ -99,10 +99,10 @@ export function MainLayout({ children }: MainLayoutProps) {
         </div>
 
         {/* Content area with AI Assistant */}
-        <div className="flex-1 flex overflow-hidden p-6 pt-0">
+        <div className="flex-1 flex overflow-hidden p-4 pt-0">
           {/* Page content with rounded corners */}
           <main className="flex-1 overflow-auto bg-white dark:bg-gray-900 rounded-2xl shadow-sm">
-            <div className="p-6">
+            <div className="p-4">
               {children}
             </div>
           </main>
@@ -111,7 +111,7 @@ export function MainLayout({ children }: MainLayoutProps) {
           <div
             className={cn(
               "transition-all duration-300 overflow-hidden",
-              aiAssistantOpen ? "w-96 ml-6" : "w-0"
+              aiAssistantOpen ? "w-96 ml-4" : "w-0"
             )}
           >
             <div className="h-full bg-white dark:bg-gray-900 rounded-2xl shadow-sm overflow-hidden">

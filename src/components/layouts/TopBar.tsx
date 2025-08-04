@@ -68,7 +68,7 @@ export function TopBar({ }: TopBarProps) {
 
   return (
     <header className="bg-gray-100 dark:bg-gray-950">
-      <div className="flex items-center justify-between px-4 py-3">
+      <div className="flex items-center justify-between px-4 py-2">
         {/* Left side */}
         <div className="flex items-center space-x-4">
           {/* Search */}
