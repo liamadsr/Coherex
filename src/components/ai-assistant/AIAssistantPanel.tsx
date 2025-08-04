@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { X, Bot, Send, Loader2 } from 'lucide-react'
+import { Send, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -16,10 +16,9 @@ interface Message {
 
 interface AIAssistantPanelProps {
   isOpen: boolean
-  onClose: () => void
 }
 
-export function AIAssistantPanel({ isOpen, onClose }: AIAssistantPanelProps) {
+export function AIAssistantPanel({ isOpen }: AIAssistantPanelProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -75,29 +74,13 @@ export function AIAssistantPanel({ isOpen, onClose }: AIAssistantPanelProps) {
   return (
     <div
       className={cn(
-        'h-full w-full bg-background overflow-hidden flex flex-col shadow-xl'
+        'h-full w-full bg-background flex flex-col border-l border-border'
       )}
     >
       {isOpen && (
         <>
-          {/* Header - matching breadcrumbs style */}
-          <div className="flex items-center justify-between px-6 py-4 bg-background border-b border-border flex-shrink-0">
-          <div className="flex items-center space-x-2">
-            <Bot className="w-5 h-5 text-primary" />
-            <h3 className="font-semibold">AI Assistant</h3>
-          </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            className="h-8 w-8"
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
-
-        {/* Messages */}
-        <ScrollArea className="flex-1 px-6 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-900/50" ref={scrollRef}>
+          {/* Messages */}
+          <ScrollArea className="flex-1 px-6 pt-6 pb-4 overflow-y-auto bg-gray-50 dark:bg-gray-900/50" ref={scrollRef}>
               <div className="space-y-4">
                 {messages.map((message) => (
                   <div

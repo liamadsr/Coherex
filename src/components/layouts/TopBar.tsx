@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Bell, Search, Settings, User, LogOut, Moon, Sun, Menu, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
+import { Bell, Search, Settings, User, LogOut, Moon, Sun } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -16,15 +16,8 @@ import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useTheme } from 'next-themes'
 import { useAuth } from '@/contexts/auth-context'
-import { AIAssistantToggle } from '@/components/ai-assistant/AIAssistantToggle'
 
 interface TopBarProps {
-  onSidebarToggle: () => void
-  onAIAssistantToggle: () => void
-  sidebarOpen: boolean
-  sidebarCollapsed: boolean
-  isDesktop: boolean
-  aiAssistantOpen: boolean
   user?: {
     name: string
     email: string
@@ -32,7 +25,7 @@ interface TopBarProps {
   }
 }
 
-export function TopBar({ onSidebarToggle, onAIAssistantToggle, sidebarOpen, sidebarCollapsed, isDesktop, aiAssistantOpen }: TopBarProps) {
+export function TopBar({ }: TopBarProps) {
   const [searchValue, setSearchValue] = useState('')
   const { theme, setTheme } = useTheme()
   const { user, logout } = useAuth()
@@ -78,22 +71,6 @@ export function TopBar({ onSidebarToggle, onAIAssistantToggle, sidebarOpen, side
       <div className="flex items-center justify-between px-4 py-3">
         {/* Left side */}
         <div className="flex items-center space-x-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onSidebarToggle}
-          >
-            {isDesktop ? (
-              sidebarCollapsed ? (
-                <PanelLeftOpen className="w-5 h-5" />
-              ) : (
-                <PanelLeftClose className="w-5 h-5" />
-              )
-            ) : (
-              <Menu className="w-5 h-5" />
-            )}
-          </Button>
-
           {/* Search */}
           <form onSubmit={handleSearch} className="hidden md:block">
             <div className="relative">
@@ -126,12 +103,6 @@ export function TopBar({ onSidebarToggle, onAIAssistantToggle, sidebarOpen, side
             <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
             <span className="sr-only">Toggle theme</span>
           </Button>
-
-          {/* AI Assistant toggle */}
-          <AIAssistantToggle 
-            onClick={onAIAssistantToggle}
-            isOpen={aiAssistantOpen}
-          />
 
           {/* Notifications */}
           <DropdownMenu>
