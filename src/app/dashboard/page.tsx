@@ -143,13 +143,6 @@ export default function DashboardPage() {
       href: '/teams/new',
       icon: Users,
       color: 'bg-gray-600 hover:bg-gray-700'
-    },
-    {
-      title: 'Visual Builder',
-      description: 'Drag & drop builder',
-      href: '/builder',
-      icon: Zap,
-      color: 'bg-gray-800 hover:bg-gray-900'
     }
   ]
 
@@ -200,7 +193,15 @@ export default function DashboardPage() {
                   transition={{ delay: index * 0.1 }}
                 >
                   <Button
-                    onClick={() => action.title === 'Agent Builder' ? router.push('/agents/new') : toast.info(`${action.title} feature coming soon!`)}
+                    onClick={() => {
+                      if (action.title === 'Agent Builder') {
+                        router.push('/agents/new')
+                      } else if (action.title === 'Form Team') {
+                        router.push('/teams')
+                      } else {
+                        toast.info(`${action.title} feature coming soon!`)
+                      }
+                    }}
                     className={`${action.color} text-white`}
                   >
                     <action.icon className="w-4 h-4 mr-2" />

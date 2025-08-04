@@ -62,11 +62,6 @@ const navigation: NavigationItem[] = [
     icon: MessageSquare,
   },
   {
-    name: 'Builder',
-    href: '/builder',
-    icon: Palette,
-  },
-  {
     name: 'Channels',
     href: '/channels',
     icon: MessageSquare,
