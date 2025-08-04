@@ -15,6 +15,7 @@ import {
   Plug, 
   Code,
   BarChart3,
+  TrendingUp,
   Settings,
   Building,
   Shield,
@@ -35,17 +36,8 @@ interface NavigationItem {
   children?: NavigationItem[]
 }
 
-const navigation: NavigationItem[] = [
-  {
-    name: 'Dashboard',
-    href: '/dashboard',
-    icon: LayoutDashboard,
-  },
-  {
-    name: 'Agents',
-    href: '/agents',
-    icon: Bot,
-  },
+// Navigation sections
+const createSection: NavigationItem[] = [
   {
     name: 'Agent Builder',
     href: '/agents/new',
@@ -55,11 +47,6 @@ const navigation: NavigationItem[] = [
     name: 'Teams',
     href: '/teams',
     icon: Users,
-  },
-  {
-    name: 'Conversations',
-    href: '/conversations',
-    icon: MessageSquare,
   },
   {
     name: 'Knowledge',
@@ -73,6 +60,24 @@ const navigation: NavigationItem[] = [
       { name: 'Search', href: '/knowledge/search', icon: Brain },
     ]
   },
+]
+
+const manageSection: NavigationItem[] = [
+  {
+    name: 'Dashboard',
+    href: '/dashboard',
+    icon: LayoutDashboard,
+  },
+  {
+    name: 'Agents',
+    href: '/agents',
+    icon: Bot,
+  },
+  {
+    name: 'Conversations',
+    href: '/conversations',
+    icon: MessageSquare,
+  },
   {
     name: 'Integrations',
     href: '/integrations',
@@ -83,6 +88,9 @@ const navigation: NavigationItem[] = [
     href: '/mcp',
     icon: Code,
   },
+]
+
+const optimizeSection: NavigationItem[] = [
   {
     name: 'Evaluation',
     href: '/evaluation',
@@ -97,13 +105,13 @@ const navigation: NavigationItem[] = [
   {
     name: 'Analytics',
     href: '/analytics',
-    icon: BarChart3,
+    icon: TrendingUp,
     children: [
-      { name: 'Overview', href: '/analytics', icon: BarChart3 },
-      { name: 'Performance', href: '/analytics/performance', icon: BarChart3 },
-      { name: 'Usage', href: '/analytics/usage', icon: BarChart3 },
-      { name: 'Costs', href: '/analytics/costs', icon: BarChart3 },
-      { name: 'ROI', href: '/analytics/roi', icon: BarChart3 },
+      { name: 'Overview', href: '/analytics', icon: TrendingUp },
+      { name: 'Performance', href: '/analytics/performance', icon: TrendingUp },
+      { name: 'Usage', href: '/analytics/usage', icon: TrendingUp },
+      { name: 'Costs', href: '/analytics/costs', icon: TrendingUp },
+      { name: 'ROI', href: '/analytics/roi', icon: TrendingUp },
     ]
   },
 ]
@@ -180,7 +188,7 @@ export function Sidebar({ isOpen, onToggle, isDesktop = false }: SidebarProps) {
   useEffect(() => {
     if (!mounted) return
     
-    const allNavItems = [...navigation, ...bottomNavigation]
+    const allNavItems = [...createSection, ...manageSection, ...optimizeSection, ...bottomNavigation]
     
     for (const item of allNavItems) {
       if (item.children) {
@@ -358,8 +366,36 @@ export function Sidebar({ isOpen, onToggle, isDesktop = false }: SidebarProps) {
 
         {/* Navigation */}
         <div className="flex-1 overflow-y-auto">
-          <nav className="p-3 space-y-1.5">
-            {navigation.map(item => renderNavItem(item))}
+          <nav className="p-3 space-y-6">
+            {/* Create Section */}
+            <div>
+              <h3 className="px-2.5 mb-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider h-5">
+                {isOpen ? 'Create' : ''}
+              </h3>
+              <div className="space-y-1.5">
+                {createSection.map(item => renderNavItem(item))}
+              </div>
+            </div>
+
+            {/* Manage Section */}
+            <div>
+              <h3 className="px-2.5 mb-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider h-5">
+                {isOpen ? 'Manage' : ''}
+              </h3>
+              <div className="space-y-1.5">
+                {manageSection.map(item => renderNavItem(item))}
+              </div>
+            </div>
+
+            {/* Optimize Section */}
+            <div>
+              <h3 className="px-2.5 mb-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider h-5">
+                {isOpen ? 'Optimize' : ''}
+              </h3>
+              <div className="space-y-1.5">
+                {optimizeSection.map(item => renderNavItem(item))}
+              </div>
+            </div>
           </nav>
         </div>
 
