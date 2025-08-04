@@ -1,8 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { usePathname } from 'next/navigation'
-import { motion, AnimatePresence } from 'framer-motion'
 import { Sidebar } from './Sidebar'
 import { TopBar } from './TopBar'
 import { Breadcrumbs } from './Breadcrumbs'
@@ -14,7 +12,6 @@ interface MainLayoutProps {
 }
 
 export function MainLayout({ children }: MainLayoutProps) {
-  const pathname = usePathname()
   const { sidebarOpen, setSidebarOpen, toggleSidebar: toggleSidebarStore } = useUIStore()
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [isDesktop, setIsDesktop] = useState(false)
@@ -62,7 +59,7 @@ export function MainLayout({ children }: MainLayoutProps) {
       {/* Main content area */}
       <div 
         style={{ marginLeft }}
-        className="flex flex-col min-h-screen transition-[margin-left] duration-300 ease-in-out"
+        className="flex flex-col min-h-screen"
       >
         {/* Top bar */}
         <TopBar 
@@ -79,18 +76,9 @@ export function MainLayout({ children }: MainLayoutProps) {
 
         {/* Main content */}
         <main className="flex-1">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={pathname}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3 }}
-              className="h-full"
-            >
-              {children}
-            </motion.div>
-          </AnimatePresence>
+          <div className="h-full">
+            {children}
+          </div>
         </main>
       </div>
 
