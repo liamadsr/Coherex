@@ -400,7 +400,7 @@ export function Sidebar({ isOpen, onToggle, isDesktop = false }: SidebarProps) {
         </div>
 
         {/* Bottom Navigation */}
-        <div className="border-t border-sidebar-border">
+        <div>
           <nav className="p-3 space-y-1.5">
             {bottomNavigation.map(item => renderNavItem(item))}
           </nav>
