@@ -19,7 +19,8 @@ import {
   Building,
   Shield,
   ChevronRight,
-  ChevronDown
+  ChevronDown,
+  Sparkles
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -48,7 +49,7 @@ const navigation: NavigationItem[] = [
   {
     name: 'Agent Builder',
     href: '/agents/new',
-    icon: Bot,
+    icon: Sparkles,
     badge: 'New',
   },
   {
