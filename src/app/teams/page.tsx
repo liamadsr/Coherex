@@ -270,8 +270,59 @@ export default function TeamsPage() {
               Create Team
             </Button>
           </div>
+        </div>
 
-          {/* Filters and Search */}
+        {/* Stats Summary */}
+        <div className="mb-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Card className="p-4">
+            <div className="flex items-center space-x-2">
+              <Activity className="w-5 h-5 text-blue-600" />
+              <div>
+                <p className="text-2xl font-bold">{teams.length}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Total Teams</p>
+              </div>
+            </div>
+          </Card>
+          
+          <Card className="p-4">
+            <div className="flex items-center space-x-2">
+              <Users className="w-5 h-5 text-green-600" />
+              <div>
+                <p className="text-2xl font-bold">
+                  {teams.reduce((acc, team) => acc + (team.memberIds?.length || 0), 0)}
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Total Members</p>
+              </div>
+            </div>
+          </Card>
+          
+          <Card className="p-4">
+            <div className="flex items-center space-x-2">
+              <Bot className="w-5 h-5 text-purple-600" />
+              <div>
+                <p className="text-2xl font-bold">
+                  {teams.reduce((acc, team) => acc + (team.agentIds?.length || 0), 0)}
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Assigned Agents</p>
+              </div>
+            </div>
+          </Card>
+          
+          <Card className="p-4">
+            <div className="flex items-center space-x-2">
+              <Activity className="w-5 h-5 text-orange-600" />
+              <div>
+                <p className="text-2xl font-bold">
+                  {teams.filter(team => team.agentIds && team.agentIds.length > 0).length}
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Active Teams</p>
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        {/* Filters and Search */}
+        <div className="mb-8">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -367,57 +418,6 @@ export default function TeamsPage() {
             {sortedTeams.map((team) => (
               <TeamListItem key={team.id} team={team} />
             ))}
-          </div>
-        )}
-
-        {/* Stats Summary */}
-        {teams.length > 0 && (
-          <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Card className="p-4">
-              <div className="flex items-center space-x-2">
-                <Activity className="w-5 h-5 text-blue-600" />
-                <div>
-                  <p className="text-2xl font-bold">{teams.length}</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Total Teams</p>
-                </div>
-              </div>
-            </Card>
-            
-            <Card className="p-4">
-              <div className="flex items-center space-x-2">
-                <Users className="w-5 h-5 text-green-600" />
-                <div>
-                  <p className="text-2xl font-bold">
-                    {teams.reduce((acc, team) => acc + (team.memberIds?.length || 0), 0)}
-                  </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Total Members</p>
-                </div>
-              </div>
-            </Card>
-            
-            <Card className="p-4">
-              <div className="flex items-center space-x-2">
-                <Bot className="w-5 h-5 text-purple-600" />
-                <div>
-                  <p className="text-2xl font-bold">
-                    {teams.reduce((acc, team) => acc + (team.agentIds?.length || 0), 0)}
-                  </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Assigned Agents</p>
-                </div>
-              </div>
-            </Card>
-            
-            <Card className="p-4">
-              <div className="flex items-center space-x-2">
-                <Activity className="w-5 h-5 text-orange-600" />
-                <div>
-                  <p className="text-2xl font-bold">
-                    {teams.filter(team => team.agentIds && team.agentIds.length > 0).length}
-                  </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Active Teams</p>
-                </div>
-              </div>
-            </Card>
           </div>
         )}
       </div>
