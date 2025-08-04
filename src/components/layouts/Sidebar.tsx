@@ -28,7 +28,10 @@ import {
   FileBarChart,
   ClipboardCheck,
   FileText,
-  LineChart
+  LineChart,
+  Database,
+  RefreshCw,
+  Search
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -61,10 +64,10 @@ const createSection: NavigationItem[] = [
     icon: Brain,
     children: [
       { name: 'Overview', href: '/knowledge', icon: Brain },
-      { name: 'Sources', href: '/knowledge/sources', icon: Brain },
-      { name: 'Documents', href: '/knowledge/documents', icon: Brain },
-      { name: 'Sync Status', href: '/knowledge/sync', icon: Brain },
-      { name: 'Search', href: '/knowledge/search', icon: Brain },
+      { name: 'Sources', href: '/knowledge/sources', icon: Database },
+      { name: 'Documents', href: '/knowledge/documents', icon: FileText },
+      { name: 'Sync Status', href: '/knowledge/sync', icon: RefreshCw },
+      { name: 'Search', href: '/knowledge/search', icon: Search },
     ]
   },
 ]
