@@ -379,14 +379,14 @@ export function Sidebar({ isOpen, onToggle, isDesktop = false }: SidebarProps) {
 
       {/* Sidebar */}
       <div
-        style={{ width: isOpen ? 280 : 80 }}
+        style={{ width: isOpen ? 240 : 80 }}
         className={cn(
-          'fixed left-0 top-0 z-50 h-full bg-sidebar border-r border-sidebar-border transition-[width] duration-300 ease-in-out',
+          'fixed left-0 top-0 z-50 h-full bg-gray-100 dark:bg-gray-950 transition-[width] duration-300 ease-in-out',
           'flex flex-col'
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-sidebar-border">
+        <div className="flex items-center justify-between p-4">
           {isOpen && (
             <div className="flex items-center">
               <Image

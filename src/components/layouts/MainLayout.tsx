@@ -50,10 +50,10 @@ export function MainLayout({ children }: MainLayoutProps) {
   }
 
   const sidebarIsOpen = isDesktop ? !sidebarCollapsed : sidebarOpen
-  const marginLeft = isDesktop ? (sidebarCollapsed ? 80 : 280) : 0
+  const marginLeft = isDesktop ? (sidebarCollapsed ? 80 : 240) : 0
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-950">
       {/* Sidebar */}
       <Sidebar 
         isOpen={sidebarIsOpen} 
@@ -70,7 +70,7 @@ export function MainLayout({ children }: MainLayoutProps) {
         <TopBar />
 
         {/* Breadcrumbs with toggle buttons */}
-        <div className="flex items-center justify-between px-6 py-4 bg-background border-b border-border">
+        <div className="flex items-center justify-between px-6 py-4 bg-gray-100 dark:bg-gray-950">
           <div className="flex items-center space-x-4">
             {/* Sidebar toggle */}
             <Button
@@ -99,22 +99,26 @@ export function MainLayout({ children }: MainLayoutProps) {
         </div>
 
         {/* Content area with AI Assistant */}
-        <div className="flex-1 flex overflow-hidden">
-          {/* Page content */}
-          <main className="flex-1 overflow-auto">
-            {children}
+        <div className="flex-1 flex overflow-hidden p-6 pt-0">
+          {/* Page content with rounded corners */}
+          <main className="flex-1 overflow-auto bg-white dark:bg-gray-900 rounded-2xl shadow-sm">
+            <div className="p-6">
+              {children}
+            </div>
           </main>
 
           {/* AI Assistant Panel */}
           <div
             className={cn(
               "transition-all duration-300 overflow-hidden",
-              aiAssistantOpen ? "w-96" : "w-0"
+              aiAssistantOpen ? "w-96 ml-6" : "w-0"
             )}
           >
-            <AIAssistantPanel 
-              isOpen={aiAssistantOpen}
-            />
+            <div className="h-full bg-white dark:bg-gray-900 rounded-2xl shadow-sm overflow-hidden">
+              <AIAssistantPanel 
+                isOpen={aiAssistantOpen}
+              />
+            </div>
           </div>
         </div>
       </div>

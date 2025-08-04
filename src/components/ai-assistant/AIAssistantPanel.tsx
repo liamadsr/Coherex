@@ -74,7 +74,7 @@ export function AIAssistantPanel({ isOpen }: AIAssistantPanelProps) {
   return (
     <div
       className={cn(
-        'h-full w-full bg-background flex flex-col border-l border-border overflow-hidden'
+        'h-full w-full bg-transparent flex flex-col overflow-hidden'
       )}
     >
       {isOpen && (
