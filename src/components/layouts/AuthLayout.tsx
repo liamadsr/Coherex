@@ -37,7 +37,7 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
               <h2 className="text-4xl xl:text-5xl font-bold text-white mb-6 leading-tight">
                 The Future of
                 <br />
-                <span className="bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">
+                <span className="text-black">
                   AI Workforce
                 </span>
               </h2>
@@ -49,15 +49,15 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
               
               <div className="space-y-4">
                 <div className="flex items-center text-blue-100">
-                  <div className="w-2 h-2 bg-yellow-300 rounded-full mr-3" />
+                  <div className="w-2 h-2 bg-white rounded-full mr-3" />
                   <span>Conversational agent creation with Orchestrator AI</span>
                 </div>
                 <div className="flex items-center text-blue-100">
-                  <div className="w-2 h-2 bg-yellow-300 rounded-full mr-3" />
+                  <div className="w-2 h-2 bg-white rounded-full mr-3" />
                   <span>Real-time collaboration and team formation</span>
                 </div>
                 <div className="flex items-center text-blue-100">
-                  <div className="w-2 h-2 bg-yellow-300 rounded-full mr-3" />
+                  <div className="w-2 h-2 bg-white rounded-full mr-3" />
                   <span>Advanced evaluation and quality monitoring</span>
                 </div>
               </div>
