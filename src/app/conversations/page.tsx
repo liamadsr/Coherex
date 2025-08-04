@@ -781,57 +781,59 @@ export default function ConversationsPage() {
               </Select>
             )}
 
-            {/* Channel Filter */}
-            <Select value={channelFilter} onValueChange={setChannelFilter}>
-              <SelectTrigger className="w-[200px]">
-                <Phone className="w-4 h-4 mr-2" />
-                <SelectValue placeholder="Channel" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">
-                  <div className="flex items-center gap-2">
-                    <Eye className="w-4 h-4" />
-                    <span>All Channels</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="email">
-                  <div className="flex items-center gap-2">
-                    <Mail className="w-4 h-4" />
-                    <span>Email</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="web-chat">
-                  <div className="flex items-center gap-2">
-                    <MessageCircle className="w-4 h-4" />
-                    <span>Web Chat</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="slack">
-                  <div className="flex items-center gap-2">
-                    <Slack className="w-4 h-4" />
-                    <span>Slack</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="teams">
-                  <div className="flex items-center gap-2">
-                    <MessageSquare className="w-4 h-4" />
-                    <span>Microsoft Teams</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="sms">
-                  <div className="flex items-center gap-2">
-                    <Phone className="w-4 h-4" />
-                    <span>SMS</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="voice">
-                  <div className="flex items-center gap-2">
-                    <Phone className="w-4 h-4" />
-                    <span>Voice</span>
-                  </div>
-                </SelectItem>
-              </SelectContent>
-            </Select>
+            {/* Channel Filter - Only show in list view */}
+            {viewMode === 'list' && (
+              <Select value={channelFilter} onValueChange={setChannelFilter}>
+                <SelectTrigger className="w-[200px]">
+                  <Phone className="w-4 h-4 mr-2" />
+                  <SelectValue placeholder="Channel" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">
+                    <div className="flex items-center gap-2">
+                      <Eye className="w-4 h-4" />
+                      <span>All Channels</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="email">
+                    <div className="flex items-center gap-2">
+                      <Mail className="w-4 h-4" />
+                      <span>Email</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="web-chat">
+                    <div className="flex items-center gap-2">
+                      <MessageCircle className="w-4 h-4" />
+                      <span>Web Chat</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="slack">
+                    <div className="flex items-center gap-2">
+                      <Slack className="w-4 h-4" />
+                      <span>Slack</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="teams">
+                    <div className="flex items-center gap-2">
+                      <MessageSquare className="w-4 h-4" />
+                      <span>Microsoft Teams</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="sms">
+                    <div className="flex items-center gap-2">
+                      <Phone className="w-4 h-4" />
+                      <span>SMS</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="voice">
+                    <div className="flex items-center gap-2">
+                      <Phone className="w-4 h-4" />
+                      <span>Voice</span>
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            )}
           </div>
         </div>
 
