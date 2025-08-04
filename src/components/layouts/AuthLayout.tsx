@@ -37,7 +37,7 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
               <h2 className="text-4xl xl:text-5xl font-bold text-white mb-6 leading-tight">
                 The Future of
                 <br />
-                <span className="text-black">
+                <span className="text-white">
                   AI Workforce
                 </span>
               </h2>
