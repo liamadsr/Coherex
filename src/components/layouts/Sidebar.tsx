@@ -84,17 +84,6 @@ const navigation: NavigationItem[] = [
     icon: Code,
   },
   {
-    name: 'Code Execution',
-    href: '/code-execution',
-    icon: Code,
-    children: [
-      { name: 'Overview', href: '/code-execution', icon: Code },
-      { name: 'Environments', href: '/code-execution/environments', icon: Code },
-      { name: 'Security', href: '/code-execution/security', icon: Code },
-      { name: 'Logs', href: '/code-execution/logs', icon: Code },
-    ]
-  },
-  {
     name: 'Evaluation',
     href: '/evaluation',
     icon: BarChart3,
