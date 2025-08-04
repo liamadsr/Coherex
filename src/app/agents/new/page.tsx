@@ -242,7 +242,7 @@ export default function NewAgentPage() {
                 Back
               </Button>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Create New Agent</h1>
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Agent Builder</h1>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Configure and test your AI assistant
                 </p>

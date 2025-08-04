@@ -402,7 +402,7 @@ export default function AgentsPage() {
             </Button>
             <Button onClick={() => router.push('/agents/new')}>
               <Plus className="w-4 h-4 mr-2" />
-              New Agent
+              Agent Builder
             </Button>
           </div>
         </div>
@@ -648,7 +648,7 @@ export default function AgentsPage() {
             </p>
             <Button onClick={() => router.push('/agents/new')}>
               <Plus className="w-4 h-4 mr-2" />
-              Create Your First Agent
+              Open Agent Builder
             </Button>
           </div>
         )}

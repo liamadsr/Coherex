@@ -131,7 +131,7 @@ export default function DashboardPage() {
 
   const quickActions = [
     {
-      title: 'Create Agent',
+      title: 'Agent Builder',
       description: 'Build a new AI agent',
       href: '/agents/new',
       icon: Bot,
@@ -200,7 +200,7 @@ export default function DashboardPage() {
                   transition={{ delay: index * 0.1 }}
                 >
                   <Button
-                    onClick={() => action.title === 'Create Agent' ? router.push('/agents/new') : toast.info(`${action.title} feature coming soon!`)}
+                    onClick={() => action.title === 'Agent Builder' ? router.push('/agents/new') : toast.info(`${action.title} feature coming soon!`)}
                     className={`${action.color} text-white`}
                   >
                     <action.icon className="w-4 h-4 mr-2" />

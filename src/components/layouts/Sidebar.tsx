@@ -44,10 +44,12 @@ const navigation: NavigationItem[] = [
     name: 'Agents',
     href: '/agents',
     icon: Bot,
-    children: [
-      { name: 'All Agents', href: '/agents', icon: Bot },
-      { name: 'Create Agent', href: '/agents/new', icon: Bot },
-    ]
+  },
+  {
+    name: 'Agent Builder',
+    href: '/agents/new',
+    icon: Bot,
+    badge: 'New',
   },
   {
     name: 'Teams',
