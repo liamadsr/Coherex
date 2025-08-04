@@ -277,8 +277,8 @@ export function Sidebar({ isOpen, onToggle, isDesktop = false }: SidebarProps) {
       <div key={item.name}>
         <div
           className={cn(
-            'group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200',
-            level > 0 && 'ml-4 px-2',
+            'group flex items-center justify-between px-2.5 py-1.5 text-sm font-medium rounded-lg transition-all duration-200',
+            level > 0 && 'ml-3 px-2',
             active && !hasChildren
               ? 'bg-sidebar-primary/10 text-sidebar-primary'
               : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
@@ -343,21 +343,11 @@ export function Sidebar({ isOpen, onToggle, isDesktop = false }: SidebarProps) {
           )}
         </div>
 
-        <AnimatePresence>
-          {hasChildren && expanded && isOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.2 }}
-              className="overflow-hidden"
-            >
-              <div className="mt-1 space-y-1">
-                {item.children?.map(child => renderNavItem(child, level + 1))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {hasChildren && expanded && isOpen && (
+          <div className="mt-1 space-y-1">
+            {item.children?.map(child => renderNavItem(child, level + 1))}
+          </div>
+        )}
       </div>
     )
   }
@@ -379,14 +369,16 @@ export function Sidebar({ isOpen, onToggle, isDesktop = false }: SidebarProps) {
 
       {/* Sidebar */}
       <div
-        style={{ width: isOpen ? 240 : 80 }}
+        style={{ 
+          width: isOpen ? 240 : 60,
+          willChange: 'width'
+        }}
         className={cn(
-          'fixed left-0 top-0 z-50 h-full bg-gray-100 dark:bg-gray-950 transition-[width] duration-300 ease-in-out',
-          'flex flex-col'
+          'fixed left-0 top-0 z-50 h-full bg-gray-100 dark:bg-gray-950 flex flex-col'
         )}
       >
         {/* Header */}
-        <div className="px-4 py-4">
+        <div className="px-3 py-3.5">
           <div className="flex items-center">
             <Image
               src="/images/coherex-Dark.png"
@@ -403,14 +395,14 @@ export function Sidebar({ isOpen, onToggle, isDesktop = false }: SidebarProps) {
 
         {/* Navigation */}
         <div className="flex-1 overflow-y-auto">
-          <nav className="p-4 space-y-2">
+          <nav className="p-3 space-y-1.5">
             {navigation.map(item => renderNavItem(item))}
           </nav>
         </div>
 
         {/* Bottom Navigation */}
         <div className="border-t border-sidebar-border">
-          <nav className="p-4 space-y-2">
+          <nav className="p-3 space-y-1.5">
             {bottomNavigation.map(item => renderNavItem(item))}
           </nav>
         </div>
