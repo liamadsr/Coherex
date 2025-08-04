@@ -50,7 +50,6 @@ const navigation: NavigationItem[] = [
     name: 'Agent Builder',
     href: '/agents/new',
     icon: Sparkles,
-    badge: 'New',
   },
   {
     name: 'Teams',
@@ -108,13 +107,11 @@ const navigation: NavigationItem[] = [
     name: 'MCP',
     href: '/mcp',
     icon: Code,
-    badge: 'New',
   },
   {
     name: 'Code Execution',
     href: '/code-execution',
     icon: Code,
-    badge: 'Beta',
     children: [
       { name: 'Overview', href: '/code-execution', icon: Code },
       { name: 'Environments', href: '/code-execution/environments', icon: Code },
@@ -126,7 +123,6 @@ const navigation: NavigationItem[] = [
     name: 'Evaluation',
     href: '/evaluation',
     icon: BarChart3,
-    badge: 'New',
     children: [
       { name: 'Dashboard', href: '/evaluation', icon: BarChart3 },
       { name: 'Agents', href: '/evaluation/agents', icon: BarChart3 },
