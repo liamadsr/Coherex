@@ -47,7 +47,6 @@ const navigation: NavigationItem[] = [
     children: [
       { name: 'All Agents', href: '/agents', icon: Bot },
       { name: 'Create Agent', href: '/agents/new', icon: Bot },
-      { name: 'Templates', href: '/builder/templates', icon: Palette },
     ]
   },
   {
@@ -263,10 +262,7 @@ export function Sidebar({ isOpen, onToggle, isDesktop = false }: SidebarProps) {
   }
 
   const isActive = (href: string) => {
-    if (href === '/dashboard') {
-      return pathname === href
-    }
-    return pathname.startsWith(href)
+    return pathname === href
   }
 
   const isExpanded = (name: string) => expandedItems.includes(name)
@@ -283,7 +279,7 @@ export function Sidebar({ isOpen, onToggle, isDesktop = false }: SidebarProps) {
           className={cn(
             'group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200',
             level > 0 && 'ml-4 px-2',
-            active
+            active && !hasChildren
               ? 'bg-sidebar-primary/10 text-sidebar-primary'
               : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
             !isOpen && 'justify-center px-2',
@@ -299,7 +295,7 @@ export function Sidebar({ isOpen, onToggle, isDesktop = false }: SidebarProps) {
             <div className="flex items-center flex-1 min-w-0">
               <Icon className={cn(
                 'flex-shrink-0 w-5 h-5',
-                active ? 'text-sidebar-primary' : 'text-sidebar-foreground/50 group-hover:text-sidebar-accent-foreground'
+                'text-sidebar-foreground/50 group-hover:text-sidebar-accent-foreground'
               )} />
               
               {isOpen && (
@@ -394,7 +390,7 @@ export function Sidebar({ isOpen, onToggle, isDesktop = false }: SidebarProps) {
           {isOpen && (
             <div className="flex items-center">
               <Image
-                src="/images/coherex-Dark-1024x1024@2x.png"
+                src="/images/coherex-Dark.png"
                 alt="COHEREX Logo"
                 width={32}
                 height={32}
