@@ -386,19 +386,19 @@ export function Sidebar({ isOpen, onToggle, isDesktop = false }: SidebarProps) {
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-3">
-          {isOpen && (
-            <div className="flex items-center">
-              <Image
-                src="/images/coherex-Dark.png"
-                alt="COHEREX Logo"
-                width={32}
-                height={32}
-                className="mr-2"
-              />
-              <h1 className="text-xl font-bold text-sidebar-foreground">COHEREX</h1>
-            </div>
-          )}
+        <div className="px-4 py-4">
+          <div className="flex items-center">
+            <Image
+              src="/images/coherex-Dark.png"
+              alt="COHEREX Logo"
+              width={28}
+              height={28}
+              className="flex-shrink-0 ml-1"
+            />
+            {isOpen && (
+              <h1 className="text-xl font-bold text-sidebar-foreground ml-3">COHEREX</h1>
+            )}
+          </div>
         </div>
 
         {/* Navigation */}
