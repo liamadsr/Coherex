@@ -64,7 +64,7 @@ export function MainLayout({ children }: MainLayoutProps) {
       {/* Main content area */}
       <div 
         style={{ marginLeft }}
-        className="flex flex-col min-h-screen"
+        className="flex flex-col h-screen overflow-hidden"
       >
         {/* Top bar */}
         <TopBar />

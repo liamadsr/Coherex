@@ -74,13 +74,14 @@ export function AIAssistantPanel({ isOpen }: AIAssistantPanelProps) {
   return (
     <div
       className={cn(
-        'h-full w-full bg-background flex flex-col border-l border-border'
+        'h-full w-full bg-background flex flex-col border-l border-border overflow-hidden'
       )}
     >
       {isOpen && (
-        <>
+        <div className="flex flex-col h-full overflow-hidden">
           {/* Messages */}
-          <ScrollArea className="flex-1 px-6 pt-6 pb-4 overflow-y-auto bg-gray-50 dark:bg-gray-900/50" ref={scrollRef}>
+          <div className="flex-1 overflow-hidden bg-gray-50 dark:bg-gray-900/50">
+            <ScrollArea className="h-full px-6 pt-6 pb-4" ref={scrollRef}>
               <div className="space-y-4">
                 {messages.map((message) => (
                   <div
@@ -114,6 +115,7 @@ export function AIAssistantPanel({ isOpen }: AIAssistantPanelProps) {
                 )}
               </div>
             </ScrollArea>
+          </div>
 
             {/* Input */}
             <div className="px-6 py-4 border-t border-border flex-shrink-0 bg-background">
@@ -135,7 +137,7 @@ export function AIAssistantPanel({ isOpen }: AIAssistantPanelProps) {
                 </Button>
               </div>
             </div>
-        </>
+        </div>
       )}
     </div>
   )

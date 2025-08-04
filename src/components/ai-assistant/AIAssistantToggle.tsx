@@ -1,6 +1,6 @@
 'use client'
 
-import { Bot } from 'lucide-react'
+import { PanelRightClose, PanelRightOpen } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
@@ -20,7 +20,11 @@ export function AIAssistantToggle({ onClick, isOpen }: AIAssistantToggleProps) {
             onClick={onClick}
             className={isOpen ? 'bg-accent' : ''}
           >
-            <Bot className="w-5 h-5" />
+            {isOpen ? (
+              <PanelRightClose className="w-5 h-5" />
+            ) : (
+              <PanelRightOpen className="w-5 h-5" />
+            )}
           </Button>
         </TooltipTrigger>
         <TooltipContent>
