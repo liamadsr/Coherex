@@ -84,14 +84,46 @@ const features = [
 
 // Integration logos
 const integrations = [
-  { name: 'Slack', abbr: 'SL' },
-  { name: 'Teams', abbr: 'MS' },
-  { name: 'HubSpot', abbr: 'HS' },
-  { name: 'Salesforce', abbr: 'SF' },
-  { name: 'GitHub', abbr: 'GH' },
-  { name: 'SharePoint', abbr: 'SP' },
-  { name: 'Confluence', abbr: 'CF' },
-  { name: 'Notion', abbr: 'NT' },
+  { 
+    name: 'Slack',
+    slug: 'slack',
+    color: 'FFFFFF' // Use white for visibility
+  },
+  { 
+    name: 'Discord',
+    slug: 'discord', 
+    color: '5865F2' // Discord brand color
+  },
+  { 
+    name: 'HubSpot',
+    slug: 'hubspot',
+    color: 'FF7A59'
+  },
+  { 
+    name: 'Salesforce',
+    slug: 'salesforce',
+    color: '00A1E0'
+  },
+  { 
+    name: 'GitHub',
+    slug: 'github',
+    color: 'FFFFFF' // Use white for visibility
+  },
+  { 
+    name: 'Google Docs',
+    slug: 'googledocs', 
+    color: '4285F4' // Google blue
+  },
+  { 
+    name: 'Confluence',
+    slug: 'confluence',
+    color: '1868DB' // Use the actual blue color
+  },
+  { 
+    name: 'Notion',
+    slug: 'notion',
+    color: 'FFFFFF' // Use white for visibility
+  },
 ]
 
 export default function LandingPage() {
@@ -375,7 +407,27 @@ export default function LandingPage() {
                 } : undefined}
                 className="bg-[#050505] rounded-xl p-6 text-center hover:bg-[#0a0a0a] transition-all duration-300 hover:scale-105 no-flash border border-neutral-800/50"
               >
-                <div className="text-2xl font-bold mb-3 bg-gray-800 w-16 h-16 rounded-full flex items-center justify-center mx-auto">{integration.abbr}</div>
+                <div className="mb-3 w-12 h-12 flex items-center justify-center mx-auto">
+                  {(integration.name === 'Teams' || integration.name === 'SharePoint') ? (
+                    // Use fallback text for Teams and SharePoint since they might not be available
+                    <div className="w-12 h-12 bg-gray-800 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+                      {integration.name === 'Teams' ? 'T' : 'SP'}
+                    </div>
+                  ) : (
+                    <img 
+                      src={`https://cdn.simpleicons.org/${integration.slug}/${integration.color}`}
+                      alt={`${integration.name} logo`}
+                      className="w-8 h-8"
+                      onError={(e) => {
+                        // Fallback to text abbreviation if icon fails
+                        const parent = e.currentTarget.parentElement;
+                        if (parent) {
+                          parent.innerHTML = `<div class="w-12 h-12 bg-gray-800 rounded-lg flex items-center justify-center text-white font-bold text-sm">${integration.name.substring(0, 2).toUpperCase()}</div>`;
+                        }
+                      }}
+                    />
+                  )}
+                </div>
                 <p className="text-gray-400">{integration.name}</p>
               </motion.div>
             ))}
