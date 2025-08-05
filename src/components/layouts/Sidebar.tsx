@@ -131,35 +131,6 @@ const bottomNavigation: NavigationItem[] = [
     name: 'Settings',
     href: '/settings',
     icon: Settings,
-    children: [
-      { name: 'Profile', href: '/settings/profile', icon: Settings },
-      { name: 'Notifications', href: '/settings/notifications', icon: Settings },
-      { name: 'Security', href: '/settings/security', icon: Settings },
-    ]
-  },
-  {
-    name: 'Organization',
-    href: '/organization',
-    icon: Building,
-    children: [
-      { name: 'Overview', href: '/organization', icon: Building },
-      { name: 'Members', href: '/organization/members', icon: Building },
-      { name: 'Billing', href: '/organization/billing', icon: Building },
-      { name: 'Compliance', href: '/organization/compliance', icon: Building },
-      { name: 'Audit Logs', href: '/organization/audit', icon: Building },
-    ]
-  },
-  {
-    name: 'Admin',
-    href: '/admin',
-    icon: Shield,
-    children: [
-      { name: 'Platform', href: '/admin', icon: Shield },
-      { name: 'Users', href: '/admin/users', icon: Shield },
-      { name: 'Organizations', href: '/admin/organizations', icon: Shield },
-      { name: 'System Health', href: '/admin/system', icon: Shield },
-      { name: 'Feature Flags', href: '/admin/feature-flags', icon: Shield },
-    ]
   },
 ]
 
