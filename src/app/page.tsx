@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { 
   ArrowRight, 
   Check, 
@@ -35,60 +35,68 @@ import { Button } from '@/components/ui/button'
 // Feature cards data
 const features = [
   {
+    id: 'ai-agents',
     icon: Bot,
     title: 'AI Agents',
     description: 'Build intelligent agents that understand context and execute tasks autonomously.',
-    gradient: 'from-purple-500 to-blue-600'
+    gradient: 'from-gray-700 to-gray-900'
   },
   {
+    id: 'mcp',
     icon: Workflow,
     title: 'Model Context Protocol',
     description: 'Connect to any tool or service through standardized MCP servers.',
-    gradient: 'from-blue-500 to-cyan-600'
+    gradient: 'from-gray-600 to-gray-800'
   },
   {
+    id: 'knowledge',
     icon: Database,
     title: 'Knowledge Sources',
     description: 'Integrate with SharePoint, Confluence, databases, and more.',
-    gradient: 'from-cyan-500 to-teal-600'
+    gradient: 'from-gray-700 to-gray-900'
   },
   {
+    id: 'integrations',
     icon: Zap,
     title: 'Integrations',
     description: 'Connect with HubSpot, Salesforce, Slack, and your favorite tools.',
-    gradient: 'from-teal-500 to-green-600'
+    gradient: 'from-gray-600 to-gray-800'
   },
   {
+    id: 'multi-channel',
     icon: MessageSquare,
     title: 'Multi-Channel',
     description: 'Deploy agents across email, chat, phone, and API endpoints.',
-    gradient: 'from-green-500 to-lime-600'
+    gradient: 'from-gray-700 to-gray-900'
   },
   {
+    id: 'enterprise',
     icon: Shield,
     title: 'Enterprise Ready',
     description: 'Built with security, compliance, and scalability in mind.',
-    gradient: 'from-orange-500 to-red-600'
+    gradient: 'from-gray-600 to-gray-800'
   }
 ]
 
 // Integration logos
 const integrations = [
-  { name: 'Slack', icon: '💜' },
-  { name: 'Teams', icon: '🟦' },
-  { name: 'HubSpot', icon: '🟠' },
-  { name: 'Salesforce', icon: '☁️' },
-  { name: 'GitHub', icon: '🐙' },
-  { name: 'SharePoint', icon: '🔷' },
-  { name: 'Confluence', icon: '🔵' },
-  { name: 'Notion', icon: '⬛' },
+  { name: 'Slack', abbr: 'SL' },
+  { name: 'Teams', abbr: 'MS' },
+  { name: 'HubSpot', abbr: 'HS' },
+  { name: 'Salesforce', abbr: 'SF' },
+  { name: 'GitHub', abbr: 'GH' },
+  { name: 'SharePoint', abbr: 'SP' },
+  { name: 'Confluence', abbr: 'CF' },
+  { name: 'Notion', abbr: 'NT' },
 ]
 
 export default function LandingPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
     const handleScroll = () => {
       setScrolled(window.scrollY > 10)
     }
@@ -136,7 +144,7 @@ export default function LandingPage() {
               <Button variant="ghost" asChild>
                 <Link href="/login">Sign In</Link>
               </Button>
-              <Button className="bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700" asChild>
+              <Button className="bg-white text-black hover:bg-gray-300 focus:ring-0 focus:ring-offset-0 transition-colors" asChild>
                 <Link href="/register">
                   Get Started
                   <ArrowRight className="w-4 h-4 ml-2" />
@@ -174,10 +182,10 @@ export default function LandingPage() {
                 Pricing
               </Link>
               <div className="pt-4 space-y-2">
-                <Button variant="outline" className="w-full" asChild>
+                <Button variant="outline" className="w-full bg-transparent border-gray-500 text-white hover:bg-white/10 hover:border-white/30 hover:text-white focus:ring-0 focus:ring-offset-0 transition-all" asChild>
                   <Link href="/login">Sign In</Link>
                 </Button>
-                <Button className="w-full bg-gradient-to-r from-purple-500 to-blue-600" asChild>
+                <Button className="w-full bg-white text-black hover:bg-gray-300 focus:ring-0 focus:ring-offset-0 transition-colors" asChild>
                   <Link href="/register">Get Started</Link>
                 </Button>
               </div>
@@ -189,20 +197,20 @@ export default function LandingPage() {
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-black to-blue-900/20" />
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-900/20 via-black to-gray-800/20" />
         
         {/* Grid pattern */}
         <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]" />
         
-        {/* Animated gradient orbs */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500 rounded-full filter blur-[128px] opacity-30 animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500 rounded-full filter blur-[128px] opacity-30 animate-pulse" />
+        {/* Animated gradient orbs - removed animate-pulse to reduce flashing */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gray-500 rounded-full filter blur-[128px] opacity-20 blur-stable" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gray-600 rounded-full filter blur-[128px] opacity-20 blur-stable" />
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            initial={mounted ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }}
+            animate={mounted ? { opacity: 1, y: 0 } : undefined}
+            transition={mounted ? { duration: 0.8 } : undefined}
           >
             <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
               Build AI Agents
@@ -215,13 +223,13 @@ export default function LandingPage() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-lg px-8" asChild>
+              <Button size="lg" className="bg-white text-black hover:bg-gray-300 focus:ring-0 focus:ring-offset-0 transition-colors text-lg px-8" asChild>
                 <Link href="/register">
                   Start Building
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" className="text-lg px-8 border-gray-700 hover:bg-gray-900" asChild>
+              <Button size="lg" variant="outline" className="text-lg px-8 bg-transparent border-gray-500 text-white hover:bg-white/10 hover:border-white/30 hover:text-white focus:ring-0 focus:ring-offset-0 transition-all" asChild>
                 <Link href="#demo">
                   <Play className="w-5 h-5 mr-2" />
                   Watch Demo
@@ -231,15 +239,15 @@ export default function LandingPage() {
             
             <div className="mt-12 flex items-center justify-center space-x-8 text-gray-500">
               <div className="flex items-center">
-                <Check className="w-5 h-5 mr-2 text-green-500" />
+                <Check className="w-5 h-5 mr-2 text-white" />
                 <span>No credit card required</span>
               </div>
               <div className="flex items-center">
-                <Check className="w-5 h-5 mr-2 text-green-500" />
+                <Check className="w-5 h-5 mr-2 text-white" />
                 <span>14-day free trial</span>
               </div>
               <div className="flex items-center">
-                <Check className="w-5 h-5 mr-2 text-green-500" />
+                <Check className="w-5 h-5 mr-2 text-white" />
                 <span>SOC2 compliant</span>
               </div>
             </div>
@@ -248,18 +256,18 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 relative">
+      <section id="features" className="py-20 relative no-flash">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
+            initial={mounted ? { opacity: 0 } : { opacity: 1 }}
+            whileInView={mounted ? { opacity: 1 } : undefined}
             viewport={{ once: true }}
             className="text-center mb-16"
           >
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
               Everything you need to build
               <br />
-              <span className="bg-gradient-to-r from-purple-500 to-blue-600 bg-clip-text text-transparent">
+              <span className="text-gray-300">
                 production-ready AI agents
               </span>
             </h2>
@@ -272,12 +280,17 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map((feature, index) => (
               <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="group relative bg-gray-900 rounded-2xl p-8 hover:bg-gray-850 transition-all duration-300"
+                key={feature.id}
+                initial={mounted ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }}
+                whileInView={mounted ? { opacity: 1, y: 0 } : undefined}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={mounted ? { 
+                  duration: 0.5,
+                  delay: index * 0.1,
+                  ease: "easeOut"
+                } : undefined}
+                className="group relative bg-gray-900 rounded-2xl p-8 hover:bg-gray-850 transition-all duration-300 no-flash"
+                style={{ minHeight: '250px' }}
               >
                 <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${feature.gradient} p-3 mb-6`}>
                   <feature.icon className="w-full h-full text-white" />
@@ -292,20 +305,20 @@ export default function LandingPage() {
       </section>
 
       {/* Integrations Section */}
-      <section id="integrations" className="py-20 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-purple-900/10 to-transparent" />
+      <section id="integrations" className="py-20 relative overflow-hidden no-flash">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-gray-900/10 to-transparent" />
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
+            initial={mounted ? { opacity: 0 } : { opacity: 1 }}
+            whileInView={mounted ? { opacity: 1 } : undefined}
             viewport={{ once: true }}
             className="text-center mb-16"
           >
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
               Connects with your
               <br />
-              <span className="bg-gradient-to-r from-purple-500 to-blue-600 bg-clip-text text-transparent">
+              <span className="text-gray-300">
                 entire tech stack
               </span>
             </h2>
@@ -318,14 +331,18 @@ export default function LandingPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
             {integrations.map((integration, index) => (
               <motion.div
-                key={index}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.05 }}
-                className="bg-gray-900 rounded-xl p-6 text-center hover:bg-gray-850 transition-all duration-300 hover:scale-105"
+                key={integration.name}
+                initial={mounted ? { opacity: 0, scale: 0.9 } : { opacity: 1, scale: 1 }}
+                whileInView={mounted ? { opacity: 1, scale: 1 } : undefined}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={mounted ? { 
+                  duration: 0.4,
+                  delay: index * 0.05,
+                  ease: "easeOut"
+                } : undefined}
+                className="bg-gray-900 rounded-xl p-6 text-center hover:bg-gray-850 transition-all duration-300 hover:scale-105 no-flash"
               >
-                <div className="text-5xl mb-3">{integration.icon}</div>
+                <div className="text-2xl font-bold mb-3 bg-gray-800 w-16 h-16 rounded-full flex items-center justify-center mx-auto">{integration.abbr}</div>
                 <p className="text-gray-400">{integration.name}</p>
               </motion.div>
             ))}
@@ -333,7 +350,7 @@ export default function LandingPage() {
 
           <div className="text-center">
             <p className="text-gray-400 mb-4">And 100+ more integrations</p>
-            <Button variant="outline" className="border-gray-700 hover:bg-gray-900">
+            <Button variant="outline" className="bg-transparent border-gray-500 text-white hover:bg-white/10 hover:border-white/30 hover:text-white focus:ring-0 focus:ring-offset-0 transition-all">
               View All Integrations
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
@@ -345,10 +362,10 @@ export default function LandingPage() {
       <section className="py-20 relative">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={mounted ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }}
+            whileInView={mounted ? { opacity: 1, y: 0 } : undefined}
             viewport={{ once: true }}
-            className="bg-gradient-to-r from-purple-900/50 to-blue-900/50 rounded-3xl p-12 backdrop-blur-xl border border-gray-800"
+            className="bg-gradient-to-r from-gray-900/50 to-gray-800/50 rounded-3xl p-12 backdrop-blur-xl border border-gray-700 no-flash"
           >
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
               Ready to transform your business
@@ -359,13 +376,13 @@ export default function LandingPage() {
               Join thousands of companies already using coherex to automate their workflows.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-lg px-8" asChild>
+              <Button size="lg" className="bg-white text-black hover:bg-gray-300 focus:ring-0 focus:ring-offset-0 transition-colors text-lg px-8" asChild>
                 <Link href="/register">
                   Get Started Free
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" className="text-lg px-8 border-gray-700 hover:bg-gray-900" asChild>
+              <Button size="lg" variant="outline" className="text-lg px-8 bg-transparent border-gray-500 text-white hover:bg-white/10 hover:border-white/30 hover:text-white focus:ring-0 focus:ring-offset-0 transition-all" asChild>
                 <Link href="/contact">
                   Talk to Sales
                 </Link>

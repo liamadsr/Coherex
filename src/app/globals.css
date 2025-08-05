@@ -120,3 +120,43 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Prevent flashing on scroll animations */
+@layer utilities {
+  .no-flash {
+    -webkit-backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+    -webkit-transform: translate3d(0, 0, 0);
+    -moz-transform: translate3d(0, 0, 0);
+  }
+  
+  /* Disable GPU acceleration for blur effects to prevent flashing */
+  .blur-stable {
+    transform: translateZ(0);
+    will-change: auto;
+  }
+  
+  /* Ensure smooth scrolling without jank */
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  /* Prevent layout shift on animations */
+  .motion-reduce {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Fix for Framer Motion flashing */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
