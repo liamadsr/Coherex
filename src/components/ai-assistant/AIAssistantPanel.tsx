@@ -93,10 +93,10 @@ export function AIAssistantPanel({ isOpen }: AIAssistantPanelProps) {
                   >
                     <div
                       className={cn(
-                        'max-w-[80%] rounded-lg px-4 py-3 shadow-sm',
+                        'max-w-[80%] rounded-lg px-4 py-3',
                         message.role === 'user'
-                          ? 'bg-primary text-primary-foreground ml-auto'
-                          : 'bg-white dark:bg-[#0c0c0c] border border-border'
+                          ? 'bg-white dark:bg-[#0c0c0c] ml-auto'
+                          : 'bg-white dark:bg-[#0c0c0c]'
                       )}
                     >
                       <p className="text-sm">{message.content}</p>
