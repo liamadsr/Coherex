@@ -62,7 +62,7 @@ import * as d3 from 'd3-force'
 const ForceGraph2D = dynamic(() => import('react-force-graph-2d'), {
   ssr: false,
   loading: () => (
-    <div className="flex items-center justify-center h-full">
+    <div className="flex items-center justify-center h-full bg-[#0c0c0c]">
       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
     </div>
   )
@@ -949,7 +949,7 @@ export default function ConversationsPage() {
           </>
         ) : (
           /* Cluster View */
-          <div className="h-[calc(100vh-280px)] relative bg-gray-50 dark:bg-[#000000] rounded-xl">
+          <div className="h-[calc(100vh-280px)] relative bg-gray-50 dark:bg-[#0c0c0c] rounded-xl overflow-hidden">
             {clusterViewMode === 'wordcloud' || clusterViewMode === 'phrasecloud' ? (
               <div className="h-full flex items-center justify-center p-8">
                 <div className="w-full h-full max-w-6xl bg-white/90 dark:bg-neutral-900/90 backdrop-blur-md rounded-xl shadow-lg border border-gray-200/50 dark:border-gray-700/50 p-8">
