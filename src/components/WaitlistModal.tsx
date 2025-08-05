@@ -85,7 +85,7 @@ export function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
             transition={{ duration: 0.2 }}
             className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md z-50"
           >
-            <div className="bg-black rounded-2xl shadow-2xl border border-gray-800 overflow-hidden">
+            <div className="bg-black rounded-2xl shadow-2xl border border-gray-700 overflow-hidden">
               {/* Header */}
               <div className="relative px-6 pt-6 pb-4">
                 <button
@@ -127,7 +127,8 @@ export function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
                         id="name"
                         type="text"
                         placeholder="John Doe"
-                        className="bg-gray-900 border-gray-700 text-white placeholder:text-gray-500 focus:border-gray-600"
+                        className="bg-gray-950 border-gray-700 text-white placeholder:text-gray-500 focus:outline-none focus:border-gray-600 focus:ring-0"
+                        style={{ backgroundColor: '#0a0a0a' }}
                         value={formData.name}
                         onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                         disabled={loading}
@@ -142,7 +143,8 @@ export function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
                         id="email"
                         type="email"
                         placeholder="john@example.com"
-                        className="bg-gray-900 border-gray-700 text-white placeholder:text-gray-500 focus:border-gray-600"
+                        className="bg-gray-950 border-gray-700 text-white placeholder:text-gray-500 focus:outline-none focus:border-gray-600 focus:ring-0"
+                        style={{ backgroundColor: '#0a0a0a' }}
                         value={formData.email}
                         onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                         disabled={loading}
@@ -157,7 +159,8 @@ export function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
                         id="company"
                         type="text"
                         placeholder="Google, Microsoft, Startup, etc."
-                        className="bg-gray-900 border-gray-700 text-white placeholder:text-gray-500 focus:border-gray-600"
+                        className="bg-gray-950 border-gray-700 text-white placeholder:text-gray-500 focus:outline-none focus:border-gray-600 focus:ring-0"
+                        style={{ backgroundColor: '#0a0a0a' }}
                         value={formData.company}
                         onChange={(e) => setFormData(prev => ({ ...prev, company: e.target.value }))}
                         disabled={loading}
@@ -171,7 +174,7 @@ export function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
                     <div className="pt-2 space-y-3">
                       <Button
                         type="submit"
-                        className="w-full bg-white text-black hover:bg-gray-200"
+                        className="w-full bg-white text-black hover:bg-gray-200 focus:outline-none focus:ring-0"
                         disabled={loading}
                       >
                         {loading ? 'Joining...' : 'Join Waitlist'}
