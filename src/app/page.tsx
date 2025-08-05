@@ -41,43 +41,43 @@ const features = [
   {
     id: 'ai-agents',
     icon: Bot,
-    title: 'AI Agents',
-    description: 'Build intelligent employees that understand context and execute tasks autonomously.',
+    title: 'Teams & Agents',
+    description: 'Build intelligent employees that understand context and help run your business.',
     gradient: 'from-gray-700 to-gray-900'
   },
   {
     id: 'mcp',
     icon: Workflow,
     title: 'Model Context Protocol',
-    description: 'Connect to any tool or service through standardized MCP servers.',
+    description: 'Connect your AI employees to all your tools and services through MCP.',
     gradient: 'from-gray-600 to-gray-800'
   },
   {
     id: 'knowledge',
     icon: Database,
     title: 'Knowledge Sources',
-    description: 'Integrate with SharePoint, Confluence, databases, and more.',
+    description: 'Choose which agents get access to what - databases, SOPs, SharePoint, and allocate resources.',
     gradient: 'from-gray-700 to-gray-900'
   },
   {
     id: 'integrations',
     icon: Zap,
     title: 'Integrations',
-    description: 'Connect with HubSpot, Salesforce, Slack, and your favorite tools.',
+    description: 'Connect to Slack for conversations, HubSpot for reports, and all your business tools.',
     gradient: 'from-gray-600 to-gray-800'
   },
   {
     id: 'multi-channel',
     icon: MessageSquare,
     title: 'Multi-Channel',
-    description: 'Deploy agents across email, chat, phone, and API endpoints.',
+    description: 'They\'re everywhere you are - own inbox, phone number, email, chat, Slack. Tell them where to be.',
     gradient: 'from-gray-700 to-gray-900'
   },
   {
     id: 'enterprise',
     icon: Shield,
     title: 'Enterprise Ready',
-    description: 'Built with security, compliance, and scalability in mind.',
+    description: 'Stay in control with audit logs, conversation history, and a dashboard showing everything your agents do.',
     gradient: 'from-gray-600 to-gray-800'
   }
 ]
