@@ -949,7 +949,7 @@ export default function ConversationsPage() {
           </>
         ) : (
           /* Cluster View */
-          <div className="h-[calc(100vh-280px)] relative bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-950 dark:to-gray-900 rounded-xl">
+          <div className="h-[calc(100vh-280px)] relative bg-gray-50 dark:bg-[#000000] rounded-xl">
             {clusterViewMode === 'wordcloud' || clusterViewMode === 'phrasecloud' ? (
               <div className="h-full flex items-center justify-center p-8">
                 <div className="w-full h-full max-w-6xl bg-white/90 dark:bg-neutral-900/90 backdrop-blur-md rounded-xl shadow-lg border border-gray-200/50 dark:border-gray-700/50 p-8">
@@ -1016,7 +1016,7 @@ export default function ConversationsPage() {
               nodeVal="val"
               linkColor={link => link.invisible ? 'transparent' : 'rgba(148, 163, 184, 0.1)'}
               linkWidth={link => link.invisible ? 0 : 1}
-              backgroundColor="transparent"
+              backgroundColor="#0c0c0c"
               onNodeClick={handleNodeClick}
               onNodeHover={node => setHoveredNode(node?.isCategory ? null : node)}
               enableNodeDrag={true}
