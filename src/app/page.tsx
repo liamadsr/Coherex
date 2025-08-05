@@ -145,7 +145,7 @@ export default function LandingPage() {
                 <Link href="/login">Sign In</Link>
               </Button>
               <Button className="bg-white text-black hover:bg-gray-300 focus:ring-0 focus:ring-offset-0 transition-colors" asChild>
-                <Link href="/register">
+                <Link href="/login">
                   Get Started
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
@@ -186,7 +186,7 @@ export default function LandingPage() {
                   <Link href="/login">Sign In</Link>
                 </Button>
                 <Button className="w-full bg-white text-black hover:bg-gray-300 focus:ring-0 focus:ring-offset-0 transition-colors" asChild>
-                  <Link href="/register">Get Started</Link>
+                  <Link href="/login">Get Started</Link>
                 </Button>
               </div>
             </div>
@@ -224,7 +224,7 @@ export default function LandingPage() {
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="bg-white text-black hover:bg-gray-300 focus:ring-0 focus:ring-offset-0 transition-colors text-lg px-8" asChild>
-                <Link href="/register">
+                <Link href="/login">
                   Start Building
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Link>
@@ -377,7 +377,7 @@ export default function LandingPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="bg-white text-black hover:bg-gray-300 focus:ring-0 focus:ring-offset-0 transition-colors text-lg px-8" asChild>
-                <Link href="/register">
+                <Link href="/login">
                   Get Started Free
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Link>
