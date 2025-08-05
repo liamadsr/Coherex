@@ -28,9 +28,13 @@ import {
   Play,
   Bot,
   Workflow,
-  Settings
+  Settings,
+  Mail
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { submitToWaitlist } from '@/lib/waitlist'
+import { WaitlistModal } from '@/components/WaitlistModal'
 
 // Feature cards data
 const features = [
@@ -94,6 +98,7 @@ export default function LandingPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [waitlistModalOpen, setWaitlistModalOpen] = useState(false)
 
   useEffect(() => {
     setMounted(true)
@@ -142,13 +147,17 @@ export default function LandingPage() {
             
             <div className="hidden md:flex items-center space-x-4">
               <Button variant="ghost" asChild>
-                <Link href="/login">Sign In</Link>
+                <a href="https://github.com/liamadsr/Coherex" target="_blank" rel="noopener noreferrer" className="flex items-center">
+                  <Github className="w-5 h-5 mr-2" />
+                  GitHub
+                </a>
               </Button>
-              <Button className="bg-white text-black hover:bg-gray-300 focus:ring-0 focus:ring-offset-0 transition-colors" asChild>
-                <Link href="/login">
-                  Get Started
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Link>
+              <Button 
+                onClick={() => setWaitlistModalOpen(true)}
+                className="bg-white text-black hover:bg-gray-300 focus:ring-0 focus:ring-offset-0 transition-colors"
+              >
+                Join Waitlist
+                <Mail className="w-4 h-4 ml-2" />
               </Button>
             </div>
             
@@ -181,12 +190,17 @@ export default function LandingPage() {
               <Link href="#pricing" className="block px-3 py-2 text-gray-300 hover:text-white">
                 Pricing
               </Link>
+              <a href="https://github.com/liamadsr/Coherex" target="_blank" rel="noopener noreferrer" className="block px-3 py-2 text-gray-300 hover:text-white">
+                <Github className="inline w-5 h-5 mr-2" />
+                GitHub Repository
+              </a>
               <div className="pt-4 space-y-2">
-                <Button variant="outline" className="w-full bg-transparent border-gray-500 text-white hover:bg-white/10 hover:border-white/30 hover:text-white focus:ring-0 focus:ring-offset-0 transition-all" asChild>
-                  <Link href="/login">Sign In</Link>
-                </Button>
-                <Button className="w-full bg-white text-black hover:bg-gray-300 focus:ring-0 focus:ring-offset-0 transition-colors" asChild>
-                  <Link href="/login">Get Started</Link>
+                <Button 
+                  onClick={() => setWaitlistModalOpen(true)}
+                  className="w-full bg-white text-black hover:bg-gray-300 focus:ring-0 focus:ring-offset-0 transition-colors"
+                >
+                  Join Waitlist
+                  <Mail className="w-4 h-4 ml-2" />
                 </Button>
               </div>
             </div>
@@ -212,43 +226,54 @@ export default function LandingPage() {
             animate={mounted ? { opacity: 1, y: 0 } : undefined}
             transition={mounted ? { duration: 0.8 } : undefined}
           >
+            <div className="inline-flex items-center px-4 py-2 bg-gray-800 rounded-full text-sm text-gray-300 mb-6">
+              <Code className="w-4 h-4 mr-2" />
+              Open Source • Coming Soon
+            </div>
             <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
-              Build AI Agents
+              The Open Source Platform
               <br />
-              That Actually Work
+              for AI Agents
             </h1>
             <p className="text-xl md:text-2xl text-gray-400 mb-8 max-w-3xl mx-auto">
-              The enterprise platform for creating, deploying, and managing intelligent AI agents 
-              that integrate with your existing tools and workflows.
+              We're building a community-driven, open source platform for creating, deploying, and managing intelligent AI agents.
+              Join us in shaping the future of AI automation.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-white text-black hover:bg-gray-300 focus:ring-0 focus:ring-offset-0 transition-colors text-lg px-8" asChild>
-                <Link href="/login">
-                  Start Building
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Link>
+            <div className="flex flex-col items-center gap-4">
+              <Button 
+                size="lg" 
+                onClick={() => setWaitlistModalOpen(true)}
+                className="bg-white text-black hover:bg-gray-300 focus:ring-0 focus:ring-offset-0 transition-colors text-lg px-8"
+              >
+                Join Waitlist
+                <Mail className="w-5 h-5 ml-2" />
               </Button>
-              <Button size="lg" variant="outline" className="text-lg px-8 bg-transparent border-gray-500 text-white hover:bg-white/10 hover:border-white/30 hover:text-white focus:ring-0 focus:ring-offset-0 transition-all" asChild>
-                <Link href="#demo">
-                  <Play className="w-5 h-5 mr-2" />
-                  Watch Demo
-                </Link>
+              <p className="text-gray-400 text-sm">
+                Get early access and help shape the future of AI agents
+              </p>
+            </div>
+            <div className="mt-4">
+              <Button size="lg" variant="ghost" className="text-lg px-8 text-gray-400 hover:text-white" asChild>
+                <a href="https://github.com/liamadsr/Coherex" target="_blank" rel="noopener noreferrer">
+                  <Github className="w-5 h-5 mr-2" />
+                  View on GitHub
+                </a>
               </Button>
             </div>
             
             <div className="mt-12 flex items-center justify-center space-x-8 text-gray-500">
               <div className="flex items-center">
                 <Check className="w-5 h-5 mr-2 text-white" />
-                <span>No credit card required</span>
+                <span>100% Open Source</span>
               </div>
               <div className="flex items-center">
                 <Check className="w-5 h-5 mr-2 text-white" />
-                <span>14-day free trial</span>
+                <span>Community Driven</span>
               </div>
               <div className="flex items-center">
                 <Check className="w-5 h-5 mr-2 text-white" />
-                <span>SOC2 compliant</span>
+                <span>Privacy First</span>
               </div>
             </div>
           </motion.div>
@@ -265,15 +290,15 @@ export default function LandingPage() {
             className="text-center mb-16"
           >
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Everything you need to build
+              What we're building
               <br />
               <span className="text-gray-300">
-                production-ready AI agents
+                together
               </span>
             </h2>
             <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-              From simple chatbots to complex autonomous systems, coherex provides the tools 
-              and infrastructure you need.
+              COHEREX will be the open source standard for building, deploying, and managing AI agents.
+              Here's what's coming:
             </p>
           </motion.div>
 
@@ -316,15 +341,15 @@ export default function LandingPage() {
             className="text-center mb-16"
           >
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Connects with your
+              Built to connect with
               <br />
               <span className="text-gray-300">
-                entire tech stack
+                everything
               </span>
             </h2>
             <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-              Seamlessly integrate with the tools your team already uses. 
-              No complex setup, just connect and go.
+              COHEREX will integrate seamlessly with the tools your team already uses.
+              Open source means endless possibilities.
             </p>
           </motion.div>
 
@@ -368,25 +393,36 @@ export default function LandingPage() {
             className="bg-gradient-to-r from-gray-900/50 to-gray-800/50 rounded-3xl p-12 backdrop-blur-xl border border-gray-700 no-flash"
           >
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Ready to transform your business
+              Be part of building
               <br />
-              with AI agents?
+              the future of AI agents
             </h2>
             <p className="text-xl text-gray-400 mb-8">
-              Join thousands of companies already using coherex to automate their workflows.
+              Join our community of developers, researchers, and companies working together to create the open source platform for AI automation.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-white text-black hover:bg-gray-300 focus:ring-0 focus:ring-offset-0 transition-colors text-lg px-8" asChild>
-                <Link href="/login">
-                  Get Started Free
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Link>
+            <div className="flex flex-col items-center gap-6">
+              <Button 
+                size="lg" 
+                onClick={() => setWaitlistModalOpen(true)}
+                className="bg-white text-black hover:bg-gray-300 focus:ring-0 focus:ring-offset-0 transition-colors text-lg px-8"
+              >
+                Get Early Access
+                <Mail className="w-5 h-5 ml-2" />
               </Button>
-              <Button size="lg" variant="outline" className="text-lg px-8 bg-transparent border-gray-500 text-white hover:bg-white/10 hover:border-white/30 hover:text-white focus:ring-0 focus:ring-offset-0 transition-all" asChild>
-                <Link href="/contact">
-                  Talk to Sales
-                </Link>
-              </Button>
+              <div className="flex gap-4">
+                <Button size="lg" variant="outline" className="text-lg px-8 bg-transparent border-gray-500 text-white hover:bg-white/10 hover:border-white/30 hover:text-white focus:ring-0 focus:ring-offset-0 transition-all" asChild>
+                  <a href="https://github.com/liamadsr/Coherex" target="_blank" rel="noopener noreferrer">
+                    <Github className="w-5 h-5 mr-2" />
+                    Star on GitHub
+                  </a>
+                </Button>
+                <Button size="lg" variant="outline" className="text-lg px-8 bg-transparent border-gray-500 text-white hover:bg-white/10 hover:border-white/30 hover:text-white focus:ring-0 focus:ring-offset-0 transition-all" asChild>
+                  <a href="https://discord.gg/coherex" target="_blank" rel="noopener noreferrer">
+                    <MessageSquare className="w-5 h-5 mr-2" />
+                    Join Discord
+                  </a>
+                </Button>
+              </div>
             </div>
           </motion.div>
         </div>
@@ -408,10 +444,10 @@ export default function LandingPage() {
                 <span className="text-xl font-bold">COHEREX</span>
               </div>
               <p className="text-gray-400">
-                The enterprise platform for AI agents.
+                The open source platform for AI agents.
               </p>
               <div className="flex space-x-4 mt-4">
-                <a href="#" className="text-gray-400 hover:text-white">
+                <a href="https://github.com/liamadsr/Coherex" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">
                   <Github className="w-5 h-5" />
                 </a>
                 <a href="#" className="text-gray-400 hover:text-white">
@@ -455,10 +491,16 @@ export default function LandingPage() {
           </div>
           
           <div className="mt-12 pt-8 border-t border-gray-800 text-center text-gray-400">
-            <p>&copy; 2024 coherex. All rights reserved.</p>
+            <p>&copy; 2024 COHEREX. Open Source Project.</p>
           </div>
         </div>
       </footer>
+      
+      {/* Waitlist Modal */}
+      <WaitlistModal 
+        isOpen={waitlistModalOpen} 
+        onClose={() => setWaitlistModalOpen(false)} 
+      />
     </div>
   )
 }
