@@ -3,6 +3,8 @@
 import { ReactNode } from 'react'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
+import Link from 'next/link'
+import { ArrowLeft } from 'lucide-react'
 
 interface AuthLayoutProps {
   children: ReactNode
@@ -72,6 +74,12 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
 
         {/* Right side - Form */}
         <div className="flex-1 flex flex-col justify-center px-6 py-12 lg:px-8">
+          {/* Back to home link */}
+          <Link href="/" className="absolute top-6 left-6 flex items-center text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition-colors">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to home
+          </Link>
+          
           <div className="mx-auto w-full max-w-md">
             {/* Mobile logo */}
             <div className="lg:hidden flex items-center justify-center mb-8">
