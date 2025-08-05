@@ -113,7 +113,7 @@ export default function LandingPage() {
     <div className="min-h-screen bg-black text-white">
       {/* Navigation */}
       <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        scrolled ? 'bg-black/80 backdrop-blur-xl border-b border-neutral-700' : 'bg-transparent'
+        scrolled ? 'bg-black/80 backdrop-blur-xl border-b border-neutral-800/50' : 'bg-transparent'
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -180,7 +180,7 @@ export default function LandingPage() {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="md:hidden bg-black/95 backdrop-blur-xl border-b border-neutral-700"
+            className="md:hidden bg-black/95 backdrop-blur-xl border-b border-neutral-800/50"
           >
             <div className="px-4 pt-2 pb-4 space-y-2">
               <Link href="#features" className="block px-3 py-2 text-gray-300 hover:text-white">
@@ -322,7 +322,7 @@ export default function LandingPage() {
                   delay: index * 0.1,
                   ease: "easeOut"
                 } : undefined}
-                className="group relative bg-[#050505] rounded-2xl p-8 hover:bg-[#0a0a0a] transition-all duration-300 no-flash border border-neutral-700"
+                className="group relative bg-[#050505] rounded-2xl p-8 hover:bg-[#0a0a0a] transition-all duration-300 no-flash border border-neutral-800/50"
                 style={{ minHeight: '250px' }}
               >
                 <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${feature.gradient} p-3 mb-6`}>
@@ -373,7 +373,7 @@ export default function LandingPage() {
                   delay: index * 0.05,
                   ease: "easeOut"
                 } : undefined}
-                className="bg-[#050505] rounded-xl p-6 text-center hover:bg-[#0a0a0a] transition-all duration-300 hover:scale-105 no-flash border border-neutral-700"
+                className="bg-[#050505] rounded-xl p-6 text-center hover:bg-[#0a0a0a] transition-all duration-300 hover:scale-105 no-flash border border-neutral-800/50"
               >
                 <div className="text-2xl font-bold mb-3 bg-gray-800 w-16 h-16 rounded-full flex items-center justify-center mx-auto">{integration.abbr}</div>
                 <p className="text-gray-400">{integration.name}</p>
@@ -398,7 +398,7 @@ export default function LandingPage() {
             initial={mounted ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }}
             whileInView={mounted ? { opacity: 1, y: 0 } : undefined}
             viewport={{ once: true }}
-            className="bg-[#050505] rounded-3xl p-12 border border-neutral-700 no-flash"
+            className="bg-[#050505] rounded-3xl p-12 border border-neutral-800/50 no-flash"
           >
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
               Be part of building
@@ -439,7 +439,7 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 border-t border-neutral-700">
+      <footer className="py-12 border-t border-neutral-800/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
@@ -502,7 +502,7 @@ export default function LandingPage() {
             </div>
           </div>
           
-          <div className="mt-12 pt-8 border-t border-neutral-700 text-center text-gray-400">
+          <div className="mt-12 pt-8 border-t border-neutral-800/50 text-center text-gray-400">
             <p>&copy; 2025 COHEREX. Open Source Project.</p>
           </div>
         </div>
