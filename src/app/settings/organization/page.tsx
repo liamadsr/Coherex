@@ -9,7 +9,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Building2, Globe, Mail, Phone, Save, Upload } from 'lucide-react'
 import { toast } from 'sonner'
-import { SettingsPageLayout } from '@/components/settings/SettingsPageLayout'
 
 export default function OrganizationSettingsPage() {
   const [isLoading, setIsLoading] = useState(false)
@@ -34,16 +33,15 @@ export default function OrganizationSettingsPage() {
   }
 
   return (
-    <SettingsPageLayout>
-      <div className="max-w-4xl">
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Organization</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
-            Manage your organization's information and settings
-          </p>
-        </div>
+    <div className="p-6 max-w-4xl">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Organization</h1>
+        <p className="text-gray-600 dark:text-gray-400 mt-1">
+          Manage your organization's information and settings
+        </p>
+      </div>
 
-        <div className="space-y-6">
+      <div className="space-y-6">
         {/* Organization Status */}
         <Card>
           <CardHeader>
@@ -219,9 +217,8 @@ export default function OrganizationSettingsPage() {
             <Save className="w-4 h-4 mr-2" />
             {isLoading ? 'Saving...' : 'Save Changes'}
           </Button>
-          </div>
         </div>
       </div>
-    </SettingsPageLayout>
+    </div>
   )
 }

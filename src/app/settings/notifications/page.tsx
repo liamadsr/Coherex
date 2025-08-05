@@ -8,7 +8,6 @@ import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Save } from 'lucide-react'
 import { toast } from 'sonner'
-import { SettingsPageLayout } from '@/components/settings/SettingsPageLayout'
 
 export default function NotificationSettingsPage() {
   const [isLoading, setIsLoading] = useState(false)
@@ -38,16 +37,15 @@ export default function NotificationSettingsPage() {
   }
 
   return (
-    <SettingsPageLayout>
-      <div className="max-w-4xl">
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Notifications</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
-            Configure how and when you receive notifications
-          </p>
-        </div>
+    <div className="p-6 max-w-4xl">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Notifications</h1>
+        <p className="text-gray-600 dark:text-gray-400 mt-1">
+          Configure how and when you receive notifications
+        </p>
+      </div>
 
-        <div className="space-y-6">
+      <div className="space-y-6">
         {/* Email Notifications */}
         <Card>
           <CardHeader>
@@ -224,9 +222,8 @@ export default function NotificationSettingsPage() {
             <Save className="w-4 h-4 mr-2" />
             {isLoading ? 'Saving...' : 'Save Preferences'}
           </Button>
-          </div>
         </div>
       </div>
-    </SettingsPageLayout>
+    </div>
   )
 }

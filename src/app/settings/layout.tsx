@@ -7,5 +7,5 @@ export default function SettingsLayout({
 }: {
   children: ReactNode
 }) {
-  return <>{children}</>
+  return <div className="h-full">{children}</div>
 }
