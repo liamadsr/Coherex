@@ -170,9 +170,6 @@ export default function LandingPage() {
                 <Link href="#solutions" className="text-gray-300 hover:text-white transition-colors">
                   Solutions
                 </Link>
-                <Link href="#pricing" className="text-gray-300 hover:text-white transition-colors">
-                  Pricing
-                </Link>
               </div>
             </div>
             
@@ -230,9 +227,6 @@ export default function LandingPage() {
               </Link>
               <Link href="#solutions" className="block px-3 py-2 text-gray-300 hover:text-white">
                 Solutions
-              </Link>
-              <Link href="#pricing" className="block px-3 py-2 text-gray-300 hover:text-white">
-                Pricing
               </Link>
               <a href="https://github.com/liamadsr/Coherex" target="_blank" rel="noopener noreferrer" className="block px-3 py-2 text-gray-300 hover:text-white">
                 <svg className="inline w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
@@ -539,7 +533,6 @@ export default function LandingPage() {
               <ul className="space-y-2 text-gray-400">
                 <li><Link href="#" className="hover:text-white">Features</Link></li>
                 <li><Link href="#" className="hover:text-white">Integrations</Link></li>
-                <li><Link href="#" className="hover:text-white">Pricing</Link></li>
                 <li><Link href="#" className="hover:text-white">Documentation</Link></li>
               </ul>
             </div>
