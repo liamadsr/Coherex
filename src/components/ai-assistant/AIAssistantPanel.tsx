@@ -80,7 +80,7 @@ export function AIAssistantPanel({ isOpen }: AIAssistantPanelProps) {
       {isOpen && (
         <div className="flex flex-col h-full overflow-hidden">
           {/* Messages */}
-          <div className="flex-1 overflow-hidden bg-gray-50 dark:bg-[#0f0f0f]">
+          <div className="flex-1 overflow-hidden bg-gray-50 dark:bg-[#0c0c0c]">
             <ScrollArea className="h-full px-6 pt-6 pb-4" ref={scrollRef}>
               <div className="space-y-4">
                 {messages.map((message) => (
@@ -118,7 +118,7 @@ export function AIAssistantPanel({ isOpen }: AIAssistantPanelProps) {
           </div>
 
             {/* Input */}
-            <div className="px-6 py-4 border-t border-border flex-shrink-0 bg-white dark:bg-[#0f0f0f]">
+            <div className="px-6 py-4 border-t border-border flex-shrink-0 bg-white dark:bg-[#0c0c0c]">
               <div className="flex space-x-2">
                 <Input
                   value={input}
