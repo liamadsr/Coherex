@@ -86,42 +86,50 @@ const integrations = [
   { 
     name: 'Slack',
     slug: 'slack',
-    color: 'FFFFFF' // Use white for visibility
+    lightColor: '4A154B', // Slack purple for light mode
+    darkColor: 'FFFFFF' // White for dark mode
   },
   { 
     name: 'Discord',
     slug: 'discord', 
-    color: '5865F2' // Discord brand color
+    lightColor: '5865F2', // Discord brand color
+    darkColor: '5865F2' // Same for dark mode
   },
   { 
     name: 'HubSpot',
     slug: 'hubspot',
-    color: 'FF7A59'
+    lightColor: 'FF7A59',
+    darkColor: 'FF7A59'
   },
   { 
     name: 'Salesforce',
     slug: 'salesforce',
-    color: '00A1E0'
+    lightColor: '00A1E0',
+    darkColor: '00A1E0'
   },
   { 
     name: 'GitHub',
     slug: 'github',
-    color: 'FFFFFF' // Use white for visibility
+    lightColor: '000000', // Black for light mode
+    darkColor: 'FFFFFF' // White for dark mode
   },
   { 
     name: 'Google Docs',
     slug: 'googledocs', 
-    color: '4285F4' // Google blue
+    lightColor: '4285F4',
+    darkColor: '4285F4'
   },
   { 
     name: 'Confluence',
     slug: 'confluence',
-    color: '1868DB' // Use the actual blue color
+    lightColor: '1868DB',
+    darkColor: '1868DB'
   },
   { 
     name: 'Notion',
     slug: 'notion',
-    color: 'FFFFFF' // Use white for visibility
+    lightColor: '000000', // Black for light mode
+    darkColor: 'FFFFFF' // White for dark mode
   },
 ]
 
@@ -141,10 +149,10 @@ export default function LandingPage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white">
       {/* Navigation */}
       <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        scrolled ? 'bg-black/80 backdrop-blur-xl border-b border-neutral-800/50' : 'bg-transparent'
+        scrolled ? 'bg-white/80 dark:bg-black/80 backdrop-blur-xl border-b border-gray-200 dark:border-neutral-800/50' : 'bg-transparent'
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -157,47 +165,52 @@ export default function LandingPage() {
                   height={32}
                   className="flex-shrink-0"
                 />
-                <span className="text-xl font-bold">COHEREX</span>
+                <span className="text-xl font-bold text-black dark:text-white">COHEREX</span>
               </Link>
               
               <div className="hidden md:flex items-center ml-10 space-x-8">
-                <Link href="#features" className="text-gray-300 hover:text-white transition-colors">
+                <Link href="#features" className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">
                   Features
                 </Link>
-                <Link href="#integrations" className="text-gray-300 hover:text-white transition-colors">
+                <Link href="#integrations" className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">
                   Integrations
                 </Link>
-                <Link href="#solutions" className="text-gray-300 hover:text-white transition-colors">
+                <Link href="#solutions" className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">
                   Solutions
                 </Link>
               </div>
             </div>
             
             <div className="hidden md:flex items-center space-x-4">
-              <Button variant="outline" size="icon" className="bg-black border-gray-600 text-white hover:bg-gray-900 hover:border-gray-500 hover:text-white focus:ring-0 focus:ring-offset-0" asChild>
+              <Button variant="outline" size="icon" className="bg-white dark:bg-black border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900 hover:border-gray-400 dark:hover:border-gray-500 focus:ring-0 focus:ring-offset-0" asChild>
                 <a href="https://github.com/liamadsr/Coherex" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
                   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
                   </svg>
                 </a>
               </Button>
-              <Button variant="outline" size="icon" className="bg-black border-gray-600 text-white hover:bg-gray-900 hover:border-gray-500 hover:text-white focus:ring-0 focus:ring-offset-0" asChild>
+              <Button variant="outline" size="icon" className="bg-white dark:bg-black border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900 hover:border-gray-400 dark:hover:border-gray-500 focus:ring-0 focus:ring-offset-0" asChild>
                 <a href="https://discord.gg/6V64wxyf" target="_blank" rel="noopener noreferrer" aria-label="Discord">
+                  <img 
+                    src="https://cdn.simpleicons.org/discord/000000"
+                    alt="Discord logo"
+                    className="w-5 h-5 dark:hidden"
+                  />
                   <img 
                     src="https://cdn.simpleicons.org/discord/FFFFFF"
                     alt="Discord logo"
-                    className="w-5 h-5"
+                    className="w-5 h-5 hidden dark:block"
                   />
                 </a>
               </Button>
               <Button 
                 onClick={() => setWaitlistModalOpen(true)}
-                className="bg-white text-black hover:bg-gray-300 focus:ring-0 focus:ring-offset-0 transition-colors"
+                className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 focus:ring-0 focus:ring-offset-0 transition-colors"
               >
                 <Mail className="w-4 h-4 mr-2" />
                 Join Waitlist
               </Button>
-              <Button variant="outline" className="bg-black border-gray-600 text-white hover:bg-gray-900 hover:border-gray-500 hover:text-white focus:ring-0 focus:ring-offset-0" asChild>
+              <Button variant="outline" className="bg-white dark:bg-black border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900 hover:border-gray-400 dark:hover:border-gray-500 focus:ring-0 focus:ring-offset-0" asChild>
                 <Link href="/login">Sign In</Link>
               </Button>
             </div>
@@ -216,31 +229,31 @@ export default function LandingPage() {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="md:hidden bg-black/95 backdrop-blur-xl border-b border-neutral-800/50"
+            className="md:hidden bg-white/95 dark:bg-black/95 backdrop-blur-xl border-b border-gray-200 dark:border-neutral-800/50"
           >
             <div className="px-4 pt-2 pb-4 space-y-2">
-              <Link href="#features" className="block px-3 py-2 text-gray-300 hover:text-white">
+              <Link href="#features" className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white">
                 Features
               </Link>
-              <Link href="#integrations" className="block px-3 py-2 text-gray-300 hover:text-white">
+              <Link href="#integrations" className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white">
                 Integrations
               </Link>
-              <Link href="#solutions" className="block px-3 py-2 text-gray-300 hover:text-white">
+              <Link href="#solutions" className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white">
                 Solutions
               </Link>
-              <a href="https://github.com/liamadsr/Coherex" target="_blank" rel="noopener noreferrer" className="block px-3 py-2 text-gray-300 hover:text-white">
+              <a href="https://github.com/liamadsr/Coherex" target="_blank" rel="noopener noreferrer" className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white">
                 <svg className="inline w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
                 </svg>
                 GitHub Repository
               </a>
               <div className="pt-4 space-y-2">
-                <Button variant="outline" className="w-full bg-transparent border-gray-600 text-white hover:bg-gray-900" asChild>
+                <Button variant="outline" className="w-full bg-white dark:bg-transparent border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900" asChild>
                   <Link href="/login">Sign In</Link>
                 </Button>
                 <Button 
                   onClick={() => setWaitlistModalOpen(true)}
-                  className="w-full bg-white text-black hover:bg-gray-300 focus:ring-0 focus:ring-offset-0 transition-colors"
+                  className="w-full bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 focus:ring-0 focus:ring-offset-0 transition-colors"
                 >
                   <Mail className="w-4 h-4 mr-2" />
                   Join Waitlist
@@ -254,7 +267,7 @@ export default function LandingPage() {
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-900/20 via-black to-gray-800/20" />
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-100/50 dark:from-gray-900/20 via-white dark:via-black to-gray-200/50 dark:to-gray-800/20" />
         
         {/* Grid pattern */}
         <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]" />
@@ -269,19 +282,19 @@ export default function LandingPage() {
             animate={mounted ? { opacity: 1, y: 0 } : undefined}
             transition={mounted ? { duration: 0.8 } : undefined}
           >
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-gray-900 dark:from-white to-gray-600 dark:to-gray-400 bg-clip-text text-transparent">
               The Open Source Platform
               <br />
               for AI Employees
             </h1>
-            <p className="text-xl md:text-2xl text-gray-400 mb-8 max-w-3xl mx-auto">
+            <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-400 mb-8 max-w-3xl mx-auto">
               We're building a community-driven, open source platform for creating, deploying, and managing intelligent AI employees.
               Join us in shaping the future of AI automation.
             </p>
             
             <div className="flex flex-col items-center gap-4">
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" variant="outline" className="text-lg px-8 bg-transparent border-gray-600 text-white hover:bg-gray-900 hover:text-white hover:border-gray-500 focus:ring-0 focus:ring-offset-0" asChild>
+                <Button size="lg" variant="outline" className="text-lg px-8 bg-white dark:bg-transparent border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900 hover:border-gray-400 dark:hover:border-gray-500 focus:ring-0 focus:ring-offset-0" asChild>
                   <a href="https://github.com/liamadsr/Coherex" target="_blank" rel="noopener noreferrer">
                     <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
@@ -292,28 +305,28 @@ export default function LandingPage() {
                 <Button 
                   size="lg" 
                   onClick={() => setWaitlistModalOpen(true)}
-                  className="bg-white text-black hover:bg-gray-300 focus:ring-0 focus:ring-offset-0 transition-colors text-lg px-8"
+                  className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 focus:ring-0 focus:ring-offset-0 transition-colors text-lg px-8"
                 >
                   <Mail className="w-5 h-5 mr-2" />
                   Join Waitlist
                 </Button>
               </div>
-              <p className="text-gray-400 text-sm">
+              <p className="text-gray-600 dark:text-gray-400 text-sm">
                 Get early access and help shape the future of AI agents
               </p>
             </div>
             
-            <div className="mt-12 flex items-center justify-center space-x-8 text-gray-500">
+            <div className="mt-12 flex items-center justify-center space-x-8 text-gray-600 dark:text-gray-500">
               <div className="flex items-center">
-                <Check className="w-5 h-5 mr-2 text-white" />
+                <Check className="w-5 h-5 mr-2 text-black dark:text-white" />
                 <span>100% Open Source</span>
               </div>
               <div className="flex items-center">
-                <Check className="w-5 h-5 mr-2 text-white" />
+                <Check className="w-5 h-5 mr-2 text-black dark:text-white" />
                 <span>Community Driven</span>
               </div>
               <div className="flex items-center">
-                <Check className="w-5 h-5 mr-2 text-white" />
+                <Check className="w-5 h-5 mr-2 text-black dark:text-white" />
                 <span>Easy to Use</span>
               </div>
             </div>
@@ -333,11 +346,11 @@ export default function LandingPage() {
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
               What we're building
               <br />
-              <span className="text-gray-300">
+              <span className="text-gray-600 dark:text-gray-300">
                 together
               </span>
             </h2>
-            <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
               COHEREX will be the open source standard for building, deploying, and managing AI agents.
               Here's what's coming:
             </p>
@@ -355,15 +368,15 @@ export default function LandingPage() {
                   delay: index * 0.1,
                   ease: "easeOut"
                 } : undefined}
-                className="group relative bg-[#050505] rounded-2xl p-8 hover:bg-[#0a0a0a] transition-all duration-300 no-flash border border-neutral-800/50"
+                className="group relative bg-gray-50 dark:bg-[#050505] rounded-2xl p-8 hover:bg-gray-100 dark:hover:bg-[#0a0a0a] transition-all duration-300 no-flash border border-gray-200 dark:border-neutral-800/50"
                 style={{ minHeight: '250px' }}
               >
                 <div className="w-14 h-14 rounded-xl p-3 mb-6">
-                  <feature.icon className="w-full h-full text-white" />
+                  <feature.icon className="w-full h-full text-gray-700 dark:text-white" />
                 </div>
                 <h3 className="text-2xl font-bold mb-3">{feature.title}</h3>
-                <p className="text-gray-400">{feature.description}</p>
-                <ChevronRight className="absolute bottom-8 right-8 w-5 h-5 text-gray-600 group-hover:text-gray-400 transition-colors" />
+                <p className="text-gray-600 dark:text-gray-400">{feature.description}</p>
+                <ChevronRight className="absolute bottom-8 right-8 w-5 h-5 text-gray-400 dark:text-gray-600 group-hover:text-gray-600 dark:group-hover:text-gray-400 transition-colors" />
               </motion.div>
             ))}
           </div>
@@ -372,7 +385,7 @@ export default function LandingPage() {
 
       {/* Integrations Section */}
       <section id="integrations" className="py-20 relative overflow-hidden no-flash">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-gray-900/10 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-gray-100/50 dark:via-gray-900/10 to-transparent" />
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div
@@ -384,11 +397,11 @@ export default function LandingPage() {
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
               Built to connect with
               <br />
-              <span className="text-gray-300">
+              <span className="text-gray-600 dark:text-gray-300">
                 everything
               </span>
             </h2>
-            <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
               COHEREX will integrate seamlessly with the tools your team already uses.
               Open source means endless possibilities.
             </p>
@@ -406,37 +419,37 @@ export default function LandingPage() {
                   delay: index * 0.05,
                   ease: "easeOut"
                 } : undefined}
-                className="bg-[#050505] rounded-xl p-6 text-center hover:bg-[#0a0a0a] transition-all duration-300 hover:scale-105 no-flash border border-neutral-800/50"
+                className="bg-gray-50 dark:bg-[#050505] rounded-xl p-6 text-center hover:bg-gray-100 dark:hover:bg-[#0a0a0a] transition-all duration-300 hover:scale-105 no-flash border border-gray-200 dark:border-neutral-800/50"
               >
                 <div className="mb-3 w-12 h-12 flex items-center justify-center mx-auto">
                   {(integration.name === 'Teams' || integration.name === 'SharePoint') ? (
                     // Use fallback text for Teams and SharePoint since they might not be available
-                    <div className="w-12 h-12 bg-gray-800 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+                    <div className="w-12 h-12 bg-gray-200 dark:bg-gray-800 rounded-lg flex items-center justify-center text-gray-800 dark:text-white font-bold text-sm">
                       {integration.name === 'Teams' ? 'T' : 'SP'}
                     </div>
                   ) : (
-                    <img 
-                      src={`https://cdn.simpleicons.org/${integration.slug}/${integration.color}`}
-                      alt={`${integration.name} logo`}
-                      className="w-8 h-8"
-                      onError={(e) => {
-                        // Fallback to text abbreviation if icon fails
-                        const parent = e.currentTarget.parentElement;
-                        if (parent) {
-                          parent.innerHTML = `<div class="w-12 h-12 bg-gray-800 rounded-lg flex items-center justify-center text-white font-bold text-sm">${integration.name.substring(0, 2).toUpperCase()}</div>`;
-                        }
-                      }}
-                    />
+                    <>
+                      <img 
+                        src={`https://cdn.simpleicons.org/${integration.slug}/${integration.lightColor}`}
+                        alt={`${integration.name} logo`}
+                        className="w-8 h-8 dark:hidden"
+                      />
+                      <img 
+                        src={`https://cdn.simpleicons.org/${integration.slug}/${integration.darkColor}`}
+                        alt={`${integration.name} logo`}
+                        className="w-8 h-8 hidden dark:block"
+                      />
+                    </>
                   )}
                 </div>
-                <p className="text-gray-400">{integration.name}</p>
+                <p className="text-gray-600 dark:text-gray-400">{integration.name}</p>
               </motion.div>
             ))}
           </div>
 
           <div className="text-center">
-            <p className="text-gray-400 mb-4">And 100+ more integrations</p>
-            <Button variant="outline" className="bg-transparent border-gray-500 text-white hover:bg-white/10 hover:border-white/30 hover:text-white focus:ring-0 focus:ring-offset-0 transition-all">
+            <p className="text-gray-600 dark:text-gray-400 mb-4">And 100+ more integrations</p>
+            <Button variant="outline" className="bg-white dark:bg-transparent border-gray-300 dark:border-gray-500 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 hover:border-gray-400 dark:hover:border-white/30 focus:ring-0 focus:ring-offset-0 transition-all">
               View All Integrations
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
@@ -451,27 +464,27 @@ export default function LandingPage() {
             initial={mounted ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }}
             whileInView={mounted ? { opacity: 1, y: 0 } : undefined}
             viewport={{ once: true }}
-            className="bg-[#050505] rounded-3xl p-12 border border-neutral-800/50 no-flash"
+            className="bg-gray-50 dark:bg-[#050505] rounded-3xl p-12 border border-gray-200 dark:border-neutral-800/50 no-flash"
           >
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
               Be part of building
               <br />
               the future of AI employees
             </h2>
-            <p className="text-xl text-gray-400 mb-8">
+            <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
               Join our community of developers, researchers, and companies working together to create the open source platform for AI automation.
             </p>
             <div className="flex flex-col items-center gap-6">
               <Button 
                 size="lg" 
                 onClick={() => setWaitlistModalOpen(true)}
-                className="bg-white text-black hover:bg-gray-300 focus:ring-0 focus:ring-offset-0 transition-colors text-lg px-8"
+                className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 focus:ring-0 focus:ring-offset-0 transition-colors text-lg px-8"
               >
                 <Mail className="w-5 h-5 mr-2" />
                 Get Early Access
               </Button>
               <div className="flex gap-4">
-                <Button size="lg" variant="outline" className="text-lg px-8 bg-transparent border-gray-500 text-white hover:bg-white/10 hover:border-white/30 hover:text-white focus:ring-0 focus:ring-offset-0 transition-all" asChild>
+                <Button size="lg" variant="outline" className="text-lg px-8 bg-white dark:bg-transparent border-gray-300 dark:border-gray-500 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 hover:border-gray-400 dark:hover:border-white/30 focus:ring-0 focus:ring-offset-0 transition-all" asChild>
                   <a href="https://github.com/liamadsr/Coherex" target="_blank" rel="noopener noreferrer">
                     <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
@@ -479,12 +492,17 @@ export default function LandingPage() {
                     Star on GitHub
                   </a>
                 </Button>
-                <Button size="lg" variant="outline" className="text-lg px-8 bg-transparent border-gray-500 text-white hover:bg-white/10 hover:border-white/30 hover:text-white focus:ring-0 focus:ring-offset-0 transition-all" asChild>
+                <Button size="lg" variant="outline" className="text-lg px-8 bg-white dark:bg-transparent border-gray-300 dark:border-gray-500 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 hover:border-gray-400 dark:hover:border-white/30 focus:ring-0 focus:ring-offset-0 transition-all" asChild>
                   <a href="https://discord.gg/6V64wxyf" target="_blank" rel="noopener noreferrer">
+                    <img 
+                      src="https://cdn.simpleicons.org/discord/000000"
+                      alt="Discord logo"
+                      className="w-5 h-5 mr-2 dark:hidden"
+                    />
                     <img 
                       src="https://cdn.simpleicons.org/discord/FFFFFF"
                       alt="Discord logo"
-                      className="w-5 h-5 mr-2"
+                      className="w-5 h-5 mr-2 hidden dark:block"
                     />
                     Join Discord
                   </a>
@@ -496,7 +514,7 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 border-t border-neutral-800/50">
+      <footer className="py-12 border-t border-gray-200 dark:border-neutral-800/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
@@ -508,21 +526,21 @@ export default function LandingPage() {
                   height={32}
                   className="flex-shrink-0"
                 />
-                <span className="text-xl font-bold">COHEREX</span>
+                <span className="text-xl font-bold text-black dark:text-white">COHEREX</span>
               </div>
-              <p className="text-gray-400">
+              <p className="text-gray-600 dark:text-gray-400">
                 The open source platform for AI agents.
               </p>
               <div className="flex space-x-4 mt-4">
-                <a href="https://github.com/liamadsr/Coherex" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">
+                <a href="https://github.com/liamadsr/Coherex" target="_blank" rel="noopener noreferrer" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
                   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
                   </svg>
                 </a>
-                <a href="#" className="text-gray-400 hover:text-white">
+                <a href="#" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
                   <Twitter className="w-5 h-5" />
                 </a>
-                <a href="#" className="text-gray-400 hover:text-white">
+                <a href="#" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
                   <Linkedin className="w-5 h-5" />
                 </a>
               </div>
@@ -530,35 +548,35 @@ export default function LandingPage() {
             
             <div>
               <h3 className="font-semibold mb-4">Product</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li><Link href="#" className="hover:text-white">Features</Link></li>
-                <li><Link href="#" className="hover:text-white">Integrations</Link></li>
-                <li><Link href="#" className="hover:text-white">Documentation</Link></li>
+              <ul className="space-y-2 text-gray-600 dark:text-gray-400">
+                <li><Link href="#" className="hover:text-gray-900 dark:hover:text-white">Features</Link></li>
+                <li><Link href="#" className="hover:text-gray-900 dark:hover:text-white">Integrations</Link></li>
+                <li><Link href="#" className="hover:text-gray-900 dark:hover:text-white">Documentation</Link></li>
               </ul>
             </div>
             
             <div>
               <h3 className="font-semibold mb-4">Company</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li><Link href="#" className="hover:text-white">About</Link></li>
-                <li><Link href="#" className="hover:text-white">Blog</Link></li>
-                <li><Link href="#" className="hover:text-white">Careers</Link></li>
-                <li><Link href="#" className="hover:text-white">Contact</Link></li>
+              <ul className="space-y-2 text-gray-600 dark:text-gray-400">
+                <li><Link href="#" className="hover:text-gray-900 dark:hover:text-white">About</Link></li>
+                <li><Link href="#" className="hover:text-gray-900 dark:hover:text-white">Blog</Link></li>
+                <li><Link href="#" className="hover:text-gray-900 dark:hover:text-white">Careers</Link></li>
+                <li><Link href="#" className="hover:text-gray-900 dark:hover:text-white">Contact</Link></li>
               </ul>
             </div>
             
             <div>
               <h3 className="font-semibold mb-4">Legal</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li><Link href="#" className="hover:text-white">Privacy</Link></li>
-                <li><Link href="#" className="hover:text-white">Terms</Link></li>
-                <li><Link href="#" className="hover:text-white">Security</Link></li>
-                <li><Link href="#" className="hover:text-white">Compliance</Link></li>
+              <ul className="space-y-2 text-gray-600 dark:text-gray-400">
+                <li><Link href="#" className="hover:text-gray-900 dark:hover:text-white">Privacy</Link></li>
+                <li><Link href="#" className="hover:text-gray-900 dark:hover:text-white">Terms</Link></li>
+                <li><Link href="#" className="hover:text-gray-900 dark:hover:text-white">Security</Link></li>
+                <li><Link href="#" className="hover:text-gray-900 dark:hover:text-white">Compliance</Link></li>
               </ul>
             </div>
           </div>
           
-          <div className="mt-12 pt-8 border-t border-neutral-800/50 text-center text-gray-400">
+          <div className="mt-12 pt-8 border-t border-gray-200 dark:border-neutral-800/50 text-center text-gray-600 dark:text-gray-400">
             <p>&copy; 2025 COHEREX. Open Source Project.</p>
           </div>
         </div>
