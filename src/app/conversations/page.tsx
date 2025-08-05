@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
+import { useTheme } from 'next-themes'
 import { 
   MessageSquare, 
   Search, 
@@ -62,7 +63,7 @@ import * as d3 from 'd3-force'
 const ForceGraph2D = dynamic(() => import('react-force-graph-2d'), {
   ssr: false,
   loading: () => (
-    <div className="flex items-center justify-center h-full bg-[#0c0c0c]">
+    <div className="flex items-center justify-center h-full bg-white dark:bg-[#0c0c0c]">
       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
     </div>
   )
@@ -421,6 +422,7 @@ function ConversationCard({ conversation, onClick }: { conversation: Conversatio
 
 export default function ConversationsPage() {
   const router = useRouter()
+  const { theme } = useTheme()
   const fgRef = useRef<any>()
   const { data: conversations = [], isLoading, refetch } = useConversations()
   
@@ -1016,7 +1018,7 @@ export default function ConversationsPage() {
               nodeVal="val"
               linkColor={link => link.invisible ? 'transparent' : 'rgba(148, 163, 184, 0.1)'}
               linkWidth={link => link.invisible ? 0 : 1}
-              backgroundColor="#0c0c0c"
+              backgroundColor={theme === 'dark' ? '#0c0c0c' : '#ffffff'}
               onNodeClick={handleNodeClick}
               onNodeHover={node => setHoveredNode(node?.isCategory ? null : node)}
               enableNodeDrag={true}
