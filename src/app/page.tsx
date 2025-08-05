@@ -146,9 +146,11 @@ export default function LandingPage() {
             </div>
             
             <div className="hidden md:flex items-center space-x-4">
-              <Button variant="ghost" asChild>
+              <Button variant="outline" className="bg-black border-gray-600 text-white hover:bg-gray-900 hover:border-gray-500 focus:ring-0 focus:ring-offset-0" asChild>
                 <a href="https://github.com/liamadsr/Coherex" target="_blank" rel="noopener noreferrer" className="flex items-center">
-                  <Github className="w-5 h-5 mr-2" />
+                  <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                  </svg>
                   GitHub
                 </a>
               </Button>
@@ -191,7 +193,9 @@ export default function LandingPage() {
                 Pricing
               </Link>
               <a href="https://github.com/liamadsr/Coherex" target="_blank" rel="noopener noreferrer" className="block px-3 py-2 text-gray-300 hover:text-white">
-                <Github className="inline w-5 h-5 mr-2" />
+                <svg className="inline w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
                 GitHub Repository
               </a>
               <div className="pt-4 space-y-2">
@@ -226,17 +230,13 @@ export default function LandingPage() {
             animate={mounted ? { opacity: 1, y: 0 } : undefined}
             transition={mounted ? { duration: 0.8 } : undefined}
           >
-            <div className="inline-flex items-center px-4 py-2 bg-gray-800 rounded-full text-sm text-gray-300 mb-6">
-              <Code className="w-4 h-4 mr-2" />
-              Open Source • Coming Soon
-            </div>
             <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
               The Open Source Platform
               <br />
-              for AI Agents
+              for AI Employees
             </h1>
             <p className="text-xl md:text-2xl text-gray-400 mb-8 max-w-3xl mx-auto">
-              We're building a community-driven, open source platform for creating, deploying, and managing intelligent AI agents.
+              We're building a community-driven, open source platform for creating, deploying, and managing intelligent AI employees.
               Join us in shaping the future of AI automation.
             </p>
             
@@ -254,9 +254,11 @@ export default function LandingPage() {
               </p>
             </div>
             <div className="mt-4">
-              <Button size="lg" variant="ghost" className="text-lg px-8 text-gray-400 hover:text-white" asChild>
+              <Button size="lg" variant="outline" className="text-lg px-8 bg-transparent border-gray-600 text-white hover:bg-gray-900 hover:text-white hover:border-gray-500 focus:ring-0 focus:ring-offset-0" asChild>
                 <a href="https://github.com/liamadsr/Coherex" target="_blank" rel="noopener noreferrer">
-                  <Github className="w-5 h-5 mr-2" />
+                  <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                  </svg>
                   View on GitHub
                 </a>
               </Button>
@@ -273,7 +275,7 @@ export default function LandingPage() {
               </div>
               <div className="flex items-center">
                 <Check className="w-5 h-5 mr-2 text-white" />
-                <span>Privacy First</span>
+                <span>Easy to Use</span>
               </div>
             </div>
           </motion.div>
@@ -412,7 +414,9 @@ export default function LandingPage() {
               <div className="flex gap-4">
                 <Button size="lg" variant="outline" className="text-lg px-8 bg-transparent border-gray-500 text-white hover:bg-white/10 hover:border-white/30 hover:text-white focus:ring-0 focus:ring-offset-0 transition-all" asChild>
                   <a href="https://github.com/liamadsr/Coherex" target="_blank" rel="noopener noreferrer">
-                    <Github className="w-5 h-5 mr-2" />
+                    <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
                     Star on GitHub
                   </a>
                 </Button>
@@ -448,7 +452,9 @@ export default function LandingPage() {
               </p>
               <div className="flex space-x-4 mt-4">
                 <a href="https://github.com/liamadsr/Coherex" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">
-                  <Github className="w-5 h-5" />
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                  </svg>
                 </a>
                 <a href="#" className="text-gray-400 hover:text-white">
                   <Twitter className="w-5 h-5" />
