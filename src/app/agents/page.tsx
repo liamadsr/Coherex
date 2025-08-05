@@ -124,36 +124,29 @@ export default function AgentsPage() {
       transition={{ duration: 0.3 }}
     >
       <Card 
-        className="h-full hover:shadow-lg transition-shadow cursor-pointer group"
+        className="h-full hover:shadow-lg transition-shadow cursor-pointer group overflow-hidden"
         onClick={() => router.push(`/agents/${agent.id}`)}
       >
         <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-medium">
-                {agent.avatar ? (
-                  <span className="text-xl">{agent.avatar}</span>
-                ) : (
-                  agent.name.charAt(0)
-                )}
-              </div>
-              <div>
-                <CardTitle className="text-lg">{agent.name}</CardTitle>
-                <CardDescription className="text-sm">{agent.email}</CardDescription>
-              </div>
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <CardTitle className="text-base sm:text-lg truncate">{agent.name}</CardTitle>
+              <CardDescription className="text-xs sm:text-sm truncate" title={agent.email}>
+                {agent.email}
+              </CardDescription>
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  className="opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="flex-shrink-0 h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <MoreHorizontal className="w-4 h-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent align="end" className="z-50">
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                 <DropdownMenuItem onClick={() => handleAgentAction('Edit', agent.name)}>
                   <Edit className="w-4 h-4 mr-2" />
@@ -196,42 +189,42 @@ export default function AgentsPage() {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <Badge className={getStatusColor(agent.status)}>
+          <div className="flex items-center justify-between gap-2">
+            <Badge className={`${getStatusColor(agent.status)} text-xs`}>
               {agent.status}
             </Badge>
-            <div className="flex items-center space-x-1 text-sm text-gray-500">
-              <Star className="w-4 h-4" />
+            <div className="flex items-center gap-1 text-xs sm:text-sm text-gray-500">
+              <Star className="w-3 h-3 sm:w-4 sm:h-4" />
               <span>{agent.metrics.satisfactionScore.toFixed(1)}</span>
             </div>
           </div>
 
           <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm">
+            <div className="flex items-center justify-between text-xs sm:text-sm">
               <span className="text-gray-600 dark:text-gray-400">Conversations</span>
               <span className="font-medium">{agent.metrics.totalConversations}</span>
             </div>
-            <div className="flex items-center justify-between text-sm">
+            <div className="flex items-center justify-between text-xs sm:text-sm">
               <span className="text-gray-600 dark:text-gray-400">Avg Response</span>
               <span className="font-medium">{agent.metrics.avgResponseTime}s</span>
             </div>
-            <div className="flex items-center justify-between text-sm">
+            <div className="flex items-center justify-between text-xs sm:text-sm">
               <span className="text-gray-600 dark:text-gray-400">Success Rate</span>
               <span className="font-medium">{agent.metrics.successRate}%</span>
             </div>
           </div>
 
           <div>
-            <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">Capabilities</div>
+            <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2">Capabilities</div>
             <div className="flex flex-wrap gap-1">
-              {agent.capabilities.slice(0, 3).map((capability, index) => (
-                <Badge key={index} variant="secondary" className="text-xs">
-                  {capability}
+              {agent.capabilities.slice(0, 2).map((capability, index) => (
+                <Badge key={index} variant="secondary" className="text-xs px-2 py-0.5">
+                  <span className="truncate max-w-[100px] sm:max-w-[120px]">{capability}</span>
                 </Badge>
               ))}
-              {agent.capabilities.length > 3 && (
-                <Badge variant="secondary" className="text-xs">
-                  +{agent.capabilities.length - 3} more
+              {agent.capabilities.length > 2 && (
+                <Badge variant="secondary" className="text-xs px-2 py-0.5">
+                  +{agent.capabilities.length - 2} more
                 </Badge>
               )}
             </div>
@@ -243,8 +236,8 @@ export default function AgentsPage() {
 
   const AgentListItem = ({ agent }: { agent: Agent }) => (
     <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
       <Card 
@@ -402,7 +395,7 @@ export default function AgentsPage() {
             </Button>
             <Button onClick={() => router.push('/agents/new')}>
               <Plus className="w-4 h-4 mr-2" />
-              New Agent
+              Agent Builder
             </Button>
           </div>
         </div>
@@ -648,7 +641,7 @@ export default function AgentsPage() {
             </p>
             <Button onClick={() => router.push('/agents/new')}>
               <Plus className="w-4 h-4 mr-2" />
-              Create Your First Agent
+              Open Agent Builder
             </Button>
           </div>
         )}

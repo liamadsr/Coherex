@@ -15,11 +15,23 @@ import {
   Plug, 
   Code,
   BarChart3,
+  TrendingUp,
   Settings,
   Building,
   Shield,
   ChevronRight,
-  ChevronDown
+  ChevronDown,
+  Sparkles,
+  Activity,
+  DollarSign,
+  Target,
+  FileBarChart,
+  ClipboardCheck,
+  FileText,
+  LineChart,
+  Database,
+  RefreshCw,
+  Search
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -34,7 +46,33 @@ interface NavigationItem {
   children?: NavigationItem[]
 }
 
-const navigation: NavigationItem[] = [
+// Navigation sections
+const createSection: NavigationItem[] = [
+  {
+    name: 'Agent Builder',
+    href: '/agents/new',
+    icon: Sparkles,
+  },
+  {
+    name: 'Teams',
+    href: '/teams',
+    icon: Users,
+  },
+  {
+    name: 'Knowledge',
+    href: '/knowledge',
+    icon: Brain,
+    children: [
+      { name: 'Overview', href: '/knowledge', icon: Brain },
+      { name: 'Sources', href: '/knowledge/sources', icon: Database },
+      { name: 'Documents', href: '/knowledge/documents', icon: FileText },
+      { name: 'Sync Status', href: '/knowledge/sync', icon: RefreshCw },
+      { name: 'Search', href: '/knowledge/search', icon: Search },
+    ]
+  },
+]
+
+const manageSection: NavigationItem[] = [
   {
     name: 'Dashboard',
     href: '/dashboard',
@@ -44,16 +82,6 @@ const navigation: NavigationItem[] = [
     name: 'Agents',
     href: '/agents',
     icon: Bot,
-    children: [
-      { name: 'All Agents', href: '/agents', icon: Bot },
-      { name: 'Create Agent', href: '/agents/new', icon: Bot },
-      { name: 'Templates', href: '/builder/templates', icon: Palette },
-    ]
-  },
-  {
-    name: 'Teams',
-    href: '/teams',
-    icon: Users,
   },
   {
     name: 'Conversations',
@@ -61,87 +89,39 @@ const navigation: NavigationItem[] = [
     icon: MessageSquare,
   },
   {
-    name: 'Builder',
-    href: '/builder',
-    icon: Palette,
-  },
-  {
-    name: 'Channels',
-    href: '/channels',
-    icon: MessageSquare,
-    children: [
-      { name: 'Overview', href: '/channels', icon: MessageSquare },
-      { name: 'Email', href: '/channels/email', icon: MessageSquare },
-      { name: 'Slack', href: '/channels/slack', icon: MessageSquare },
-      { name: 'Teams', href: '/channels/teams', icon: MessageSquare },
-      { name: 'SMS', href: '/channels/sms', icon: MessageSquare },
-      { name: 'Voice', href: '/channels/voice', icon: MessageSquare },
-      { name: 'Web Chat', href: '/channels/web-chat', icon: MessageSquare },
-    ]
-  },
-  {
-    name: 'Knowledge',
-    href: '/knowledge',
-    icon: Brain,
-    children: [
-      { name: 'Overview', href: '/knowledge', icon: Brain },
-      { name: 'Sources', href: '/knowledge/sources', icon: Brain },
-      { name: 'Documents', href: '/knowledge/documents', icon: Brain },
-      { name: 'Sync Status', href: '/knowledge/sync', icon: Brain },
-      { name: 'Search', href: '/knowledge/search', icon: Brain },
-    ]
-  },
-  {
     name: 'Integrations',
     href: '/integrations',
     icon: Plug,
-    children: [
-      { name: 'Marketplace', href: '/integrations', icon: Plug },
-      { name: 'Connected', href: '/integrations/connected', icon: Plug },
-      { name: 'Enterprise', href: '/integrations/enterprise', icon: Plug },
-      { name: 'Custom', href: '/integrations/custom', icon: Plug },
-    ]
   },
   {
     name: 'MCP',
     href: '/mcp',
     icon: Code,
-    badge: 'New',
   },
-  {
-    name: 'Code Execution',
-    href: '/code-execution',
-    icon: Code,
-    badge: 'Beta',
-    children: [
-      { name: 'Overview', href: '/code-execution', icon: Code },
-      { name: 'Environments', href: '/code-execution/environments', icon: Code },
-      { name: 'Security', href: '/code-execution/security', icon: Code },
-      { name: 'Logs', href: '/code-execution/logs', icon: Code },
-    ]
-  },
+]
+
+const optimizeSection: NavigationItem[] = [
   {
     name: 'Evaluation',
     href: '/evaluation',
     icon: BarChart3,
-    badge: 'New',
     children: [
       { name: 'Dashboard', href: '/evaluation', icon: BarChart3 },
-      { name: 'Agents', href: '/evaluation/agents', icon: BarChart3 },
-      { name: 'Reports', href: '/evaluation/reports', icon: BarChart3 },
-      { name: 'Criteria', href: '/evaluation/criteria', icon: BarChart3 },
+      { name: 'Agents', href: '/evaluation/agents', icon: Bot },
+      { name: 'Reports', href: '/evaluation/reports', icon: FileBarChart },
+      { name: 'Criteria', href: '/evaluation/criteria', icon: ClipboardCheck },
     ]
   },
   {
     name: 'Analytics',
     href: '/analytics',
-    icon: BarChart3,
+    icon: LineChart,
     children: [
-      { name: 'Overview', href: '/analytics', icon: BarChart3 },
-      { name: 'Performance', href: '/analytics/performance', icon: BarChart3 },
-      { name: 'Usage', href: '/analytics/usage', icon: BarChart3 },
-      { name: 'Costs', href: '/analytics/costs', icon: BarChart3 },
-      { name: 'ROI', href: '/analytics/roi', icon: BarChart3 },
+      { name: 'Overview', href: '/analytics', icon: LineChart },
+      { name: 'Performance', href: '/analytics/performance', icon: Activity },
+      { name: 'Usage', href: '/analytics/usage', icon: Users },
+      { name: 'Costs', href: '/analytics/costs', icon: DollarSign },
+      { name: 'ROI', href: '/analytics/roi', icon: Target },
     ]
   },
 ]
@@ -151,35 +131,6 @@ const bottomNavigation: NavigationItem[] = [
     name: 'Settings',
     href: '/settings',
     icon: Settings,
-    children: [
-      { name: 'Profile', href: '/settings/profile', icon: Settings },
-      { name: 'Notifications', href: '/settings/notifications', icon: Settings },
-      { name: 'Security', href: '/settings/security', icon: Settings },
-    ]
-  },
-  {
-    name: 'Organization',
-    href: '/organization',
-    icon: Building,
-    children: [
-      { name: 'Overview', href: '/organization', icon: Building },
-      { name: 'Members', href: '/organization/members', icon: Building },
-      { name: 'Billing', href: '/organization/billing', icon: Building },
-      { name: 'Compliance', href: '/organization/compliance', icon: Building },
-      { name: 'Audit Logs', href: '/organization/audit', icon: Building },
-    ]
-  },
-  {
-    name: 'Admin',
-    href: '/admin',
-    icon: Shield,
-    children: [
-      { name: 'Platform', href: '/admin', icon: Shield },
-      { name: 'Users', href: '/admin/users', icon: Shield },
-      { name: 'Organizations', href: '/admin/organizations', icon: Shield },
-      { name: 'System Health', href: '/admin/system', icon: Shield },
-      { name: 'Feature Flags', href: '/admin/feature-flags', icon: Shield },
-    ]
   },
 ]
 
@@ -218,7 +169,7 @@ export function Sidebar({ isOpen, onToggle, isDesktop = false }: SidebarProps) {
   useEffect(() => {
     if (!mounted) return
     
-    const allNavItems = [...navigation, ...bottomNavigation]
+    const allNavItems = [...createSection, ...manageSection, ...optimizeSection, ...bottomNavigation]
     
     for (const item of allNavItems) {
       if (item.children) {
@@ -263,10 +214,7 @@ export function Sidebar({ isOpen, onToggle, isDesktop = false }: SidebarProps) {
   }
 
   const isActive = (href: string) => {
-    if (href === '/dashboard') {
-      return pathname === href
-    }
-    return pathname.startsWith(href)
+    return pathname === href
   }
 
   const isExpanded = (name: string) => expandedItems.includes(name)
@@ -281,9 +229,9 @@ export function Sidebar({ isOpen, onToggle, isDesktop = false }: SidebarProps) {
       <div key={item.name}>
         <div
           className={cn(
-            'group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200',
-            level > 0 && 'ml-4 px-2',
-            active
+            'group flex items-center justify-between px-2.5 py-1.5 text-sm font-medium rounded-lg transition-all duration-200',
+            level > 0 && 'ml-3 px-2',
+            active && !hasChildren
               ? 'bg-sidebar-primary/10 text-sidebar-primary'
               : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
             !isOpen && 'justify-center px-2',
@@ -299,7 +247,7 @@ export function Sidebar({ isOpen, onToggle, isDesktop = false }: SidebarProps) {
             <div className="flex items-center flex-1 min-w-0">
               <Icon className={cn(
                 'flex-shrink-0 w-5 h-5',
-                active ? 'text-sidebar-primary' : 'text-sidebar-foreground/50 group-hover:text-sidebar-accent-foreground'
+                'text-sidebar-foreground/50 group-hover:text-sidebar-accent-foreground'
               )} />
               
               {isOpen && (
@@ -347,21 +295,11 @@ export function Sidebar({ isOpen, onToggle, isDesktop = false }: SidebarProps) {
           )}
         </div>
 
-        <AnimatePresence>
-          {hasChildren && expanded && isOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.2 }}
-              className="overflow-hidden"
-            >
-              <div className="mt-1 space-y-1">
-                {item.children?.map(child => renderNavItem(child, level + 1))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {hasChildren && expanded && isOpen && (
+          <div className="mt-1 space-y-1">
+            {item.children?.map(child => renderNavItem(child, level + 1))}
+          </div>
+        )}
       </div>
     )
   }
@@ -383,38 +321,68 @@ export function Sidebar({ isOpen, onToggle, isDesktop = false }: SidebarProps) {
 
       {/* Sidebar */}
       <div
-        style={{ width: isOpen ? 280 : 80 }}
+        style={{ 
+          width: isOpen ? 240 : 60,
+          willChange: 'width'
+        }}
         className={cn(
-          'fixed left-0 top-0 z-50 h-full bg-sidebar border-r border-sidebar-border transition-[width] duration-300 ease-in-out',
-          'flex flex-col'
+          'fixed left-0 top-0 z-50 h-full bg-gray-100 dark:bg-neutral-950 flex flex-col'
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-sidebar-border">
-          {isOpen && (
-            <div className="flex items-center">
-              <Image
-                src="/images/coherex-Dark-1024x1024@2x.png"
-                alt="COHEREX Logo"
-                width={32}
-                height={32}
-                className="mr-2"
-              />
-              <h1 className="text-xl font-bold text-sidebar-foreground">COHEREX</h1>
-            </div>
-          )}
+        <div className="px-3 py-3.5">
+          <div className="flex items-center">
+            <Image
+              src="/images/coherex-Dark.png"
+              alt="COHEREX Logo"
+              width={28}
+              height={28}
+              className="flex-shrink-0 ml-1"
+            />
+            {isOpen && (
+              <h1 className="text-xl font-bold text-sidebar-foreground ml-3">COHEREX</h1>
+            )}
+          </div>
         </div>
 
         {/* Navigation */}
         <div className="flex-1 overflow-y-auto">
-          <nav className="p-4 space-y-2">
-            {navigation.map(item => renderNavItem(item))}
+          <nav className="p-3 space-y-4">
+            {/* Manage Section */}
+            <div>
+              <h3 className="px-2.5 mb-2 text-xs font-semibold text-gray-500 dark:text-gray-400 tracking-wider h-5">
+                {isOpen ? 'Manage' : ''}
+              </h3>
+              <div className="space-y-1.5">
+                {manageSection.map(item => renderNavItem(item))}
+              </div>
+            </div>
+
+            {/* Create Section */}
+            <div>
+              <h3 className="px-2.5 mb-2 text-xs font-semibold text-gray-500 dark:text-gray-400 tracking-wider h-5">
+                {isOpen ? 'Create' : ''}
+              </h3>
+              <div className="space-y-1.5">
+                {createSection.map(item => renderNavItem(item))}
+              </div>
+            </div>
+
+            {/* Optimize Section */}
+            <div>
+              <h3 className="px-2.5 mb-2 text-xs font-semibold text-gray-500 dark:text-gray-400 tracking-wider h-5">
+                {isOpen ? 'Optimize' : ''}
+              </h3>
+              <div className="space-y-1.5">
+                {optimizeSection.map(item => renderNavItem(item))}
+              </div>
+            </div>
           </nav>
         </div>
 
         {/* Bottom Navigation */}
-        <div className="border-t border-sidebar-border">
-          <nav className="p-4 space-y-2">
+        <div>
+          <nav className="p-3 space-y-1.5">
             {bottomNavigation.map(item => renderNavItem(item))}
           </nav>
         </div>

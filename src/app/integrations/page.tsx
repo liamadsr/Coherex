@@ -23,7 +23,13 @@ import {
   Workflow,
   Cloud,
   Code,
-  Zap
+  Zap,
+  CheckCircle,
+  Unplug,
+  RefreshCw,
+  Trash2,
+  MoreHorizontal,
+  Activity
 } from 'lucide-react'
 
 import { MainLayout } from '@/components/layouts/MainLayout'
@@ -34,6 +40,16 @@ import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { IntegrationCard } from '@/components/integrations/IntegrationCard'
 import { Integration, IntegrationCategory } from '@/types'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { toast } from 'sonner'
+import { cn } from '@/lib/utils'
 
 // Integration categories with their connectors
 const integrationCategories: IntegrationCategory[] = [
@@ -414,10 +430,73 @@ const integrationCategories: IntegrationCategory[] = [
 // Mock connected integrations
 const connectedIntegrations = ['zendesk', 'slack', 'email']
 
+// Mock connected integrations data
+const connectedIntegrationsData = [
+  {
+    id: 'zendesk',
+    name: 'Zendesk',
+    description: 'Customer service platform',
+    icon: '🟢',
+    category: 'customer-support',
+    status: 'connected' as const,
+    lastSync: new Date(Date.now() - 1000 * 60 * 5), // 5 minutes ago
+    config: {
+      subdomain: 'coherex',
+      apiKey: '•••••••••••••••k7f9',
+      syncInterval: 300, // 5 minutes
+    },
+    metrics: {
+      totalSynced: 1234,
+      lastSyncItems: 45,
+      errors: 0,
+    }
+  },
+  {
+    id: 'slack',
+    name: 'Slack',
+    description: 'Team communication platform',
+    icon: '💜',
+    category: 'communication',
+    status: 'connected' as const,
+    lastSync: new Date(Date.now() - 1000 * 60 * 60), // 1 hour ago
+    config: {
+      workspace: 'coherex.slack.com',
+      channels: ['#support', '#general', '#sales'],
+      token: '•••••••••••••••p3m2',
+    },
+    metrics: {
+      totalSynced: 5678,
+      lastSyncItems: 123,
+      errors: 0,
+    }
+  },
+  {
+    id: 'email',
+    name: 'Email',
+    description: 'SMTP email integration',
+    icon: '📧',
+    category: 'communication',
+    status: 'error' as const,
+    lastSync: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
+    config: {
+      smtp: 'smtp.gmail.com',
+      port: 587,
+      username: 'support@coherex.ai',
+    },
+    metrics: {
+      totalSynced: 890,
+      lastSyncItems: 0,
+      errors: 3,
+    },
+    error: 'Authentication failed. Please check your credentials.'
+  },
+]
+
 export default function IntegrationsPage() {
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
+  const [activeTab, setActiveTab] = useState('marketplace')
 
   // Filter integrations based on search and category
   const filteredCategories = integrationCategories
@@ -447,6 +526,50 @@ export default function IntegrationsPage() {
     router.push(`/integrations/${integrationId}/connect`)
   }
 
+  // Filter connected integrations based on search
+  const filteredConnectedIntegrations = connectedIntegrationsData.filter(integration =>
+    integration.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    integration.description.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+
+  const handleDisconnect = (integrationId: string) => {
+    if (confirm('Are you sure you want to disconnect this integration?')) {
+      toast.success('Integration disconnected')
+      // In real app, would make API call
+    }
+  }
+
+  const handleSync = (integrationId: string) => {
+    toast.success('Sync started')
+    // In real app, would trigger sync
+  }
+
+  const formatLastSync = (date: Date) => {
+    const now = new Date()
+    const diff = now.getTime() - date.getTime()
+    const minutes = Math.floor(diff / 60000)
+    const hours = Math.floor(minutes / 60)
+    const days = Math.floor(hours / 24)
+
+    if (days > 0) return `${days}d ago`
+    if (hours > 0) return `${hours}h ago`
+    return `${minutes}m ago`
+  }
+
+  const statusIcons = {
+    connected: CheckCircle,
+    error: AlertCircle,
+    syncing: RefreshCw,
+    disconnected: Unplug,
+  }
+
+  const statusColors = {
+    connected: 'text-green-600',
+    error: 'text-red-600',
+    syncing: 'text-blue-600',
+    disconnected: 'text-gray-600',
+  }
+
   return (
     <MainLayout>
       <div className="p-8">
@@ -459,22 +582,13 @@ export default function IntegrationsPage() {
                 Connect coherex to your favorite tools and services
               </p>
             </div>
-            <Button 
-              variant="default"
-              onClick={() => router.push('/integrations/connected')}
-            >
-              See Connectors
-              <Badge className="ml-2" variant="secondary">
-                {connectedCount}
-              </Badge>
-            </Button>
           </div>
 
           {/* Search */}
           <div className="relative max-w-md">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <Input
-              placeholder="Search connectors..."
+              placeholder={activeTab === 'marketplace' ? "Search integrations..." : "Search connected integrations..."}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-9"
@@ -541,54 +655,185 @@ export default function IntegrationsPage() {
           </Card>
         </div>
 
-        {/* Category Tabs */}
-        <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="mb-8">
-          <TabsList className="w-full justify-start overflow-x-auto">
-            <TabsTrigger value="all">All Categories</TabsTrigger>
-            {integrationCategories.map(category => (
-              <TabsTrigger key={category.id} value={category.id}>
-                {category.name}
-              </TabsTrigger>
-            ))}
+        {/* Main Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
+          <TabsList className="grid w-full grid-cols-2 max-w-md">
+            <TabsTrigger value="marketplace">
+              Marketplace
+              <Badge className="ml-2" variant="secondary">
+                {totalIntegrations}
+              </Badge>
+            </TabsTrigger>
+            <TabsTrigger value="connected">
+              Connected
+              <Badge className="ml-2" variant="secondary">
+                {connectedCount}
+              </Badge>
+            </TabsTrigger>
           </TabsList>
-        </Tabs>
 
-        {/* Integration Categories */}
-        <div className="space-y-8">
-          {filteredCategories.map(category => (
-            <div key={category.id}>
-              <div className="mb-4">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                  {category.name}
-                </h2>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {category.description}
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {category.integrations.map(integration => (
-                  <IntegrationCard
-                    key={integration.id}
-                    integration={integration}
-                    isConnected={connectedIntegrations.includes(integration.id)}
-                    onConnect={() => handleConnect(integration.id)}
-                  />
+          {/* Marketplace Tab */}
+          <TabsContent value="marketplace" className="space-y-6 mt-6">
+            {/* Category Tabs */}
+            <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
+              <TabsList className="w-full justify-start overflow-x-auto">
+                <TabsTrigger value="all">All Categories</TabsTrigger>
+                {integrationCategories.map(category => (
+                  <TabsTrigger key={category.id} value={category.id}>
+                    {category.name}
+                  </TabsTrigger>
                 ))}
-              </div>
-            </div>
-          ))}
-        </div>
+              </TabsList>
+            </Tabs>
 
-        {filteredCategories.length === 0 && (
-          <Card className="p-12 text-center">
-            <Workflow className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No integrations found</h3>
-            <p className="text-gray-600 dark:text-gray-400">
-              Try adjusting your search query
-            </p>
-          </Card>
-        )}
+            {/* Integration Categories */}
+            <div className="space-y-8">
+              {filteredCategories.map(category => (
+                <div key={category.id}>
+                  <div className="mb-4">
+                    <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                      {category.name}
+                    </h2>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {category.description}
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    {category.integrations.map(integration => (
+                      <IntegrationCard
+                        key={integration.id}
+                        integration={integration}
+                        isConnected={connectedIntegrations.includes(integration.id)}
+                        onConnect={() => handleConnect(integration.id)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {filteredCategories.length === 0 && (
+              <Card className="p-12 text-center">
+                <Workflow className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2">No integrations found</h3>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Try adjusting your search query
+                </p>
+              </Card>
+            )}
+          </TabsContent>
+
+          {/* Connected Tab */}
+          <TabsContent value="connected" className="space-y-4 mt-6">
+            {filteredConnectedIntegrations.map(integration => {
+              const StatusIcon = statusIcons[integration.status]
+              const statusColor = statusColors[integration.status]
+
+              return (
+                <Card key={integration.id} className={cn(
+                  "hover:shadow-md transition-all duration-200",
+                  integration.status === 'error' && "border-red-500"
+                )}>
+                  <CardHeader className="pb-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center text-2xl">
+                          {integration.icon}
+                        </div>
+                        <div>
+                          <CardTitle className="flex items-center gap-2">
+                            {integration.name}
+                            <StatusIcon className={cn("w-5 h-5", statusColor)} />
+                          </CardTitle>
+                          <CardDescription>{integration.description}</CardDescription>
+                        </div>
+                      </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm">
+                            <MoreHorizontal className="w-4 h-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuItem onClick={() => handleSync(integration.id)}>
+                            <RefreshCw className="w-4 h-4 mr-2" />
+                            Sync Now
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => router.push(`/integrations/${integration.id}/connect`)}>
+                            <Settings className="w-4 h-4 mr-2" />
+                            Configure
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem 
+                            onClick={() => handleDisconnect(integration.id)}
+                            className="text-red-600 dark:text-red-400"
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Disconnect
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    {integration.status === 'error' && integration.error && (
+                      <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
+                        <p className="text-sm text-red-600 dark:text-red-400 flex items-center">
+                          <AlertCircle className="w-4 h-4 mr-2" />
+                          {integration.error}
+                        </p>
+                      </div>
+                    )}
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                      <div>
+                        <p className="text-gray-600 dark:text-gray-400">Last Sync</p>
+                        <p className="font-medium flex items-center">
+                          <Clock className="w-4 h-4 mr-1" />
+                          {formatLastSync(integration.lastSync)}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-gray-600 dark:text-gray-400">Items Synced</p>
+                        <p className="font-medium flex items-center">
+                          <Activity className="w-4 h-4 mr-1" />
+                          {integration.metrics.totalSynced}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-gray-600 dark:text-gray-400">Status</p>
+                        <p className="font-medium">
+                          <Badge 
+                            variant={integration.status === 'connected' ? 'default' : 'destructive'}
+                            className="capitalize"
+                          >
+                            {integration.status}
+                          </Badge>
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )
+            })}
+
+            {filteredConnectedIntegrations.length === 0 && (
+              <Card className="p-12 text-center">
+                <Unplug className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2">No connected integrations</h3>
+                <p className="text-gray-600 dark:text-gray-400 mb-4">
+                  {searchQuery ? 'Try adjusting your search query' : 'Start by connecting your first integration'}
+                </p>
+                <Button onClick={() => setActiveTab('marketplace')}>
+                  <Zap className="w-4 h-4 mr-2" />
+                  Browse Marketplace
+                </Button>
+              </Card>
+            )}
+          </TabsContent>
+        </Tabs>
       </div>
     </MainLayout>
   )

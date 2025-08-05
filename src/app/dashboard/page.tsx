@@ -131,7 +131,7 @@ export default function DashboardPage() {
 
   const quickActions = [
     {
-      title: 'Create Agent',
+      title: 'Agent Builder',
       description: 'Build a new AI agent',
       href: '/agents/new',
       icon: Bot,
@@ -143,13 +143,6 @@ export default function DashboardPage() {
       href: '/teams/new',
       icon: Users,
       color: 'bg-gray-600 hover:bg-gray-700'
-    },
-    {
-      title: 'Visual Builder',
-      description: 'Drag & drop builder',
-      href: '/builder',
-      icon: Zap,
-      color: 'bg-gray-800 hover:bg-gray-900'
     }
   ]
 
@@ -195,12 +188,20 @@ export default function DashboardPage() {
               {quickActions.map((action, index) => (
                 <motion.div
                   key={action.title}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                 >
                   <Button
-                    onClick={() => action.title === 'Create Agent' ? router.push('/agents/new') : toast.info(`${action.title} feature coming soon!`)}
+                    onClick={() => {
+                      if (action.title === 'Agent Builder') {
+                        router.push('/agents/new')
+                      } else if (action.title === 'Form Team') {
+                        router.push('/teams')
+                      } else {
+                        toast.info(`${action.title} feature coming soon!`)
+                      }
+                    }}
                     className={`${action.color} text-white`}
                   >
                     <action.icon className="w-4 h-4 mr-2" />
@@ -311,8 +312,8 @@ export default function DashboardPage() {
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             <Card>
@@ -356,8 +357,8 @@ export default function DashboardPage() {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
           >
             <Card>
@@ -409,12 +410,12 @@ export default function DashboardPage() {
                   {recentActivity.map((activity, index) => (
                     <motion.div
                       key={activity.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.1 }}
                       className="flex items-start space-x-4 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
                     >
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center bg-gray-100 dark:bg-gray-800`}>
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center bg-gray-100 dark:bg-neutral-800`}>
                         <activity.icon className={`w-5 h-5 ${activity.color}`} />
                       </div>
                       <div className="flex-1 min-w-0">

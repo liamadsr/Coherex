@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Bell, Search, Settings, User, LogOut, Moon, Sun, Menu, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
+import { Bell, Search, Settings, User, LogOut, Moon, Sun } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -18,10 +18,6 @@ import { useTheme } from 'next-themes'
 import { useAuth } from '@/contexts/auth-context'
 
 interface TopBarProps {
-  onSidebarToggle: () => void
-  sidebarOpen: boolean
-  sidebarCollapsed: boolean
-  isDesktop: boolean
   user?: {
     name: string
     email: string
@@ -29,7 +25,7 @@ interface TopBarProps {
   }
 }
 
-export function TopBar({ onSidebarToggle, sidebarOpen, sidebarCollapsed, isDesktop }: TopBarProps) {
+export function TopBar({ }: TopBarProps) {
   const [searchValue, setSearchValue] = useState('')
   const { theme, setTheme } = useTheme()
   const { user, logout } = useAuth()
@@ -71,26 +67,10 @@ export function TopBar({ onSidebarToggle, sidebarOpen, sidebarCollapsed, isDeskt
   }
 
   return (
-    <header className="bg-background border-b border-border">
-      <div className="flex items-center justify-between px-4 py-3">
+    <header className="bg-gray-100 dark:bg-neutral-950">
+      <div className="flex items-center justify-between px-3 py-1.5">
         {/* Left side */}
         <div className="flex items-center space-x-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onSidebarToggle}
-          >
-            {isDesktop ? (
-              sidebarCollapsed ? (
-                <PanelLeftOpen className="w-5 h-5" />
-              ) : (
-                <PanelLeftClose className="w-5 h-5" />
-              )
-            ) : (
-              <Menu className="w-5 h-5" />
-            )}
-          </Button>
-
           {/* Search */}
           <form onSubmit={handleSearch} className="hidden md:block">
             <div className="relative">
