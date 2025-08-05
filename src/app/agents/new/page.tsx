@@ -32,7 +32,8 @@ import {
   Paperclip,
   ChevronRight,
   RefreshCw,
-  Send
+  Send,
+  Check
 } from 'lucide-react'
 
 import { MainLayout } from '@/components/layouts/MainLayout'
@@ -56,11 +57,12 @@ import { toast } from 'sonner'
 
 const agentSchema = z.object({
   name: z.string().min(2, 'Agent name must be at least 2 characters'),
-  email: z.string().email('Please enter a valid email address'),
   description: z.string().min(10, 'Description must be at least 10 characters'),
-  personality: z.array(z.string()).min(1, 'Select at least one personality trait'),
-  capabilities: z.array(z.string()).min(1, 'Select at least one capability'),
   channels: z.array(z.string()).min(1, 'Select at least one communication channel'),
+  channelConfig: z.record(z.string(), z.any()).optional(),
+  knowledgeSources: z.array(z.string()).optional(),
+  mcpServers: z.array(z.string()).optional(),
+  integrations: z.array(z.string()).optional(),
   model: z.string().min(1, 'Please select an AI model'),
   temperature: z.number().min(0).max(2),
   maxTokens: z.number().min(1).max(4000),
@@ -69,31 +71,36 @@ const agentSchema = z.object({
 
 type AgentFormData = z.infer<typeof agentSchema>
 
-const personalityTraits = [
-  { id: 'professional', label: 'Professional', icon: Users },
-  { id: 'friendly', label: 'Friendly', icon: MessageSquare },
-  { id: 'technical', label: 'Technical', icon: Code },
-  { id: 'empathetic', label: 'Empathetic', icon: Brain },
-  { id: 'analytical', label: 'Analytical', icon: Database },
-  { id: 'creative', label: 'Creative', icon: Palette },
-  { id: 'concise', label: 'Concise', icon: FileText },
-  { id: 'detailed', label: 'Detailed', icon: Sparkles },
+const knowledgeSources = [
+  { id: 'ks-1', name: 'SharePoint Operations Processes', type: 'sharepoint', icon: FileText, documents: 1247 },
+  { id: 'ks-2', name: 'Product Documentation', type: 'confluence', icon: FileText, documents: 892 },
+  { id: 'ks-3', name: 'Customer Support FAQs', type: 'database', icon: Database, documents: 445 },
+  { id: 'ks-4', name: 'API Reference', type: 'github', icon: Code, documents: 156 },
+  { id: 'ks-5', name: 'Company Policies', type: 'google-drive', icon: FileText, documents: 89 },
+  { id: 'ks-6', name: 'Technical Specifications', type: 'notion', icon: FileText, documents: 234 },
 ]
 
-const capabilities = [
-  { id: 'customer-support', label: 'Customer Support', icon: MessageSquare },
-  { id: 'sales', label: 'Sales & Lead Generation', icon: Users },
-  { id: 'data-analysis', label: 'Data Analysis', icon: Database },
-  { id: 'content-creation', label: 'Content Creation', icon: FileText },
-  { id: 'code-review', label: 'Code Review', icon: Code },
-  { id: 'research', label: 'Research & Insights', icon: Brain },
-  { id: 'scheduling', label: 'Scheduling & Calendar', icon: Zap },
-  { id: 'translation', label: 'Translation', icon: Globe },
+const mcpServers = [
+  { id: 'mcp-filesystem', name: 'Filesystem', description: 'File operations (read, write, delete)', icon: FileText },
+  { id: 'mcp-github', name: 'GitHub', description: 'Repository interactions', icon: Code },
+  { id: 'mcp-postgres', name: 'PostgreSQL', description: 'Database operations', icon: Database },
+  { id: 'mcp-slack', name: 'Slack', description: 'Send messages and manage channels', icon: Slack },
+  { id: 'mcp-browser', name: 'Web Browser', description: 'Browser automation', icon: Globe },
+]
+
+const integrations = [
+  { id: 'int-hubspot', name: 'HubSpot', category: 'CRM', icon: Users },
+  { id: 'int-salesforce', name: 'Salesforce', category: 'CRM', icon: Users },
+  { id: 'int-zendesk', name: 'Zendesk', category: 'Support', icon: MessageSquare },
+  { id: 'int-jira', name: 'Jira', category: 'Project Management', icon: Zap },
+  { id: 'int-notion', name: 'Notion', category: 'Knowledge Base', icon: FileText },
+  { id: 'int-teams', name: 'Microsoft Teams', category: 'Communication', icon: Users },
 ]
 
 const channels = [
   { id: 'email', label: 'Email', icon: Mail },
   { id: 'slack', label: 'Slack', icon: Slack },
+  { id: 'teams', label: 'Microsoft Teams', icon: Users },
   { id: 'web-chat', label: 'Web Chat', icon: MessageSquare },
   { id: 'phone', label: 'Phone', icon: Phone },
   { id: 'api', label: 'API', icon: Code },
@@ -128,21 +135,23 @@ export default function NewAgentPage() {
     resolver: zodResolver(agentSchema),
     mode: 'onChange',
     defaultValues: {
-      personality: [],
-      capabilities: [],
       channels: [],
+      knowledgeSources: [],
+      mcpServers: [],
+      integrations: [],
       temperature: 0.7,
       maxTokens: 2000,
       systemPrompt: 'You are a helpful AI assistant. Be professional, accurate, and helpful in all your responses.',
     }
   })
 
-  const watchedPersonality = watch('personality') || []
-  const watchedCapabilities = watch('capabilities') || []
   const watchedChannels = watch('channels') || []
+  const watchedKnowledgeSources = watch('knowledgeSources') || []
+  const watchedMcpServers = watch('mcpServers') || []
+  const watchedIntegrations = watch('integrations') || []
   const watchedTemperature = watch('temperature')
 
-  const toggleSelection = (field: 'personality' | 'capabilities' | 'channels', value: string) => {
+  const toggleSelection = (field: 'channels' | 'knowledgeSources' | 'mcpServers' | 'integrations', value: string) => {
     const currentValues = getValues(field) || []
     const newValues = currentValues.includes(value)
       ? currentValues.filter(item => item !== value)
@@ -195,34 +204,42 @@ export default function NewAgentPage() {
   }
 
   const generateAIResponse = (userMessage: string, formData: any) => {
-    // Simulate agent response based on configured personality and capabilities
+    // Simulate agent response based on configured resources and capabilities
     const agentName = formData.name || "Your Agent"
-    const personality = formData.personality || []
-    const capabilities = formData.capabilities || []
+    const knowledgeSources = formData.knowledgeSources || []
+    const mcpServers = formData.mcpServers || []
+    const integrations = formData.integrations || []
     
-    // Create a response that reflects the agent's configured personality
-    let responseStyle = ""
-    if (personality.includes('professional')) {
-      responseStyle = "I'd be happy to assist you with that. "
-    } else if (personality.includes('friendly')) {
-      responseStyle = "Hey there! I'd love to help you with that. "
-    } else if (personality.includes('technical')) {
-      responseStyle = "Based on my technical analysis, "
-    } else {
-      responseStyle = "I can help you with that. "
+    // Create response based on agent configuration
+    let response = `Hello! I'm ${agentName}. `
+    
+    // Add knowledge source awareness
+    if (knowledgeSources.length > 0) {
+      const sourceNames = knowledgeSources.map((id: string) => {
+        const source = knowledgeSources.find(ks => ks.id === id)
+        return source?.name || id
+      }).slice(0, 2).join(' and ')
+      response += `I have access to ${sourceNames} to help answer your questions. `
     }
     
-    // Add capability-specific responses
-    if (capabilities.includes('customer-support')) {
-      return `${responseStyle}As a customer support agent, I'm here to resolve any issues you might have. Could you please describe what you're experiencing so I can better assist you?`
-    } else if (capabilities.includes('sales')) {
-      return `${responseStyle}I'd be delighted to tell you more about our products and services. What specific features or solutions are you looking for?`
-    } else if (capabilities.includes('code-review')) {
-      return `${responseStyle}I can analyze your code for best practices, potential bugs, and optimization opportunities. Please share the code you'd like me to review.`
+    // Add MCP capabilities
+    if (mcpServers.includes('mcp-filesystem')) {
+      response += "I can help you manage files and folders. "
+    } else if (mcpServers.includes('mcp-github')) {
+      response += "I can interact with GitHub repositories. "
+    } else if (mcpServers.includes('mcp-postgres')) {
+      response += "I can query and manage PostgreSQL databases. "
     }
     
-    // Default response
-    return `${responseStyle}I'm ${agentName}, configured with ${personality.join(', ')} traits. How can I assist you today?`
+    // Add integration mentions
+    if (integrations.includes('int-hubspot')) {
+      response += "I'm connected to HubSpot for CRM operations. "
+    } else if (integrations.includes('int-zendesk')) {
+      response += "I can help with Zendesk tickets and support issues. "
+    }
+    
+    // Default ending
+    return response + "How can I assist you today?"
   }
 
   return (
@@ -268,13 +285,13 @@ export default function NewAgentPage() {
               <CardContent className="p-6 flex-1 overflow-hidden flex flex-col">
                 <Tabs value={currentTab} onValueChange={setCurrentTab} className="flex-1 flex flex-col min-h-0">
                   <TabsList className="grid w-full grid-cols-4 h-10 bg-gray-100 dark:bg-neutral-800 p-1 rounded-lg mb-6">
-                    <TabsTrigger value="basic" className="text-xs font-medium">Basic</TabsTrigger>
-                    <TabsTrigger value="personality" className="text-xs font-medium">Personality</TabsTrigger>
+                    <TabsTrigger value="basic" className="text-xs font-medium">Interaction</TabsTrigger>
+                    <TabsTrigger value="personality" className="text-xs font-medium">Resources</TabsTrigger>
                     <TabsTrigger value="capabilities" className="text-xs font-medium">Capabilities</TabsTrigger>
                     <TabsTrigger value="advanced" className="text-xs font-medium">Advanced</TabsTrigger>
                   </TabsList>
 
-                  {/* Basic Information Tab */}
+                  {/* Interaction Tab */}
                   <TabsContent value="basic" className="space-y-6 flex-1 overflow-y-auto">
                     <div className="space-y-4">
                       <div className="space-y-2">
@@ -290,24 +307,6 @@ export default function NewAgentPage() {
                         {errors.name && (
                           <p className="text-xs text-red-600 dark:text-red-400">
                             {errors.name.message}
-                          </p>
-                        )}
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="email" className="text-sm font-medium">
-                          Agent Email *
-                        </Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          placeholder="sarah@company.com"
-                          className="h-9"
-                          {...register('email')}
-                        />
-                        {errors.email && (
-                          <p className="text-xs text-red-600 dark:text-red-400">
-                            {errors.email.message}
                           </p>
                         )}
                       </div>
@@ -334,22 +333,145 @@ export default function NewAgentPage() {
                         <Label className="text-sm font-medium">
                           Communication Channels *
                         </Label>
-                        <div className="grid grid-cols-2 gap-2">
+                        <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
+                          Select how this agent will interact with your organization
+                        </p>
+                        <div className="space-y-3">
                           {channels.map((channel) => {
                             const Icon = channel.icon
                             const isSelected = watchedChannels.includes(channel.id)
                             return (
-                              <Button
-                                key={channel.id}
-                                type="button"
-                                variant={isSelected ? 'default' : 'outline'}
-                                size="sm"
-                                className="justify-start h-9"
-                                onClick={() => toggleSelection('channels', channel.id)}
-                              >
-                                <Icon className="w-3 h-3 mr-2" />
-                                <span className="text-xs">{channel.label}</span>
-                              </Button>
+                              <div key={channel.id} className="space-y-2">
+                                <Button
+                                  type="button"
+                                  variant={isSelected ? 'default' : 'outline'}
+                                  size="sm"
+                                  className="w-full justify-start h-10"
+                                  onClick={() => toggleSelection('channels', channel.id)}
+                                >
+                                  <Icon className="w-4 h-4 mr-3" />
+                                  <span className="text-sm font-medium">{channel.label}</span>
+                                  {isSelected && (
+                                    <Check className="w-4 h-4 ml-auto" />
+                                  )}
+                                </Button>
+                                
+                                {isSelected && (
+                                  <div className="ml-7 space-y-2 p-3 bg-gray-50 dark:bg-neutral-900 rounded-md">
+                                    {channel.id === 'email' && (
+                                      <div className="space-y-2">
+                                        <Label htmlFor={`${channel.id}-address`} className="text-xs">
+                                          Email Address
+                                        </Label>
+                                        <div className="flex gap-2">
+                                          <Input
+                                            id={`${channel.id}-address`}
+                                            type="email"
+                                            placeholder="agent@yourcompany.com"
+                                            className="h-8 text-xs flex-1"
+                                            {...register(`channelConfig.${channel.id}.address` as any)}
+                                          />
+                                          <Button 
+                                            type="button" 
+                                            size="sm" 
+                                            variant="outline"
+                                            className="h-8 text-xs"
+                                            onClick={() => toast.info('Email provisioning coming soon!')}
+                                          >
+                                            Generate
+                                          </Button>
+                                        </div>
+                                      </div>
+                                    )}
+                                    
+                                    {channel.id === 'phone' && (
+                                      <div className="space-y-2">
+                                        <Label htmlFor={`${channel.id}-number`} className="text-xs">
+                                          Phone Number
+                                        </Label>
+                                        <div className="flex gap-2">
+                                          <Input
+                                            id={`${channel.id}-number`}
+                                            type="tel"
+                                            placeholder="+1 (555) 000-0000"
+                                            className="h-8 text-xs flex-1"
+                                            {...register(`channelConfig.${channel.id}.number` as any)}
+                                          />
+                                          <Button 
+                                            type="button" 
+                                            size="sm" 
+                                            variant="outline"
+                                            className="h-8 text-xs"
+                                            onClick={() => toast.info('Phone number provisioning coming soon!')}
+                                          >
+                                            Assign
+                                          </Button>
+                                        </div>
+                                      </div>
+                                    )}
+                                    
+                                    {channel.id === 'slack' && (
+                                      <div className="space-y-2">
+                                        <Label className="text-xs">Slack Integration</Label>
+                                        <Button 
+                                          type="button" 
+                                          size="sm" 
+                                          variant="outline"
+                                          className="w-full h-8 text-xs"
+                                          onClick={() => toast.info('Slack integration coming soon!')}
+                                        >
+                                          <Slack className="w-3 h-3 mr-2" />
+                                          Connect to Slack Workspace
+                                        </Button>
+                                        <Input
+                                          placeholder="Channel name (optional)"
+                                          className="h-8 text-xs"
+                                          {...register(`channelConfig.${channel.id}.channel` as any)}
+                                        />
+                                      </div>
+                                    )}
+                                    
+                                    {channel.id === 'teams' && (
+                                      <div className="space-y-2">
+                                        <Label className="text-xs">Microsoft Teams Integration</Label>
+                                        <Button 
+                                          type="button" 
+                                          size="sm" 
+                                          variant="outline"
+                                          className="w-full h-8 text-xs"
+                                          onClick={() => toast.info('Teams integration coming soon!')}
+                                        >
+                                          <Users className="w-3 h-3 mr-2" />
+                                          Connect to Teams
+                                        </Button>
+                                        <Input
+                                          placeholder="Team/Channel name (optional)"
+                                          className="h-8 text-xs"
+                                          {...register(`channelConfig.${channel.id}.channel` as any)}
+                                        />
+                                      </div>
+                                    )}
+                                    
+                                    {channel.id === 'web-chat' && (
+                                      <div className="space-y-2">
+                                        <Label className="text-xs">Widget Configuration</Label>
+                                        <div className="text-xs text-gray-600 dark:text-gray-400">
+                                          Embed code will be generated after agent creation
+                                        </div>
+                                      </div>
+                                    )}
+                                    
+                                    {channel.id === 'api' && (
+                                      <div className="space-y-2">
+                                        <Label className="text-xs">API Configuration</Label>
+                                        <div className="text-xs text-gray-600 dark:text-gray-400">
+                                          API key and endpoint will be generated after agent creation
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
                             )
                           })}
                         </div>
@@ -362,35 +484,44 @@ export default function NewAgentPage() {
                     </div>
                   </TabsContent>
 
-                  {/* Personality Tab */}
+                  {/* Resources Tab */}
                   <TabsContent value="personality" className="space-y-6 flex-1 overflow-y-auto">
                     <div className="space-y-4">
                       <div className="space-y-3">
                         <Label className="text-sm font-medium">
-                          Personality Traits *
+                          Knowledge Sources
                         </Label>
-                        <div className="grid grid-cols-2 gap-2">
-                          {personalityTraits.map((trait) => {
-                            const Icon = trait.icon
-                            const isSelected = watchedPersonality.includes(trait.id)
+                        <p className="text-xs text-gray-600 dark:text-gray-400">
+                          Select knowledge sources this agent can access
+                        </p>
+                        <div className="space-y-2">
+                          {knowledgeSources.map((source) => {
+                            const Icon = source.icon
+                            const isSelected = watchedKnowledgeSources.includes(source.id)
                             return (
-                              <Button
-                                key={trait.id}
-                                type="button"
-                                variant={isSelected ? 'default' : 'outline'}
-                                size="sm"
-                                className="h-14 flex-col gap-1"
-                                onClick={() => toggleSelection('personality', trait.id)}
-                              >
-                                <Icon className="w-4 h-4" />
-                                <span className="text-xs">{trait.label}</span>
-                              </Button>
+                              <div key={source.id} className="flex items-center justify-between p-3 border rounded-lg">
+                                <div className="flex items-center gap-3">
+                                  <Icon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                                  <div>
+                                    <p className="text-sm font-medium">{source.name}</p>
+                                    <p className="text-xs text-gray-600 dark:text-gray-400">{source.type} • {source.documents} documents</p>
+                                  </div>
+                                </div>
+                                <Button
+                                  type="button"
+                                  variant={isSelected ? 'default' : 'outline'}
+                                  size="sm"
+                                  onClick={() => toggleSelection('knowledgeSources', source.id)}
+                                >
+                                  {isSelected ? 'Added' : 'Add'}
+                                </Button>
+                              </div>
                             )
                           })}
                         </div>
-                        {errors.personality && (
+                        {errors.knowledgeSources && (
                           <p className="text-xs text-red-600 dark:text-red-400">
-                            {errors.personality.message}
+                            {errors.knowledgeSources.message}
                           </p>
                         )}
                       </div>
@@ -420,43 +551,84 @@ export default function NewAgentPage() {
 
                   {/* Capabilities Tab */}
                   <TabsContent value="capabilities" className="space-y-6 flex-1 overflow-y-auto">
-                    <div className="space-y-4">
+                    <div className="space-y-6">
                       <div className="space-y-3">
                         <Label className="text-sm font-medium">
-                          Core Capabilities *
+                          MCP Servers
                         </Label>
+                        <p className="text-xs text-gray-600 dark:text-gray-400">
+                          Select MCP servers to give your agent additional capabilities
+                        </p>
                         <div className="space-y-2">
-                          {capabilities.map((capability) => {
-                            const Icon = capability.icon
-                            const isSelected = watchedCapabilities.includes(capability.id)
+                          {mcpServers.map((server) => {
+                            const Icon = server.icon
+                            const isSelected = watchedMcpServers.includes(server.id)
                             return (
-                              <Button
-                                key={capability.id}
-                                type="button"
-                                variant={isSelected ? 'default' : 'outline'}
-                                size="sm"
-                                className="w-full justify-start h-10"
-                                onClick={() => toggleSelection('capabilities', capability.id)}
-                              >
-                                <Icon className="w-4 h-4 mr-3 flex-shrink-0" />
-                                <span className="text-xs">{capability.label}</span>
-                              </Button>
+                              <div key={server.id} className="flex items-center justify-between p-3 border rounded-lg">
+                                <div className="flex items-center gap-3">
+                                  <Icon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                                  <div>
+                                    <p className="text-sm font-medium">{server.name}</p>
+                                    <p className="text-xs text-gray-600 dark:text-gray-400">{server.description}</p>
+                                  </div>
+                                </div>
+                                <Button
+                                  type="button"
+                                  variant={isSelected ? 'default' : 'outline'}
+                                  size="sm"
+                                  onClick={() => toggleSelection('mcpServers', server.id)}
+                                >
+                                  {isSelected ? 'Enabled' : 'Enable'}
+                                </Button>
+                              </div>
                             )
                           })}
                         </div>
-                        {errors.capabilities && (
+                        {errors.mcpServers && (
                           <p className="text-xs text-red-600 dark:text-red-400">
-                            {errors.capabilities.message}
+                            {errors.mcpServers.message}
                           </p>
                         )}
                       </div>
 
-                      <Alert className="bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800">
-                        <Sparkles className="h-3 w-3 text-blue-600 dark:text-blue-400" />
-                        <AlertDescription className="text-xs text-blue-800 dark:text-blue-300">
-                          More capabilities can be added after creation
-                        </AlertDescription>
-                      </Alert>
+                      <div className="space-y-3">
+                        <Label className="text-sm font-medium">
+                          Integrations
+                        </Label>
+                        <p className="text-xs text-gray-600 dark:text-gray-400">
+                          Connect external services for enhanced functionality
+                        </p>
+                        <div className="space-y-2">
+                          {integrations.map((integration) => {
+                            const Icon = integration.icon
+                            const isSelected = watchedIntegrations.includes(integration.id)
+                            return (
+                              <div key={integration.id} className="flex items-center justify-between p-3 border rounded-lg">
+                                <div className="flex items-center gap-3">
+                                  <Icon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                                  <div>
+                                    <p className="text-sm font-medium">{integration.name}</p>
+                                    <p className="text-xs text-gray-600 dark:text-gray-400">{integration.category}</p>
+                                  </div>
+                                </div>
+                                <Button
+                                  type="button"
+                                  variant={isSelected ? 'default' : 'outline'}
+                                  size="sm"
+                                  onClick={() => toggleSelection('integrations', integration.id)}
+                                >
+                                  {isSelected ? 'Connected' : 'Connect'}
+                                </Button>
+                              </div>
+                            )
+                          })}
+                        </div>
+                        {errors.integrations && (
+                          <p className="text-xs text-red-600 dark:text-red-400">
+                            {errors.integrations.message}
+                          </p>
+                        )}
+                      </div>
                     </div>
                   </TabsContent>
 
