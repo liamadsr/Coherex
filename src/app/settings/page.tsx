@@ -62,14 +62,7 @@ export default function SettingsPage() {
     <div className="flex h-full">
       {/* Settings Sidebar */}
       <aside className="w-64 border-r border-gray-200 dark:border-neutral-800 overflow-y-auto bg-white dark:bg-[#0c0c0c]">
-        <div className="p-6">
-          <div className="flex items-center gap-2 text-gray-900 dark:text-white">
-            <SettingsIcon className="w-5 h-5" />
-            <h2 className="text-lg font-semibold">Settings</h2>
-          </div>
-        </div>
-
-        <nav className="px-3 pb-6">
+        <nav className="p-3 pt-6">
           <ul className="space-y-1">
             {settingsItems.map((item, index) => {
               // Add category header
@@ -86,17 +79,17 @@ export default function SettingsPage() {
                   <button
                     onClick={() => setActiveItem(item.id)}
                     className={cn(
-                      'w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors text-left',
+                      'w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all text-left',
                       activeItem === item.id
-                        ? 'bg-gray-50 dark:bg-neutral-900 text-gray-900 dark:text-white'
-                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-neutral-900 hover:text-gray-900 dark:hover:text-white'
+                        ? 'bg-gray-100 dark:bg-neutral-900 text-gray-900 dark:text-white'
+                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-neutral-900 hover:text-gray-900 dark:hover:text-white'
                     )}
                   >
                     <item.icon className={cn(
-                      'w-4 h-4 flex-shrink-0',
+                      'w-4 h-4 flex-shrink-0 transition-colors',
                       activeItem === item.id 
                         ? 'text-gray-700 dark:text-gray-300' 
-                        : 'text-gray-400 dark:text-gray-500'
+                        : 'text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300'
                     )} />
                     <span>{item.label}</span>
                   </button>
