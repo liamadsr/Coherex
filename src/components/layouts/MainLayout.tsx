@@ -128,7 +128,7 @@ export function MainLayout({ children }: MainLayoutProps) {
         {/* Content area with AI Assistant */}
         <div className="flex-1 flex overflow-hidden p-2 pt-0">
           {/* Page content with rounded corners */}
-          <main className="flex-1 overflow-auto bg-white dark:bg-neutral-900 rounded-2xl shadow-sm">
+          <main className="flex-1 overflow-auto bg-white dark:bg-[#0f0f0f] rounded-2xl shadow-sm">
             <div className="p-4">
               {children}
             </div>
@@ -141,7 +141,7 @@ export function MainLayout({ children }: MainLayoutProps) {
               aiAssistantOpen ? "w-80 ml-2" : "w-0"
             )}
           >
-            <div className="h-full bg-white dark:bg-neutral-900 rounded-2xl shadow-sm overflow-hidden">
+            <div className="h-full bg-white dark:bg-[#0f0f0f] rounded-2xl shadow-sm overflow-hidden">
               <AIAssistantPanel 
                 isOpen={aiAssistantOpen}
               />
