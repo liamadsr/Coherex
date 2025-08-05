@@ -556,8 +556,8 @@ export default function NewAgentPage() {
 
           {/* Right Panel - AI Assistant */}
           <div className="flex-1 min-h-0 overflow-hidden">
-            <Card className="h-full flex flex-col bg-white dark:bg-neutral-950">
-              <CardContent className="flex-1 overflow-y-auto p-0 bg-white dark:bg-neutral-950">
+            <Card className="h-full flex flex-col">
+              <CardContent className="flex-1 overflow-y-auto p-0">
                 <div className="p-6">
                   {messages.map((message, index) => (
                     <div key={index} className="mb-6">
