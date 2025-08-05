@@ -40,21 +40,21 @@ import { WaitlistModal } from '@/components/WaitlistModal'
 const features = [
   {
     id: 'ai-agents',
-    icon: Bot,
+    icon: Users,
     title: 'Teams & Agents',
     description: 'Build intelligent employees that understand context and help run your business.',
     gradient: 'from-gray-700 to-gray-900'
   },
   {
     id: 'mcp',
-    icon: Workflow,
+    icon: Sparkles,
     title: 'Model Context Protocol',
     description: 'Connect your AI employees to all your tools and services through MCP.',
-    gradient: 'from-gray-600 to-gray-800'
+    gradient: 'from-gray-700 to-gray-900'
   },
   {
     id: 'knowledge',
-    icon: Database,
+    icon: Brain,
     title: 'Knowledge Sources',
     description: 'Choose which agents get access to what - databases, SOPs, SharePoint, and allocate resources.',
     gradient: 'from-gray-700 to-gray-900'
@@ -64,11 +64,11 @@ const features = [
     icon: Zap,
     title: 'Integrations',
     description: 'Connect to Slack for conversations, HubSpot for reports, and all your business tools.',
-    gradient: 'from-gray-600 to-gray-800'
+    gradient: 'from-gray-700 to-gray-900'
   },
   {
     id: 'multi-channel',
-    icon: MessageSquare,
+    icon: Globe,
     title: 'Multi-Channel',
     description: 'They\'re everywhere you are - own inbox, phone number, email, chat, Slack. Tell them where to be.',
     gradient: 'from-gray-700 to-gray-900'
@@ -78,7 +78,7 @@ const features = [
     icon: Shield,
     title: 'Enterprise Ready',
     description: 'Stay in control with audit logs, conversation history, and a dashboard showing everything your agents do.',
-    gradient: 'from-gray-600 to-gray-800'
+    gradient: 'from-gray-700 to-gray-900'
   }
 ]
 
@@ -357,7 +357,7 @@ export default function LandingPage() {
                 className="group relative bg-[#050505] rounded-2xl p-8 hover:bg-[#0a0a0a] transition-all duration-300 no-flash border border-neutral-800/50"
                 style={{ minHeight: '250px' }}
               >
-                <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${feature.gradient} p-3 mb-6`}>
+                <div className="w-14 h-14 rounded-xl p-3 mb-6">
                   <feature.icon className="w-full h-full text-white" />
                 </div>
                 <h3 className="text-2xl font-bold mb-3">{feature.title}</h3>
