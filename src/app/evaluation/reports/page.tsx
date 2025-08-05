@@ -27,7 +27,7 @@ export default function EvaluationReportsPage() {
       id: '1',
       title: 'Weekly Performance Report',
       type: 'performance',
-      date: '2024-01-15',
+      date: '2025-01-15',
       status: 'completed',
       metrics: {
         accuracy: 94.5,
@@ -38,7 +38,7 @@ export default function EvaluationReportsPage() {
       id: '2',
       title: 'Monthly Agent Comparison',
       type: 'comparison',
-      date: '2024-01-10',
+      date: '2025-01-10',
       status: 'completed',
       metrics: {
         accuracy: 91.2,
@@ -49,7 +49,7 @@ export default function EvaluationReportsPage() {
       id: '3',
       title: 'Evaluation Criteria Analysis',
       type: 'criteria',
-      date: '2024-01-08',
+      date: '2025-01-08',
       status: 'processing',
       metrics: {
         accuracy: null,

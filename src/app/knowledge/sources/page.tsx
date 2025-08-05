@@ -65,7 +65,7 @@ export default function KnowledgeSourcesPage() {
       status: 'active',
       size: '12.3 MB',
       syncFrequency: 'Every 6 hours',
-      createdAt: '2024-01-15',
+      createdAt: '2025-01-15',
       owner: 'John Smith'
     },
     {
@@ -81,7 +81,7 @@ export default function KnowledgeSourcesPage() {
       status: 'active',
       size: '3.7 MB',
       syncFrequency: 'Every hour',
-      createdAt: '2024-01-10',
+      createdAt: '2025-01-10',
       owner: 'Sarah Johnson'
     },
     {
@@ -129,7 +129,7 @@ export default function KnowledgeSourcesPage() {
       status: 'active',
       size: '15.4 MB',
       syncFrequency: 'Every 24 hours',
-      createdAt: '2024-01-05',
+      createdAt: '2025-01-05',
       owner: 'Engineering'
     },
     {
@@ -145,7 +145,7 @@ export default function KnowledgeSourcesPage() {
       status: 'error',
       size: '5.2 MB',
       syncFrequency: 'Every 12 hours',
-      createdAt: '2024-01-20',
+      createdAt: '2025-01-20',
       owner: 'Dev Team',
       error: 'Authentication failed'
     },

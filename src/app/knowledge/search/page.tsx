@@ -52,7 +52,7 @@ export default function KnowledgeSearchPage() {
       source: 'API Reference',
       document: 'authentication.md',
       relevance: 0.95,
-      lastModified: '2024-01-27',
+      lastModified: '2025-01-27',
       author: 'Dev Team',
       tags: ['api', 'authentication', 'oauth'],
       chunks: 3,
@@ -65,7 +65,7 @@ export default function KnowledgeSearchPage() {
       source: 'Product Documentation',
       document: 'oauth-guide.pdf',
       relevance: 0.89,
-      lastModified: '2024-01-25',
+      lastModified: '2025-01-25',
       author: 'John Smith',
       tags: ['oauth', 'security', 'tutorial'],
       chunks: 2
@@ -77,7 +77,7 @@ export default function KnowledgeSearchPage() {
       source: 'Customer Support FAQs',
       document: 'auth-errors.xlsx',
       relevance: 0.82,
-      lastModified: '2024-01-24',
+      lastModified: '2025-01-24',
       author: 'Support Team',
       tags: ['authentication', 'errors', 'troubleshooting'],
       chunks: 5
@@ -89,7 +89,7 @@ export default function KnowledgeSearchPage() {
       source: 'Code Examples',
       document: 'token-refresh.js',
       relevance: 0.78,
-      lastModified: '2024-01-22',
+      lastModified: '2025-01-22',
       author: 'Dev Team',
       tags: ['code', 'tokens', 'implementation'],
       chunks: 1
