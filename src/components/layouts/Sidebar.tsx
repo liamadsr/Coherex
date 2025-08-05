@@ -355,7 +355,7 @@ export function Sidebar({ isOpen, onToggle, isDesktop = false }: SidebarProps) {
           willChange: 'width'
         }}
         className={cn(
-          'fixed left-0 top-0 z-50 h-full bg-gray-100 dark:bg-gray-950 flex flex-col'
+          'fixed left-0 top-0 z-50 h-full bg-gray-100 dark:bg-neutral-950 flex flex-col'
         )}
       >
         {/* Header */}

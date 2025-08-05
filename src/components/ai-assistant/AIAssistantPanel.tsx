@@ -80,7 +80,7 @@ export function AIAssistantPanel({ isOpen }: AIAssistantPanelProps) {
       {isOpen && (
         <div className="flex flex-col h-full overflow-hidden">
           {/* Messages */}
-          <div className="flex-1 overflow-hidden bg-gray-50 dark:bg-gray-900/50">
+          <div className="flex-1 overflow-hidden bg-gray-50 dark:bg-neutral-900/50">
             <ScrollArea className="h-full px-6 pt-6 pb-4" ref={scrollRef}>
               <div className="space-y-4">
                 {messages.map((message) => (
@@ -96,7 +96,7 @@ export function AIAssistantPanel({ isOpen }: AIAssistantPanelProps) {
                         'max-w-[80%] rounded-lg px-4 py-3 shadow-sm',
                         message.role === 'user'
                           ? 'bg-primary text-primary-foreground ml-auto'
-                          : 'bg-white dark:bg-gray-800 border border-border'
+                          : 'bg-white dark:bg-neutral-800 border border-border'
                       )}
                     >
                       <p className="text-sm">{message.content}</p>

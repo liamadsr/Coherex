@@ -79,7 +79,7 @@ export function MainLayout({ children }: MainLayoutProps) {
   // Use suppressHydrationWarning on the main wrapper to prevent hydration warnings
   // This is safe because we handle the state properly after hydration
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-950" suppressHydrationWarning>
+    <div className="min-h-screen bg-gray-100 dark:bg-neutral-950" suppressHydrationWarning>
       {/* Sidebar */}
       <Sidebar 
         isOpen={sidebarIsOpen} 
@@ -97,7 +97,7 @@ export function MainLayout({ children }: MainLayoutProps) {
         <TopBar />
 
         {/* Breadcrumbs with toggle buttons */}
-        <div className="flex items-center justify-between px-4 py-1.5 bg-gray-100 dark:bg-gray-950">
+        <div className="flex items-center justify-between px-4 py-1.5 bg-gray-100 dark:bg-neutral-950">
           <div className="flex items-center space-x-2.5">
             {/* Sidebar toggle */}
             <Button
@@ -128,7 +128,7 @@ export function MainLayout({ children }: MainLayoutProps) {
         {/* Content area with AI Assistant */}
         <div className="flex-1 flex overflow-hidden p-2 pt-0">
           {/* Page content with rounded corners */}
-          <main className="flex-1 overflow-auto bg-white dark:bg-gray-900 rounded-2xl shadow-sm">
+          <main className="flex-1 overflow-auto bg-white dark:bg-neutral-900 rounded-2xl shadow-sm">
             <div className="p-4">
               {children}
             </div>
@@ -141,7 +141,7 @@ export function MainLayout({ children }: MainLayoutProps) {
               aiAssistantOpen ? "w-80 ml-2" : "w-0"
             )}
           >
-            <div className="h-full bg-white dark:bg-gray-900 rounded-2xl shadow-sm overflow-hidden">
+            <div className="h-full bg-white dark:bg-neutral-900 rounded-2xl shadow-sm overflow-hidden">
               <AIAssistantPanel 
                 isOpen={aiAssistantOpen}
               />

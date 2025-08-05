@@ -267,7 +267,7 @@ export default function NewAgentPage() {
             <Card className="h-full flex flex-col">
               <CardContent className="p-6 flex-1 overflow-hidden flex flex-col">
                 <Tabs value={currentTab} onValueChange={setCurrentTab} className="flex-1 flex flex-col min-h-0">
-                  <TabsList className="grid w-full grid-cols-4 h-10 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg mb-6">
+                  <TabsList className="grid w-full grid-cols-4 h-10 bg-gray-100 dark:bg-neutral-800 p-1 rounded-lg mb-6">
                     <TabsTrigger value="basic" className="text-xs font-medium">Basic</TabsTrigger>
                     <TabsTrigger value="personality" className="text-xs font-medium">Personality</TabsTrigger>
                     <TabsTrigger value="capabilities" className="text-xs font-medium">Capabilities</TabsTrigger>
@@ -468,7 +468,7 @@ export default function NewAgentPage() {
                           AI Model *
                         </Label>
                         <Select onValueChange={(value) => setValue('model', value)} defaultValue="">
-                          <SelectTrigger className="h-9 bg-white dark:bg-gray-900">
+                          <SelectTrigger className="h-9 bg-white dark:bg-neutral-900">
                             <SelectValue placeholder="Select an AI model" />
                           </SelectTrigger>
                           <SelectContent>
@@ -556,14 +556,14 @@ export default function NewAgentPage() {
 
           {/* Right Panel - AI Assistant */}
           <div className="flex-1 min-h-0 overflow-hidden">
-            <Card className="h-full flex flex-col bg-white dark:bg-gray-950">
-              <CardContent className="flex-1 overflow-y-auto p-0 bg-white dark:bg-gray-950">
+            <Card className="h-full flex flex-col bg-white dark:bg-neutral-950">
+              <CardContent className="flex-1 overflow-y-auto p-0 bg-white dark:bg-neutral-950">
                 <div className="p-6">
                   {messages.map((message, index) => (
                     <div key={index} className="mb-6">
                       {message.role === 'user' ? (
                         <div className="flex items-start space-x-3">
-                          <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-800 flex items-center justify-center flex-shrink-0">
+                          <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-neutral-800 flex items-center justify-center flex-shrink-0">
                             <span className="text-xs font-medium text-gray-600 dark:text-gray-400">You</span>
                           </div>
                           <div className="flex-1">
@@ -619,7 +619,7 @@ export default function NewAgentPage() {
                           handleSendMessage()
                         }
                       }}
-                      className="w-full min-h-[40px] max-h-[120px] resize-none bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg pl-12 pr-4 py-2.5 text-sm placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      className="w-full min-h-[40px] max-h-[120px] resize-none bg-white dark:bg-neutral-900 border border-gray-300 dark:border-gray-700 rounded-lg pl-12 pr-4 py-2.5 text-sm placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                       rows={1}
                     />
                   </div>
@@ -633,7 +633,7 @@ export default function NewAgentPage() {
                       size="sm"
                       className={`h-10 px-3 ${
                         autoClear 
-                          ? 'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600' 
+                          ? 'bg-gray-100 dark:bg-neutral-800 border-gray-300 dark:border-gray-600' 
                           : ''
                       }`}
                       onClick={() => setAutoClear(!autoClear)}

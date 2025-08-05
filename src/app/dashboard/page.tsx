@@ -415,7 +415,7 @@ export default function DashboardPage() {
                       transition={{ delay: index * 0.1 }}
                       className="flex items-start space-x-4 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
                     >
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center bg-gray-100 dark:bg-gray-800`}>
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center bg-gray-100 dark:bg-neutral-800`}>
                         <activity.icon className={`w-5 h-5 ${activity.color}`} />
                       </div>
                       <div className="flex-1 min-w-0">

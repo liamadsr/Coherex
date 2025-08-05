@@ -700,7 +700,7 @@ export default function ConversationsPage() {
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Refresh
               </Button>
-              <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-1 flex">
+              <div className="bg-gray-100 dark:bg-neutral-800 rounded-lg p-1 flex">
                 <Button
                   variant={viewMode === 'cluster' ? 'default' : 'ghost'}
                   size="sm"
@@ -952,7 +952,7 @@ export default function ConversationsPage() {
           <div className="h-[calc(100vh-280px)] relative bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-950 dark:to-gray-900 rounded-xl">
             {clusterViewMode === 'wordcloud' || clusterViewMode === 'phrasecloud' ? (
               <div className="h-full flex items-center justify-center p-8">
-                <div className="w-full h-full max-w-6xl bg-white/90 dark:bg-gray-900/90 backdrop-blur-md rounded-xl shadow-lg border border-gray-200/50 dark:border-gray-700/50 p-8">
+                <div className="w-full h-full max-w-6xl bg-white/90 dark:bg-neutral-900/90 backdrop-blur-md rounded-xl shadow-lg border border-gray-200/50 dark:border-gray-700/50 p-8">
                   <div className="mb-6">
                     <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                       {clusterViewMode === 'wordcloud' ? 'Most Common Words' : 'Most Common Phrases'}
@@ -1069,7 +1069,7 @@ export default function ConversationsPage() {
 
             {/* Categories Panel - Only show for non-cloud views */}
             {(clusterViewMode !== 'wordcloud' && clusterViewMode !== 'phrasecloud') && (
-            <div className="absolute top-4 left-4 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md rounded-xl shadow-lg border border-gray-200/50 dark:border-gray-700/50 w-80">
+            <div className="absolute top-4 left-4 bg-white/90 dark:bg-neutral-900/90 backdrop-blur-md rounded-xl shadow-lg border border-gray-200/50 dark:border-gray-700/50 w-80">
               <div className="p-4">
                 <h3 className="text-sm font-semibold mb-4">
                   {clusterViewMode === 'category' ? 'Conversation Categories' : 
@@ -1080,7 +1080,7 @@ export default function ConversationsPage() {
                   <button
                     onClick={() => setSelectedCategory('all')}
                     className={`w-full flex items-center justify-between py-2 px-2 rounded-lg transition-colors ${
-                      selectedCategory === 'all' ? 'bg-gray-100 dark:bg-gray-800' : 'hover:bg-gray-50 dark:hover:bg-gray-800/50'
+                      selectedCategory === 'all' ? 'bg-gray-100 dark:bg-neutral-800' : 'hover:bg-gray-50 dark:hover:bg-gray-800/50'
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -1101,7 +1101,7 @@ export default function ConversationsPage() {
                         key={key}
                         onClick={() => setSelectedCategory(selectedCategory === key ? 'all' : key)}
                         className={`w-full flex items-center justify-between py-2 px-2 rounded-lg transition-colors ${
-                          selectedCategory === key ? 'bg-gray-100 dark:bg-gray-800' : 'hover:bg-gray-50 dark:hover:bg-gray-800/50'
+                          selectedCategory === key ? 'bg-gray-100 dark:bg-neutral-800' : 'hover:bg-gray-50 dark:hover:bg-gray-800/50'
                         }`}
                       >
                         <div className="flex items-center gap-3">
@@ -1120,12 +1120,12 @@ export default function ConversationsPage() {
             {/* Zoom Controls - Only show for non-cloud views */}
             {(clusterViewMode !== 'wordcloud' && clusterViewMode !== 'phrasecloud') && (
             <div className="absolute top-4 right-4 flex items-start gap-2">
-              <div className="bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 px-2 py-1.5 flex items-center gap-1.5">
+              <div className="bg-white dark:bg-neutral-900 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 px-2 py-1.5 flex items-center gap-1.5">
                 <Move className="w-3.5 h-3.5 text-gray-600 dark:text-gray-400" />
                 <span className="text-xs text-gray-600 dark:text-gray-400">Click + drag</span>
               </div>
               
-              <div className="bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 flex overflow-hidden">
+              <div className="bg-white dark:bg-neutral-900 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 flex overflow-hidden">
                 <button
                   onClick={handleZoomIn}
                   className="hover:bg-gray-100 dark:hover:bg-gray-800 p-1.5"
@@ -1152,7 +1152,7 @@ export default function ConversationsPage() {
 
             {/* Hover Details - Only show for non-cloud views */}
             {(clusterViewMode !== 'wordcloud' && clusterViewMode !== 'phrasecloud') && hoveredNode && !hoveredNode.isCategory && (
-              <div className="absolute bottom-4 left-4 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-xl shadow-2xl p-5 max-w-md border border-gray-200/50 dark:border-gray-700/50">
+              <div className="absolute bottom-4 left-4 bg-white/95 dark:bg-neutral-800/95 backdrop-blur-sm rounded-xl shadow-2xl p-5 max-w-md border border-gray-200/50 dark:border-gray-700/50">
                 <div className="flex items-start justify-between mb-2">
                   <h3 className="font-semibold text-lg">{hoveredNode.name}</h3>
                   <Badge style={{ 
