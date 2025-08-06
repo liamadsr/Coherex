@@ -96,26 +96,26 @@ const integrations = [
   { 
     name: 'Slack',
     slug: 'slack',
-    lightColor: '4A154B', // Slack purple for light mode
+    lightColor: '000000', // Black for light mode
     darkColor: 'FFFFFF' // White for dark mode
   },
   { 
     name: 'Discord',
     slug: 'discord', 
-    lightColor: '5865F2', // Discord brand color
-    darkColor: '5865F2' // Same for dark mode
+    lightColor: '000000', // Black for light mode
+    darkColor: 'FFFFFF' // White for dark mode
   },
   { 
     name: 'HubSpot',
     slug: 'hubspot',
-    lightColor: 'FF7A59',
-    darkColor: 'FF7A59'
+    lightColor: '000000', // Black for light mode
+    darkColor: 'FFFFFF' // White for dark mode
   },
   { 
     name: 'Salesforce',
     slug: 'salesforce',
-    lightColor: '00A1E0',
-    darkColor: '00A1E0'
+    lightColor: '000000', // Black for light mode
+    darkColor: 'FFFFFF' // White for dark mode
   },
   { 
     name: 'GitHub',
@@ -126,14 +126,14 @@ const integrations = [
   { 
     name: 'Google Docs',
     slug: 'googledocs', 
-    lightColor: '4285F4',
-    darkColor: '4285F4'
+    lightColor: '000000', // Black for light mode
+    darkColor: 'FFFFFF' // White for dark mode
   },
   { 
     name: 'Confluence',
     slug: 'confluence',
-    lightColor: '1868DB',
-    darkColor: '1868DB'
+    lightColor: '000000', // Black for light mode
+    darkColor: 'FFFFFF' // White for dark mode
   },
   { 
     name: 'Notion',
