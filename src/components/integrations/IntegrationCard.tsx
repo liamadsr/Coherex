@@ -50,7 +50,7 @@ export function IntegrationCard({ integration, isConnected, onConnect }: Integra
         <div className="space-y-4">
           {/* Header */}
           <div className="flex items-start justify-between">
-            <div className="p-3 bg-gray-100 dark:bg-gray-800 rounded-lg">
+            <div>
               {renderIcon()}
             </div>
             {isConnected && (

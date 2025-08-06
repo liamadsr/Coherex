@@ -777,7 +777,7 @@ export default function IntegrationsPage() {
                   <CardHeader className="pb-4">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center">
+                        <div className="w-12 h-12 flex items-center justify-center">
                           {typeof integration.icon === 'string' ? (
                             integration.icon === 'email' ? (
                               <Mail className="w-8 h-8" />
