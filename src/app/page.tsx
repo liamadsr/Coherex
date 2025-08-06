@@ -238,16 +238,16 @@ export default function LandingPage() {
                     <span className="sr-only">Toggle theme</span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
-                  <DropdownMenuItem onClick={() => setTheme('light')} className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800">
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => setTheme('light')} className="cursor-pointer">
                     <Sun className="mr-2 h-4 w-4" />
                     <span>Light</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setTheme('dark')} className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800">
+                  <DropdownMenuItem onClick={() => setTheme('dark')} className="cursor-pointer">
                     <Moon className="mr-2 h-4 w-4" />
                     <span>Dark</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setTheme('system')} className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800">
+                  <DropdownMenuItem onClick={() => setTheme('system')} className="cursor-pointer">
                     <Laptop className="mr-2 h-4 w-4" />
                     <span>System</span>
                   </DropdownMenuItem>
