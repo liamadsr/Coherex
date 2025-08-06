@@ -3,7 +3,8 @@ import {
   Check,
   ArrowRight,
   ExternalLink,
-  Settings
+  Settings,
+  Mail
 } from 'lucide-react'
 
 import { Card, CardContent } from '@/components/ui/card'
@@ -11,6 +12,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Integration } from '@/types'
 import { cn } from '@/lib/utils'
+import { ServiceIcon } from './ServiceIcon'
 
 interface IntegrationCardProps {
   integration: Integration
@@ -20,9 +22,15 @@ interface IntegrationCardProps {
 
 export function IntegrationCard({ integration, isConnected, onConnect }: IntegrationCardProps) {
   const renderIcon = () => {
-    // If icon is a string (emoji), render it directly
+    // If icon is a string, check if it's a Simple Icons slug
     if (typeof integration.icon === 'string') {
-      return <span className="text-3xl">{integration.icon}</span>
+      // Check if it's a known Lucide icon for certain services
+      if (integration.icon === 'email') {
+        return <Mail className="w-8 h-8" />
+      }
+      
+      // Use the ServiceIcon component which handles fallbacks
+      return <ServiceIcon name={integration.name} slug={integration.icon} />
     }
     
     // If icon is a component, render it
