@@ -30,10 +30,17 @@ import {
   Settings,
   Mail,
   Sun,
-  Moon
+  Moon,
+  Laptop
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { submitToWaitlist } from '@/lib/waitlist'
 import { WaitlistModal } from '@/components/WaitlistModal'
 import { useTheme } from 'next-themes'
@@ -218,17 +225,34 @@ export default function LandingPage() {
                 <Link href="/login">Sign In</Link>
               </Button>
               
-              {/* Theme toggle - far right */}
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="bg-white dark:bg-black border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900 hover:border-gray-400 dark:hover:border-gray-500 focus:ring-0 focus:ring-offset-0"
-              >
-                <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-                <span className="sr-only">Toggle theme</span>
-              </Button>
+              {/* Theme dropdown - far right */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="bg-white dark:bg-black border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900 hover:border-gray-400 dark:hover:border-gray-500 focus:ring-0 focus:ring-offset-0"
+                  >
+                    <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                    <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                    <span className="sr-only">Toggle theme</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+                  <DropdownMenuItem onClick={() => setTheme('light')} className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800">
+                    <Sun className="mr-2 h-4 w-4" />
+                    <span>Light</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setTheme('dark')} className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800">
+                    <Moon className="mr-2 h-4 w-4" />
+                    <span>Dark</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setTheme('system')} className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800">
+                    <Laptop className="mr-2 h-4 w-4" />
+                    <span>System</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
             
             <button
@@ -264,13 +288,27 @@ export default function LandingPage() {
                 GitHub Repository
               </a>
               <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
+                <div className="px-3 py-1 text-xs font-medium text-gray-500 dark:text-gray-400">Theme</div>
                 <button
-                  onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                  onClick={() => setTheme('light')}
                   className="flex items-center w-full px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white"
                 >
-                  <Sun className="w-5 h-5 mr-2 dark:hidden" />
-                  <Moon className="w-5 h-5 mr-2 hidden dark:block" />
-                  {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+                  <Sun className="w-5 h-5 mr-2" />
+                  Light
+                </button>
+                <button
+                  onClick={() => setTheme('dark')}
+                  className="flex items-center w-full px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white"
+                >
+                  <Moon className="w-5 h-5 mr-2" />
+                  Dark
+                </button>
+                <button
+                  onClick={() => setTheme('system')}
+                  className="flex items-center w-full px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white"
+                >
+                  <Laptop className="w-5 h-5 mr-2" />
+                  System
                 </button>
               </div>
               <div className="pt-4 space-y-2">
