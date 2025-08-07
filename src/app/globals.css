@@ -129,18 +129,18 @@
     -webkit-transform: translate3d(0, 0, 0);
     -moz-transform: translate3d(0, 0, 0);
   }
-  
+
   /* Disable GPU acceleration for blur effects to prevent flashing */
   .blur-stable {
     transform: translateZ(0);
     will-change: auto;
   }
-  
+
   /* Ensure smooth scrolling without jank */
   html {
     scroll-behavior: smooth;
   }
-  
+
   /* Prevent layout shift on animations */
   .motion-reduce {
     animation-duration: 0.01ms !important;
