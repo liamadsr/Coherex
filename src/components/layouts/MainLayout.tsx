@@ -138,10 +138,10 @@ export function MainLayout({ children }: MainLayoutProps) {
           <div
             className={cn(
               "transition-all duration-300 overflow-hidden",
-              aiAssistantOpen ? "w-80 ml-2" : "w-0"
+              aiAssistantOpen ? "w-96 ml-2" : "w-0"
             )}
           >
-            <div className="h-full bg-white dark:bg-[#0c0c0c] rounded-2xl shadow-sm overflow-hidden">
+            <div className="h-full bg-white dark:bg-[#0c0c0c] rounded-2xl shadow-sm overflow-hidden flex flex-col">
               <AIAssistantPanel 
                 isOpen={aiAssistantOpen}
               />
