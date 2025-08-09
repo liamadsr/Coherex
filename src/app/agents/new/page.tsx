@@ -170,7 +170,7 @@ export default function NewAgentPage() {
   const onSubmit = async (data: AgentFormData) => {
     setIsLoading(true)
     try {
-      // Create agent configuration
+      // Create agent configuration that matches both config format AND database columns
       const config = {
         name: data.name,
         description: data.description,
@@ -213,6 +213,12 @@ export default function NewAgentPage() {
           name: data.name,
           description: data.description,
           execution_mode: data.executionMode,
+          channels: data.channels,
+          model: data.model,
+          temperature: data.temperature,
+          maxTokens: data.maxTokens,
+          systemPrompt: data.systemPrompt,
+          knowledgeSources: data.knowledgeSources || [],
           config,
           status: 'draft'
         })

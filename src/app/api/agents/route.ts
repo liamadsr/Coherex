@@ -107,6 +107,7 @@ export async function POST(req: NextRequest) {
       email: agentData.email || `${agentData.name.toLowerCase().replace(/\s+/g, '.')}@coherex.ai`,
       description: agentData.description || '',
       status: agentData.status || 'training',
+      execution_mode: agentData.execution_mode || 'ephemeral',
       personality: agentData.personality || [],
       capabilities: agentData.capabilities || [],
       channels: agentData.channels || [],
@@ -171,7 +172,8 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data: transformedAgent
+      agent: transformedAgent,  // Frontend expects 'agent' not 'data'
+      data: transformedAgent  // Keep for backwards compatibility
     })
   } catch (error) {
     console.error('Create agent error:', error)
