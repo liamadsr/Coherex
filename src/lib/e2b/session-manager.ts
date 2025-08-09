@@ -132,9 +132,56 @@ export class PersistentSandboxManager {
     input: string,
     includeContext: boolean = true
   ): Promise<any> {
-    const sandbox = this.activeSandboxes.get(sessionId)
+    // Try to get sandbox from memory first
+    let sandbox = this.activeSandboxes.get(sessionId)
+    
+    // If not in memory, try to reconnect using stored sandbox_id
     if (!sandbox) {
-      throw new Error('Session sandbox not found. Session may be hibernated or stopped.')
+      // Get session from database
+      const { data: session } = await supabase
+        .from('agent_sessions')
+        .select('*, agents(*)')
+        .eq('id', sessionId)
+        .single()
+      
+      if (!session || !session.sandbox_id) {
+        throw new Error('Session not found or sandbox ID missing')
+      }
+      
+      if (session.status === 'stopped') {
+        throw new Error('Session is stopped')
+      }
+      
+      if (session.status === 'hibernated') {
+        // Resume hibernated session
+        await this.resumeSession(session)
+        sandbox = this.activeSandboxes.get(sessionId)
+      } else {
+        // Try to reconnect to existing sandbox
+        try {
+          sandbox = await this.reconnectToSandbox(session.sandbox_id, session.agent_id)
+          if (sandbox) {
+            this.activeSandboxes.set(sessionId, sandbox)
+            
+            // Re-initialize the agent in the reconnected sandbox
+            const agent = session.agents as unknown as Agent
+            await this.initializeAgentInSandbox(
+              sandbox, 
+              agent, 
+              session.conversation_context as ConversationMessage[]
+            )
+          }
+        } catch (error) {
+          console.error('Failed to reconnect to sandbox:', error)
+          // If reconnection fails, create new sandbox
+          const agent = session.agents as unknown as Agent
+          sandbox = await this.createAndStoreSandbox(sessionId, agent, session)
+        }
+      }
+    }
+    
+    if (!sandbox) {
+      throw new Error('Failed to get or create sandbox for session')
     }
     
     // Get session and agent details
@@ -512,6 +559,73 @@ print(json.dumps({"success": True, "output": result}))
       .order('last_activity_at', { ascending: false })
     
     return data || []
+  }
+  
+  /**
+   * Reconnect to an existing sandbox
+   */
+  private async reconnectToSandbox(
+    sandboxId: string,
+    agentId: string
+  ): Promise<Sandbox | null> {
+    try {
+      // Use E2B's connect method to reconnect to existing sandbox
+      const sandbox = await Sandbox.connect(sandboxId, {
+        apiKey: process.env.E2B_API_KEY
+      })
+      
+      console.log(`Successfully reconnected to sandbox ${sandboxId}`)
+      return sandbox
+    } catch (error) {
+      console.error(`Failed to reconnect to sandbox ${sandboxId}:`, error)
+      return null
+    }
+  }
+  
+  /**
+   * Create new sandbox and update session
+   */
+  private async createAndStoreSandbox(
+    sessionId: string,
+    agent: Agent,
+    session: any
+  ): Promise<Sandbox> {
+    // Create new sandbox
+    const sandbox = await e2bClient.createSandbox(agent.id, {
+      timeout: 3600,
+      metadata: { sessionType: 'persistent', sessionId }
+    })
+    
+    // Set environment variables
+    const envVars = this.getEnvironmentVariables(agent)
+    await e2bClient.setEnvironmentVariables(sandbox, envVars)
+    
+    // Install required packages
+    const packages = this.getRequiredPackages(agent)
+    if (packages.length > 0) {
+      await e2bClient.installPackages(sandbox, packages)
+    }
+    
+    // Initialize with existing context
+    await this.initializeAgentInSandbox(
+      sandbox,
+      agent,
+      session.conversation_context as ConversationMessage[]
+    )
+    
+    // Update database with new sandbox ID
+    await supabase
+      .from('agent_sessions')
+      .update({ 
+        sandbox_id: sandbox.sandboxId,
+        status: 'active' as SessionStatus
+      })
+      .eq('id', sessionId)
+    
+    // Store in memory
+    this.activeSandboxes.set(sessionId, sandbox)
+    
+    return sandbox
   }
   
   /**
