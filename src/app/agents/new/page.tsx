@@ -623,95 +623,6 @@ export default function NewAgentPage() {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              {/* Environment Controls */}
-              <div className="flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-neutral-800 rounded-lg">
-                {/* Play/Start Button */}
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={startEnvironment}
-                  disabled={environmentStatus !== 'idle' || !watchedModel}
-                  className="p-2"
-                  title={!watchedModel ? "Select a model first" : "Start environment"}
-                >
-                  <Play className={cn(
-                    "w-4 h-4",
-                    environmentStatus === 'idle' && watchedModel ? "text-green-600" : "text-gray-400"
-                  )} />
-                </Button>
-                
-                {/* Stop Button */}
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => stopEnvironment()}
-                  disabled={environmentStatus !== 'running'}
-                  className="p-2"
-                  title="Stop environment"
-                >
-                  <Square className={cn(
-                    "w-4 h-4",
-                    environmentStatus === 'running' ? "text-red-600" : "text-gray-400"
-                  )} />
-                </Button>
-                
-                {/* Restart Button */}
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={restartEnvironment}
-                  disabled={environmentStatus !== 'running'}
-                  className={cn(
-                    "p-2",
-                    runningExecutionMode && runningExecutionMode !== watchedExecutionMode && "animate-pulse"
-                  )}
-                  title={runningExecutionMode && runningExecutionMode !== watchedExecutionMode 
-                    ? "Execution mode changed - restart required" 
-                    : "Restart environment"}
-                >
-                  <RefreshCw className={cn(
-                    "w-4 h-4",
-                    environmentStatus === 'running' 
-                      ? runningExecutionMode && runningExecutionMode !== watchedExecutionMode 
-                        ? "text-amber-600" 
-                        : "text-blue-600"
-                      : "text-gray-400"
-                  )} />
-                </Button>
-                
-                {/* Environment Status */}
-                {environmentStatus !== 'idle' && (
-                  <div className="ml-2 px-2 py-1 text-xs font-medium">
-                    {environmentStatus === 'running' && (
-                      <span className="flex items-center gap-1 text-green-600 dark:text-green-400">
-                        <span className="relative flex h-2 w-2">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                        </span>
-                        Running
-                      </span>
-                    )}
-                    {environmentStatus === 'starting' && (
-                      <span className="flex items-center gap-1 text-yellow-600 dark:text-yellow-400">
-                        <Loader2 className="w-3 h-3 animate-spin" />
-                        Starting
-                      </span>
-                    )}
-                    {environmentStatus === 'stopping' && (
-                      <span className="flex items-center gap-1 text-orange-600 dark:text-orange-400">
-                        <Loader2 className="w-3 h-3 animate-spin" />
-                        Stopping
-                      </span>
-                    )}
-                  </div>
-                )}
-              </div>
-              
-              <div className="w-px h-6 bg-gray-300 dark:bg-neutral-700" />
-              
               <Button
                 type="button"
                 variant="outline"
@@ -1292,40 +1203,92 @@ export default function NewAgentPage() {
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
-                    {/* Environment Status */}
-                    {environmentStatus !== 'idle' && (
-                      <Badge 
-                        variant={environmentStatus === 'running' ? 'default' : 'secondary'}
+                    {/* Environment Controls */}
+                    <div className="flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-neutral-800 rounded-lg">
+                      {/* Restart Button (left) */}
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={restartEnvironment}
+                        disabled={environmentStatus !== 'running'}
                         className={cn(
-                          "text-xs flex items-center gap-1",
-                          environmentStatus === 'running' && "bg-green-500/10 text-green-600 border-green-500/20 dark:bg-green-500/10 dark:text-green-400",
-                          environmentStatus === 'starting' && "bg-yellow-500/10 text-yellow-600 border-yellow-500/20 dark:bg-yellow-500/10 dark:text-yellow-400",
-                          environmentStatus === 'stopping' && "bg-orange-500/10 text-orange-600 border-orange-500/20 dark:bg-orange-500/10 dark:text-orange-400"
+                          "p-1.5",
+                          runningExecutionMode && runningExecutionMode !== watchedExecutionMode && "animate-pulse"
                         )}
+                        title={runningExecutionMode && runningExecutionMode !== watchedExecutionMode 
+                          ? "Execution mode changed - restart required" 
+                          : "Restart environment"}
                       >
-                        {environmentStatus === 'running' && (
-                          <>
-                            <span className="relative flex h-2 w-2">
-                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                        <RefreshCw className={cn(
+                          "w-3.5 h-3.5",
+                          environmentStatus === 'running' 
+                            ? runningExecutionMode && runningExecutionMode !== watchedExecutionMode 
+                              ? "text-amber-600" 
+                              : "text-blue-600"
+                            : "text-gray-400"
+                        )} />
+                      </Button>
+                      
+                      {/* Stop Button (middle) */}
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => stopEnvironment()}
+                        disabled={environmentStatus !== 'running'}
+                        className="p-1.5"
+                        title="Stop environment"
+                      >
+                        <Square className={cn(
+                          "w-3.5 h-3.5",
+                          environmentStatus === 'running' ? "text-red-600" : "text-gray-400"
+                        )} />
+                      </Button>
+                      
+                      {/* Play/Start Button (right) */}
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={startEnvironment}
+                        disabled={environmentStatus !== 'idle' || !watchedModel}
+                        className="p-1.5"
+                        title={!watchedModel ? "Select a model first" : "Start environment"}
+                      >
+                        <Play className={cn(
+                          "w-3.5 h-3.5",
+                          environmentStatus === 'idle' && watchedModel ? "text-green-600" : "text-gray-400"
+                        )} />
+                      </Button>
+                      
+                      {/* Environment Status */}
+                      {environmentStatus !== 'idle' && (
+                        <div className="ml-1 px-2 py-0.5 text-xs font-medium">
+                          {environmentStatus === 'running' && (
+                            <span className="flex items-center gap-1 text-green-600 dark:text-green-400">
+                              <span className="relative flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                              </span>
+                              Running
                             </span>
-                            Environment Active
-                          </>
-                        )}
-                        {environmentStatus === 'starting' && (
-                          <>
-                            <Loader2 className="w-3 h-3 animate-spin" />
-                            Starting...
-                          </>
-                        )}
-                        {environmentStatus === 'stopping' && (
-                          <>
-                            <Loader2 className="w-3 h-3 animate-spin" />
-                            Stopping...
-                          </>
-                        )}
-                      </Badge>
-                    )}
+                          )}
+                          {environmentStatus === 'starting' && (
+                            <span className="flex items-center gap-1 text-yellow-600 dark:text-yellow-400">
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                              Starting
+                            </span>
+                          )}
+                          {environmentStatus === 'stopping' && (
+                            <span className="flex items-center gap-1 text-orange-600 dark:text-orange-400">
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                              Stopping
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
                     
                     {/* Restart indicator when execution mode changes */}
                     {environmentStatus === 'running' && runningExecutionMode && runningExecutionMode !== watchedExecutionMode && (
@@ -1335,18 +1298,6 @@ export default function NewAgentPage() {
                       >
                         <AlertCircle className="w-3 h-3" />
                         Restart needed
-                      </Badge>
-                    )}
-                    
-                    {/* Model Badge */}
-                    {watchedModel ? (
-                      <Badge variant="outline" className="text-xs">
-                        <Bot className="w-3 h-3 mr-1" />
-                        {aiModels.find(m => m.id === watchedModel)?.label || watchedModel}
-                      </Badge>
-                    ) : (
-                      <Badge variant="secondary" className="text-xs">
-                        No model selected
                       </Badge>
                     )}
                   </div>
@@ -1661,6 +1612,16 @@ export default function NewAgentPage() {
                         >
                           <Paperclip className="w-4 h-4" />
                         </button>
+                        
+                        {/* Model Indicator */}
+                        {watchedModel && (
+                          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 dark:bg-neutral-800 rounded-md">
+                            <Bot className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                            <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
+                              {aiModels.find(m => m.id === watchedModel)?.label || watchedModel}
+                            </span>
+                          </div>
+                        )}
 
                         {/* Auto-clear toggle */}
                         <button
