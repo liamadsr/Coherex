@@ -34,9 +34,12 @@ import {
   RefreshCw,
   Send,
   Check,
+  CheckCircle,
+  AlertCircle,
   Info,
   Clock,
-  Activity
+  Activity,
+  Play
 } from 'lucide-react'
 
 import { MainLayout } from '@/components/layouts/MainLayout'
@@ -122,7 +125,7 @@ export default function NewAgentPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [currentTab, setCurrentTab] = useState('basic')
   const [messages, setMessages] = useState<Array<{ role: 'user' | 'assistant' | 'system', content: string }>>([
-    { role: 'system', content: "Configure your agent settings and select an AI model to start testing. Your messages will be processed using the current configuration." }
+    { role: 'system', content: "👋 Welcome to the Agent Builder! Configure your agent on the left, then test it here in real-time. Once you're happy with how it responds, click 'Create Agent' at the top to save it." }
   ])
   const [inputValue, setInputValue] = useState('')
   const [isThinking, setIsThinking] = useState(false)
@@ -378,19 +381,40 @@ export default function NewAgentPage() {
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Agent Builder</h1>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Configure and test your AI assistant
+                  Configure, test, and refine your AI assistant before creating
                 </p>
               </div>
             </div>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => toast.info('Save as draft feature coming soon!')}
-              size="sm"
-            >
-              <Save className="w-4 h-4 mr-2" />
-              Save Draft
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => toast.info('Save as draft feature coming soon!')}
+                size="sm"
+              >
+                <Save className="w-4 h-4 mr-2" />
+                Save Draft
+              </Button>
+              <Button
+                onClick={handleSubmit(onSubmit)}
+                disabled={!isValid || isLoading}
+                size="sm"
+                className="bg-green-600 hover:bg-green-700 text-white"
+                title={isValid ? "Save this agent to your workspace" : "Complete all required fields first"}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Creating...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    Create Agent
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -926,25 +950,45 @@ export default function NewAgentPage() {
                   </TabsContent>
                 </Tabs>
                 
-                {/* Create Agent Button */}
+                {/* Test Agent Button */}
                 <div className="mt-4 pt-4 border-t flex-shrink-0">
-                  <Button
-                    onClick={handleSubmit(onSubmit)}
-                    disabled={!isValid || isLoading}
-                    className="w-full bg-blue-600 hover:bg-blue-700"
-                  >
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Creating Agent...
-                      </>
-                    ) : (
-                      <>
-                        <Plus className="w-4 h-4 mr-2" />
-                        Create Agent
-                      </>
-                    )}
-                  </Button>
+                  <div className="space-y-3">
+                    <Alert className="border-blue-200 bg-blue-50 dark:bg-blue-950/20">
+                      <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                      <AlertDescription className="text-xs">
+                        Test your agent configuration in the panel on the right. Once you're satisfied with the responses, 
+                        click "Create Agent" in the top bar to save it.
+                      </AlertDescription>
+                    </Alert>
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        // Focus on the test panel input
+                        const testInput = document.querySelector('textarea[placeholder*="Test your agent"]') as HTMLTextAreaElement
+                        if (testInput) {
+                          testInput.focus()
+                          toast.info('Start testing your agent in the panel on the right!')
+                        }
+                        if (!watchedModel) {
+                          toast.error('Please select an AI model in the Advanced tab first')
+                        }
+                      }}
+                      className="w-full"
+                      variant={watchedModel ? "default" : "outline"}
+                    >
+                      {watchedModel ? (
+                        <>
+                          <Play className="w-4 h-4 mr-2" />
+                          Test Agent Configuration →
+                        </>
+                      ) : (
+                        <>
+                          <AlertCircle className="w-4 h-4 mr-2" />
+                          Select Model to Test Agent
+                        </>
+                      )}
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
