@@ -657,47 +657,57 @@ export default function NewAgentPage() {
           
           {/* Center section with environment controls */}
           <div className="flex items-center gap-4">
-            {/* Status indicators */}
-            <div className="flex items-center gap-3">
-              {environmentStatus === 'idle' && (
-                <div className="flex items-center gap-1.5">
-                  <div className="w-2 h-2 bg-gray-400 rounded-full" />
-                  <span className="text-xs text-muted-foreground">Idle</span>
-                </div>
-              )}
-              {environmentStatus === 'starting' && (
-                <div className="flex items-center gap-1.5">
-                  <Loader2 className="w-3 h-3 animate-spin text-yellow-600" />
-                  <span className="text-xs text-yellow-600 dark:text-yellow-500">Starting</span>
-                </div>
-              )}
-              {environmentStatus === 'running' && (
-                <>
-                  <div className="flex items-center gap-1.5">
-                    <span className="relative flex h-1.5 w-1.5">
+            {/* Status indicator section */}
+            <div className="flex items-center h-9 px-3 bg-gray-50 dark:bg-neutral-900 rounded-lg border border-gray-200 dark:border-neutral-800">
+              <div className="flex items-center gap-2">
+                {/* Status light */}
+                {environmentStatus === 'idle' && (
+                  <>
+                    <div className="relative">
+                      <div className="w-2 h-2 bg-gray-400 rounded-full" />
+                    </div>
+                    <span className="text-xs font-medium text-gray-600 dark:text-gray-400">Environment Idle</span>
+                  </>
+                )}
+                {environmentStatus === 'starting' && (
+                  <>
+                    <div className="relative">
+                      <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse" />
+                    </div>
+                    <span className="text-xs font-medium text-yellow-600 dark:text-yellow-500">Starting Environment</span>
+                  </>
+                )}
+                {environmentStatus === 'running' && (
+                  <>
+                    <div className="relative flex h-2 w-2">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-600"></span>
-                    </span>
-                    <span className="text-xs text-green-600 dark:text-green-500">Running</span>
-                  </div>
-                  {environmentStartTime && (
-                    <span className="text-xs text-muted-foreground">
-                      {(() => {
-                        const elapsed = Math.floor((Date.now() - environmentStartTime.getTime()) / 1000)
-                        const minutes = Math.floor(elapsed / 60)
-                        const seconds = elapsed % 60
-                        return `${minutes}:${seconds.toString().padStart(2, '0')}`
-                      })()}
-                    </span>
-                  )}
-                </>
-              )}
-              {environmentStatus === 'stopping' && (
-                <div className="flex items-center gap-1.5">
-                  <Loader2 className="w-3 h-3 animate-spin text-orange-600" />
-                  <span className="text-xs text-orange-600 dark:text-orange-500">Stopping</span>
-                </div>
-              )}
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                    </div>
+                    <span className="text-xs font-medium text-green-600 dark:text-green-500">Environment Running</span>
+                    {environmentStartTime && (
+                      <>
+                        <div className="mx-1 w-px h-4 bg-gray-300 dark:bg-neutral-700" />
+                        <span className="text-xs font-mono text-gray-600 dark:text-gray-400">
+                          {(() => {
+                            const elapsed = Math.floor((Date.now() - environmentStartTime.getTime()) / 1000)
+                            const minutes = Math.floor(elapsed / 60)
+                            const seconds = elapsed % 60
+                            return `${minutes}:${seconds.toString().padStart(2, '0')}`
+                          })()}
+                        </span>
+                      </>
+                    )}
+                  </>
+                )}
+                {environmentStatus === 'stopping' && (
+                  <>
+                    <div className="relative">
+                      <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
+                    </div>
+                    <span className="text-xs font-medium text-orange-600 dark:text-orange-500">Stopping Environment</span>
+                  </>
+                )}
+              </div>
             </div>
             
             {/* Environment control buttons */}
