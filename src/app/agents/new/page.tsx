@@ -153,6 +153,8 @@ export default function NewAgentPage() {
   const [autoClear, setAutoClear] = useState(false)
   const [showScrollButton, setShowScrollButton] = useState(false)
   const [attachedFiles, setAttachedFiles] = useState<File[]>([])
+  const [environmentStatus, setEnvironmentStatus] = useState<'idle' | 'starting' | 'running' | 'stopping'>('idle')
+  const [environmentStartTime, setEnvironmentStartTime] = useState<Date | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const scrollAreaRef = useRef<HTMLDivElement>(null)
 
@@ -314,6 +316,12 @@ export default function NewAgentPage() {
 
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return
+
+    // Check if environment is running
+    if (environmentStatus !== 'running') {
+      toast.error('Please start the agent environment first')
+      return
+    }
 
     // Check if model is selected
     const formData = getValues()
@@ -1044,28 +1052,63 @@ export default function NewAgentPage() {
                     <Button
                       type="button"
                       onClick={() => {
-                        // Focus on the test panel input
-                        const testInput = document.querySelector('textarea[placeholder*="Test your agent"]') as HTMLTextAreaElement
-                        if (testInput) {
-                          testInput.focus()
-                          toast.info('Start testing your agent in the panel on the right!')
-                        }
                         if (!watchedModel) {
                           toast.error('Please select an AI model in the Advanced tab first')
+                          return
+                        }
+                        
+                        if (environmentStatus === 'idle') {
+                          // Start the environment
+                          setEnvironmentStatus('starting')
+                          setEnvironmentStartTime(new Date())
+                          
+                          // Simulate environment startup
+                          setTimeout(() => {
+                            setEnvironmentStatus('running')
+                            toast.success('Agent environment is ready! Start testing in the panel.')
+                            
+                            // Focus on the test panel input
+                            const testInput = document.querySelector('textarea[placeholder*="Test your agent"]') as HTMLTextAreaElement
+                            if (testInput) {
+                              testInput.focus()
+                            }
+                          }, 1500)
+                        } else if (environmentStatus === 'running') {
+                          // Stop the environment
+                          setEnvironmentStatus('stopping')
+                          setTimeout(() => {
+                            setEnvironmentStatus('idle')
+                            setEnvironmentStartTime(null)
+                            toast.info('Agent environment stopped')
+                          }, 500)
                         }
                       }}
                       className="w-full"
                       variant={watchedModel ? "default" : "outline"}
+                      disabled={environmentStatus === 'starting' || environmentStatus === 'stopping'}
                     >
-                      {watchedModel ? (
+                      {environmentStatus === 'idle' && (
                         <>
                           <Play className="w-4 h-4 mr-2" />
-                          Test Agent Configuration →
+                          {watchedModel ? 'Start Agent Environment →' : 'Select Model to Test Agent'}
                         </>
-                      ) : (
+                      )}
+                      {environmentStatus === 'starting' && (
                         <>
-                          <AlertCircle className="w-4 h-4 mr-2" />
-                          Select Model to Test Agent
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Starting Environment...
+                        </>
+                      )}
+                      {environmentStatus === 'running' && (
+                        <>
+                          <Activity className="w-4 h-4 mr-2" />
+                          Stop Environment
+                        </>
+                      )}
+                      {environmentStatus === 'stopping' && (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Stopping...
                         </>
                       )}
                     </Button>
@@ -1088,6 +1131,42 @@ export default function NewAgentPage() {
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
+                    {/* Environment Status */}
+                    {environmentStatus !== 'idle' && (
+                      <Badge 
+                        variant={environmentStatus === 'running' ? 'default' : 'secondary'}
+                        className={cn(
+                          "text-xs flex items-center gap-1",
+                          environmentStatus === 'running' && "bg-green-500/10 text-green-600 border-green-500/20 dark:bg-green-500/10 dark:text-green-400",
+                          environmentStatus === 'starting' && "bg-yellow-500/10 text-yellow-600 border-yellow-500/20 dark:bg-yellow-500/10 dark:text-yellow-400",
+                          environmentStatus === 'stopping' && "bg-orange-500/10 text-orange-600 border-orange-500/20 dark:bg-orange-500/10 dark:text-orange-400"
+                        )}
+                      >
+                        {environmentStatus === 'running' && (
+                          <>
+                            <span className="relative flex h-2 w-2">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                            </span>
+                            Environment Active
+                          </>
+                        )}
+                        {environmentStatus === 'starting' && (
+                          <>
+                            <Loader2 className="w-3 h-3 animate-spin" />
+                            Starting...
+                          </>
+                        )}
+                        {environmentStatus === 'stopping' && (
+                          <>
+                            <Loader2 className="w-3 h-3 animate-spin" />
+                            Stopping...
+                          </>
+                        )}
+                      </Badge>
+                    )}
+                    
+                    {/* Model Badge */}
                     {watchedModel ? (
                       <Badge variant="outline" className="text-xs">
                         <Bot className="w-3 h-3 mr-1" />
@@ -1108,28 +1187,57 @@ export default function NewAgentPage() {
                   {messages.length === 0 && (
                     <div className="mx-auto max-w-3xl space-y-6 py-8">
                       <div className="text-center space-y-2">
-                        <h2 className="text-xl font-semibold">Test Your Agent</h2>
-                        <p className="text-sm text-muted-foreground">
-                          Configure your agent on the left, then test it here
-                        </p>
+                        {environmentStatus === 'idle' ? (
+                          <>
+                            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                              <Play className="w-8 h-8 text-gray-400" />
+                            </div>
+                            <h2 className="text-xl font-semibold">Start Agent Environment</h2>
+                            <p className="text-sm text-muted-foreground">
+                              Click "Start Agent Environment" on the left to begin testing
+                            </p>
+                          </>
+                        ) : environmentStatus === 'starting' ? (
+                          <>
+                            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-yellow-100 dark:bg-yellow-900/20 flex items-center justify-center">
+                              <Loader2 className="w-8 h-8 text-yellow-600 dark:text-yellow-400 animate-spin" />
+                            </div>
+                            <h2 className="text-xl font-semibold">Starting Environment...</h2>
+                            <p className="text-sm text-muted-foreground">
+                              Setting up your agent's virtual environment
+                            </p>
+                          </>
+                        ) : (
+                          <>
+                            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
+                              <Activity className="w-8 h-8 text-green-600 dark:text-green-400" />
+                            </div>
+                            <h2 className="text-xl font-semibold">Environment Ready</h2>
+                            <p className="text-sm text-muted-foreground">
+                              Your agent is running. Try these suggestions or type your own message
+                            </p>
+                          </>
+                        )}
                       </div>
-                      <div className="flex flex-wrap gap-2 justify-center">
-                        <PromptSuggestion
-                          onClick={() => setInputValue("What can you help me with?")}
-                        >
-                          What can you help me with?
-                        </PromptSuggestion>
-                        <PromptSuggestion
-                          onClick={() => setInputValue("Tell me about your capabilities")}
-                        >
-                          Tell me about your capabilities
-                        </PromptSuggestion>
-                        <PromptSuggestion
-                          onClick={() => setInputValue("How do you access knowledge?")}
-                        >
-                          How do you access knowledge?
-                        </PromptSuggestion>
-                      </div>
+                      {environmentStatus === 'running' && (
+                        <div className="flex flex-wrap gap-2 justify-center">
+                          <PromptSuggestion
+                            onClick={() => setInputValue("What can you help me with?")}
+                          >
+                            What can you help me with?
+                          </PromptSuggestion>
+                          <PromptSuggestion
+                            onClick={() => setInputValue("Tell me about your capabilities")}
+                          >
+                            Tell me about your capabilities
+                          </PromptSuggestion>
+                          <PromptSuggestion
+                            onClick={() => setInputValue("How do you access knowledge?")}
+                          >
+                            How do you access knowledge?
+                          </PromptSuggestion>
+                        </div>
+                      )}
                     </div>
                   )}
 
@@ -1268,8 +1376,15 @@ export default function NewAgentPage() {
                 >
                   <div className="flex flex-col">
                     <PromptInputTextarea
-                      placeholder={watchedModel ? "Test your agent configuration..." : "Select an AI model to start testing..."}
+                      placeholder={
+                        !watchedModel ? "Select an AI model to start testing..." :
+                        environmentStatus === 'idle' ? "Start the agent environment to begin testing..." :
+                        environmentStatus === 'starting' ? "Environment is starting up..." :
+                        environmentStatus === 'stopping' ? "Environment is shutting down..." :
+                        "Test your agent configuration..."
+                      }
                       className="min-h-[44px] pt-3 pl-4 text-base leading-[1.3]"
+                      disabled={environmentStatus !== 'running'}
                     />
 
                     {/* Hidden file input */}
@@ -1314,9 +1429,15 @@ export default function NewAgentPage() {
                       <div className="flex items-center gap-2">
                         <Button
                           size="icon"
-                          disabled={!inputValue.trim() || isThinking || !watchedModel}
+                          disabled={!inputValue.trim() || isThinking || !watchedModel || environmentStatus !== 'running'}
                           onClick={handleSendMessage}
                           className="size-9 rounded-full"
+                          title={
+                            environmentStatus !== 'running' ? "Start the environment first" :
+                            !watchedModel ? "Select a model first" :
+                            !inputValue.trim() ? "Type a message" :
+                            "Send message"
+                          }
                         >
                           {isThinking ? (
                             <span className="size-3 rounded-xs bg-white" />
