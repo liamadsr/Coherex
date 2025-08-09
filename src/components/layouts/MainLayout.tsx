@@ -152,7 +152,7 @@ export function MainLayout({ children }: MainLayoutProps) {
 
       {/* Toast notifications */}
       <Toaster 
-        position="top-right"
+        position="top-center"
         toastOptions={{
           duration: 4000,
           className: 'bg-card border border-border',
