@@ -50,6 +50,7 @@ import { useAgent, useUpdateAgent, useDeleteAgent, useConversations } from '@/ho
 import { mockApi } from '@/mock-data'
 import { MetricsChart } from '@/components/charts/MetricsChart'
 import { ConversationDetail } from '@/components/conversations/ConversationDetail'
+import { Textarea } from '@/components/ui/textarea'
 
 const channelIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   email: Mail,
@@ -87,6 +88,11 @@ export default function AgentDetailPage() {
   const [currentTab, setCurrentTab] = useState('overview')
   const [metrics, setMetrics] = useState<AgentMetrics | null>(null)
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null)
+  const [testInput, setTestInput] = useState('')
+  const [isExecuting, setIsExecuting] = useState(false)
+  const [executionResult, setExecutionResult] = useState<any>(null)
+  const [executionHistory, setExecutionHistory] = useState<any[]>([])
+  const [loadingHistory, setLoadingHistory] = useState(false)
   
   const { data: agent, isLoading: loading } = useAgent(agentId)
   const { data: conversations = [] } = useConversations({ agentId })
@@ -107,6 +113,26 @@ export default function AgentDetailPage() {
     loadMetrics()
   }, [agentId])
 
+  useEffect(() => {
+    const loadExecutionHistory = async () => {
+      if (agentId && currentTab === 'test') {
+        setLoadingHistory(true)
+        try {
+          const response = await fetch(`/api/agents/${agentId}/execute`)
+          if (response.ok) {
+            const data = await response.json()
+            setExecutionHistory(data.executions || [])
+          }
+        } catch (error) {
+          console.error('Error loading execution history:', error)
+        } finally {
+          setLoadingHistory(false)
+        }
+      }
+    }
+    loadExecutionHistory()
+  }, [agentId, currentTab, executionResult]) // Reload when new execution completes
+
   const handleToggleStatus = async () => {
     if (!agent) return
     
@@ -123,6 +149,45 @@ export default function AgentDetailPage() {
     if (confirm('Are you sure you want to delete this agent? This action cannot be undone.')) {
       await deleteAgent.mutateAsync(agent.id)
       router.push('/agents')
+    }
+  }
+
+  const handleExecuteAgent = async () => {
+    if (!agent || !testInput.trim()) {
+      toast.error('Please enter test input')
+      return
+    }
+
+    setIsExecuting(true)
+    setExecutionResult(null)
+
+    try {
+      const response = await fetch(`/api/agents/${agent.id}/execute`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          input: testInput,
+          options: {}
+        })
+      })
+
+      const result = await response.json()
+
+      if (response.ok) {
+        setExecutionResult(result)
+        toast.success('Agent executed successfully')
+      } else {
+        toast.error(result.error || 'Failed to execute agent')
+        setExecutionResult({ error: result.error, details: result.details })
+      }
+    } catch (error) {
+      console.error('Execution error:', error)
+      toast.error('Failed to execute agent')
+      setExecutionResult({ error: 'Execution failed', details: error })
+    } finally {
+      setIsExecuting(false)
     }
   }
 
@@ -247,8 +312,9 @@ export default function AgentDetailPage() {
         </div>
 
         <Tabs value={currentTab} onValueChange={setCurrentTab} className="space-y-8">
-          <TabsList className="grid w-full grid-cols-5 h-12 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
+          <TabsList className="grid w-full grid-cols-6 h-12 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
             <TabsTrigger value="overview" className="h-10">Overview</TabsTrigger>
+            <TabsTrigger value="test" className="h-10">Test Agent</TabsTrigger>
             <TabsTrigger value="conversations" className="h-10">Conversations</TabsTrigger>
             <TabsTrigger value="analytics" className="h-10">Analytics</TabsTrigger>
             <TabsTrigger value="configuration" className="h-10">Configuration</TabsTrigger>
@@ -393,6 +459,200 @@ export default function AgentDetailPage() {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          {/* Test Agent Tab */}
+          <TabsContent value="test" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Test Agent Execution</CardTitle>
+                <CardDescription>
+                  Test your agent by providing input and seeing the output in real-time
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Input</label>
+                    <Textarea
+                      placeholder="Enter your test input here..."
+                      value={testInput}
+                      onChange={(e) => setTestInput(e.target.value)}
+                      className="min-h-[120px]"
+                    />
+                  </div>
+
+                  <Button
+                    onClick={handleExecuteAgent}
+                    disabled={isExecuting || !testInput.trim() || agent.status === 'inactive'}
+                    className="w-full"
+                  >
+                    {isExecuting ? (
+                      <>
+                        <Clock className="w-4 h-4 mr-2 animate-spin" />
+                        Executing...
+                      </>
+                    ) : (
+                      <>
+                        <Play className="w-4 h-4 mr-2" />
+                        Run Agent
+                      </>
+                    )}
+                  </Button>
+
+                  {agent.status === 'inactive' && (
+                    <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                      <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                        This agent is currently inactive. Activate it to run tests.
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {executionResult && (
+                  <div className="space-y-4">
+                    <div className="border-t pt-4">
+                      <h4 className="text-sm font-medium mb-3">Execution Result</h4>
+                      
+                      {executionResult.error ? (
+                        <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                          <div className="flex items-start space-x-2">
+                            <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5" />
+                            <div className="flex-1">
+                              <p className="font-medium text-red-800 dark:text-red-200">
+                                {executionResult.error}
+                              </p>
+                              {executionResult.details && (
+                                <p className="text-sm text-red-700 dark:text-red-300 mt-1">
+                                  {typeof executionResult.details === 'string' 
+                                    ? executionResult.details 
+                                    : JSON.stringify(executionResult.details, null, 2)}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-3">
+                          <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                            <div className="flex items-center space-x-2 mb-2">
+                              <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
+                              <span className="font-medium text-green-800 dark:text-green-200">
+                                Execution Successful
+                              </span>
+                            </div>
+                            {executionResult.duration && (
+                              <p className="text-sm text-gray-600 dark:text-gray-400">
+                                Duration: {executionResult.duration}ms
+                              </p>
+                            )}
+                          </div>
+
+                          {executionResult.output && (
+                            <div>
+                              <h5 className="text-sm font-medium mb-2">Output</h5>
+                              <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                                <pre className="text-sm whitespace-pre-wrap font-mono">
+                                  {typeof executionResult.output === 'string' 
+                                    ? executionResult.output 
+                                    : JSON.stringify(executionResult.output, null, 2)}
+                                </pre>
+                              </div>
+                            </div>
+                          )}
+
+                          {executionResult.logs && executionResult.logs.length > 0 && (
+                            <div>
+                              <h5 className="text-sm font-medium mb-2">Logs</h5>
+                              <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg space-y-1">
+                                {executionResult.logs.map((log: string, index: number) => (
+                                  <p key={index} className="text-sm font-mono text-gray-700 dark:text-gray-300">
+                                    {log}
+                                  </p>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {executionResult.executionId && (
+                            <p className="text-xs text-gray-500">
+                              Execution ID: {executionResult.executionId}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Execution History */}
+            {executionHistory.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Execution History</CardTitle>
+                  <CardDescription>
+                    Recent executions of this agent
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {executionHistory.map((execution) => (
+                      <div
+                        key={execution.id}
+                        className="p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors cursor-pointer"
+                        onClick={() => {
+                          setExecutionResult({
+                            success: execution.status === 'completed',
+                            executionId: execution.id,
+                            output: execution.output,
+                            error: execution.status === 'failed' ? 'Execution failed' : null,
+                            logs: execution.logs,
+                            duration: execution.duration_ms,
+                            timestamp: execution.completed_at || execution.started_at
+                          })
+                          setTestInput(execution.input || '')
+                        }}
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-2 mb-1">
+                              <Badge
+                                variant={
+                                  execution.status === 'completed' ? 'default' :
+                                  execution.status === 'failed' ? 'destructive' :
+                                  execution.status === 'running' ? 'secondary' :
+                                  'outline'
+                                }
+                              >
+                                {execution.status}
+                              </Badge>
+                              <span className="text-xs text-gray-500">
+                                {new Date(execution.created_at).toLocaleString()}
+                              </span>
+                              {execution.duration_ms && (
+                                <span className="text-xs text-gray-500">
+                                  ({execution.duration_ms}ms)
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                              <span className="font-medium">Input:</span> {execution.input}
+                            </p>
+                            {execution.output && (
+                              <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mt-1">
+                                <span className="font-medium">Output:</span> {typeof execution.output === 'string' ? execution.output : JSON.stringify(execution.output)}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           {/* Conversations Tab */}

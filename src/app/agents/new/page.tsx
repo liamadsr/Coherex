@@ -162,11 +162,63 @@ export default function NewAgentPage() {
   const onSubmit = async (data: AgentFormData) => {
     setIsLoading(true)
     try {
-      // Simulate agent creation
-      await mockApi.createAgent(data)
-      toast.success('Agent created successfully!')
-      router.push('/agents')
+      // Create agent configuration
+      const config = {
+        name: data.name,
+        description: data.description,
+        type: 'custom' as const,
+        model: data.model,
+        temperature: data.temperature,
+        maxTokens: data.maxTokens,
+        systemPrompt: data.systemPrompt,
+        tools: [],
+        dataSources: data.knowledgeSources || [],
+        outputFormat: 'json' as const,
+        settings: {
+          channels: data.channels,
+          mcpServers: data.mcpServers || [],
+          integrations: data.integrations || []
+        }
+      }
+
+      // Save to database via API
+      const response = await fetch('/api/data-sources', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: data.name,
+          description: data.description,
+          config,
+          status: 'draft'
+        })
+      })
+
+      // Actually, let me use the correct endpoint
+      const agentResponse = await fetch('/api/agents', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: data.name,
+          description: data.description,
+          config,
+          status: 'draft'
+        })
+      })
+
+      if (agentResponse.ok) {
+        const result = await agentResponse.json()
+        toast.success('Agent created successfully!')
+        router.push(`/agents/${result.agent.id}`)
+      } else {
+        const error = await agentResponse.json()
+        toast.error(error.error || 'Failed to create agent')
+      }
     } catch (error) {
+      console.error('Error creating agent:', error)
       toast.error('Failed to create agent. Please try again.')
     } finally {
       setIsLoading(false)

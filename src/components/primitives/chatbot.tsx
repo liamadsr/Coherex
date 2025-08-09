@@ -179,10 +179,10 @@ function ConversationPromptInput() {
   const currentModel = models.find(m => m.id === selectedModel) || models[0]
 
   const promptSuggestions = [
-    "What can you help me with?",
-    "Explain quantum computing in simple terms",
-    "Help me write a business proposal",
-    "Create a weekly meal plan",
+    "Create an agent that analyzes CSV files",
+    "Build a customer support chatbot",
+    "Show me all my agents",
+    "Create an agent to monitor Slack messages",
   ]
 
   const { messages, sendMessage, status, error } = useChat({

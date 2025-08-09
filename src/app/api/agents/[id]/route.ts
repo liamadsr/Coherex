@@ -4,13 +4,14 @@ import { supabase } from '@/lib/supabase/client'
 // GET - Fetch single agent
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const { data: agent, error } = await supabase
       .from('agents')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', id)
       .single()
 
     if (error || !agent) {
@@ -33,9 +34,10 @@ export async function GET(
 // PUT - Update agent
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const updates = await req.json()
 
     // Don't allow direct ID updates
@@ -46,7 +48,7 @@ export async function PUT(
       const { data: currentAgent } = await supabase
         .from('agents')
         .select('version')
-        .eq('id', params.id)
+        .eq('id', id)
         .single()
       
       updates.version = (currentAgent?.version || 1) + 1
@@ -86,9 +88,10 @@ export async function PUT(
 // DELETE - Delete agent
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const { error } = await supabase
       .from('agents')
       .delete()
@@ -117,9 +120,10 @@ export async function DELETE(
 // PATCH - Update agent status
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const { status } = await req.json()
 
     if (!['draft', 'active', 'paused', 'archived'].includes(status)) {

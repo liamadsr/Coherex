@@ -84,6 +84,11 @@ class E2BClient {
     agentConfig: any,
     input: any
   ): Promise<ExecutionResult> {
+    // If E2B is not configured, use mock execution
+    if (!E2B_API_KEY) {
+      return this.mockExecuteAgent(agentConfig, input)
+    }
+
     let sandbox: Sandbox | undefined
 
     try {
@@ -112,19 +117,116 @@ class E2BClient {
   }
 
   /**
+   * Mock agent execution for development/testing
+   */
+  private mockExecuteAgent(agentConfig: any, input: any): ExecutionResult {
+    const startTime = Date.now()
+    const logs: string[] = []
+    
+    logs.push(`[${new Date().toISOString()}] E2B not configured - running in simulation mode`)
+    logs.push(`[${new Date().toISOString()}] Agent '${agentConfig.name}' started`)
+    logs.push(`[${new Date().toISOString()}] Processing input with ${agentConfig.model || 'default model'}`)
+    
+    let output: any
+    const agentType = agentConfig.type || 'custom'
+    
+    switch (agentType) {
+      case 'data_processor':
+        output = {
+          processed: true,
+          inputLength: JSON.stringify(input).length,
+          summary: `Processed data with ${agentConfig.name}`,
+          timestamp: new Date().toISOString(),
+          note: 'E2B_API_KEY not configured - running in simulation output (E2B not configured)'
+        }
+        logs.push(`[${new Date().toISOString()}] Data processing completed`)
+        break
+        
+      case 'analyzer':
+        output = {
+          analysis: `Analysis of input: "${input}"`,
+          insights: [
+            'Mock Insight 1: Input received successfully',
+            'Mock Insight 2: Agent is functioning in test mode',
+            `Mock Insight 3: Would use model ${agentConfig.model || 'gpt-4'} in production`
+          ],
+          confidence: 0.95,
+          note: 'E2B_API_KEY not configured - running in simulation analysis (E2B not configured)'
+        }
+        logs.push(`[${new Date().toISOString()}] Analysis completed`)
+        break
+        
+      case 'chatbot':
+        output = `Hello! I'm ${agentConfig.name}. You said: "${input}". ` +
+                `\n\nNote: E2B_API_KEY not configured - running in simulation mode. In production, this would process with ${agentConfig.model || 'AI'}.`
+        logs.push(`[${new Date().toISOString()}] Response generated`)
+        break
+        
+      case 'automation':
+        output = {
+          task: 'Automation task',
+          status: 'completed',
+          actions: [
+            { action: 'receive_input', status: 'done' },
+            { action: 'process_request', status: 'done' },
+            { action: 'generate_output', status: 'done' }
+          ],
+          note: 'E2B_API_KEY not configured - running in simulation automation (E2B not configured)'
+        }
+        logs.push(`[${new Date().toISOString()}] Automation workflow executed`)
+        break
+        
+      default:
+        output = {
+          message: `Agent ${agentConfig.name} processed your input (mock mode)`,
+          input: input,
+          agentType: agentType,
+          config: {
+            model: agentConfig.model,
+            temperature: agentConfig.temperature
+          },
+          note: 'E2B_API_KEY not configured - running in simulation output (E2B not configured)'
+        }
+        logs.push(`[${new Date().toISOString()}] Custom agent execution completed`)
+    }
+    
+    const executionTime = Date.now() - startTime
+    logs.push(`[${new Date().toISOString()}] Execution completed in ${executionTime}ms`)
+    logs.push(`[${new Date().toISOString()}] To enable real sandbox execution, configure E2B_API_KEY in .env.local`)
+    
+    return {
+      success: true,
+      output,
+      logs,
+      executionTime
+    }
+  }
+
+  /**
    * Generate runtime code for agent execution
    */
   private generateAgentRuntime(agentConfig: any, input: any): string {
+    // Convert JavaScript null to Python None
+    const pythonConfig = JSON.stringify(agentConfig, null, 2)
+      .replace(/null/g, 'None')
+      .replace(/true/g, 'True')
+      .replace(/false/g, 'False')
+    
+    const pythonInput = JSON.stringify(input)
+      .replace(/null/g, 'None')
+      .replace(/true/g, 'True')
+      .replace(/false/g, 'False')
+    
     // This is a simplified version - we'll expand this based on agent config structure
     const code = `
 import json
 import sys
 
 # Agent configuration
-config = ${JSON.stringify(agentConfig)}
+config = ${pythonConfig}
 
 # Input data
-input_data = ${JSON.stringify(input)}
+input_data = ${pythonInput}
 
 # Agent execution logic
 def execute_agent(config, input_data):

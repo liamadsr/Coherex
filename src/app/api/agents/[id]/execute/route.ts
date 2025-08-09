@@ -5,11 +5,11 @@ import { e2bClient } from '@/lib/e2b/client'
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id: agentId } = await params
     const { input, options = {} } = await req.json()
-    const agentId = params.id
 
     // Fetch agent from database
     const { data: agent, error: fetchError } = await supabase
@@ -66,11 +66,27 @@ export async function POST(
       const completedAt = new Date().toISOString()
       const duration = new Date(completedAt).getTime() - new Date(execution.started_at!).getTime()
 
+      // Parse output if it's from stdout logs
+      let finalOutput = result.output
+      if (result.logs && typeof result.logs === 'object' && 'stdout' in result.logs) {
+        const stdout = (result.logs as any).stdout
+        if (Array.isArray(stdout) && stdout.length > 0) {
+          try {
+            // Try to parse the first stdout line as JSON
+            const parsed = JSON.parse(stdout[0])
+            finalOutput = parsed.output || parsed
+          } catch (e) {
+            // If not JSON, use as-is
+            finalOutput = stdout.join('\n')
+          }
+        }
+      }
+
       await supabase
         .from('agent_executions')
         .update({
           status: result.success ? 'completed' : 'failed',
-          output: result.output,
+          output: finalOutput,
           logs: result.logs || [],
           duration_ms: duration,
           completed_at: completedAt
@@ -80,7 +96,7 @@ export async function POST(
       return NextResponse.json({
         success: result.success,
         executionId: execution.id,
-        output: result.output,
+        output: finalOutput,
         error: result.error,
         logs: result.logs,
         duration: duration,
@@ -116,10 +132,10 @@ export async function POST(
 // Get execution status
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const agentId = params.id
+    const { id: agentId } = await params
     const { searchParams } = new URL(req.url)
     const executionId = searchParams.get('executionId')
 
