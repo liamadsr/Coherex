@@ -1467,12 +1467,12 @@ export default function NewAgentPage() {
               </ChatContainerRoot>
               ) : (
                 /* Logs View */
-                <div ref={logsScrollRef} className="flex-1 overflow-y-auto bg-gray-900 dark:bg-black p-4 font-mono text-xs">
+                <div ref={logsScrollRef} className="flex-1 overflow-y-auto bg-white dark:bg-[#0c0c0c] p-4 font-mono text-xs">
                   {executionLogs.length === 0 ? (
                     <div className="text-center py-8">
-                      <Terminal className="w-12 h-12 mx-auto mb-4 text-gray-600 dark:text-gray-400" />
-                      <p className="text-gray-500 dark:text-gray-400">No logs yet</p>
-                      <p className="text-gray-400 dark:text-gray-500 text-xs mt-2">
+                      <Terminal className="w-12 h-12 mx-auto mb-4 text-gray-400 dark:text-gray-600" />
+                      <p className="text-gray-600 dark:text-gray-400">No logs yet</p>
+                      <p className="text-gray-500 dark:text-gray-500 text-xs mt-2">
                         Start the environment and send messages to see execution logs
                       </p>
                     </div>
@@ -1483,13 +1483,13 @@ export default function NewAgentPage() {
                           key={index} 
                           className={cn(
                             "flex items-start gap-3 py-1",
-                            log.type === 'error' && "text-red-400",
-                            log.type === 'warning' && "text-yellow-400",
-                            log.type === 'success' && "text-green-400",
-                            log.type === 'info' && "text-gray-300"
+                            log.type === 'error' && "text-red-600 dark:text-red-400",
+                            log.type === 'warning' && "text-yellow-600 dark:text-yellow-400",
+                            log.type === 'success' && "text-green-600 dark:text-green-400",
+                            log.type === 'info' && "text-gray-700 dark:text-gray-300"
                           )}
                         >
-                          <span className="text-gray-500 dark:text-gray-600 select-none">
+                          <span className="text-gray-400 dark:text-gray-600 select-none">
                             [{log.timestamp}]
                           </span>
                           <span className="flex-1 break-all">
@@ -1500,10 +1500,10 @@ export default function NewAgentPage() {
                       
                       {/* Show a blinking cursor at the end */}
                       <div className="flex items-start gap-3 py-1">
-                        <span className="text-gray-500 dark:text-gray-600 select-none">
+                        <span className="text-gray-400 dark:text-gray-600 select-none">
                           [--:--:--]
                         </span>
-                        <span className="text-gray-400 animate-pulse">
+                        <span className="text-gray-500 dark:text-gray-400 animate-pulse">
                           █
                         </span>
                       </div>
