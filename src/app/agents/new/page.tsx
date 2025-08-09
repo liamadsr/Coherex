@@ -640,7 +640,7 @@ export default function NewAgentPage() {
     <MainLayout>
       <div className="flex flex-col h-[calc(100vh-120px)]">
         {/* Simplified Header Bar */}
-        <div className="flex items-center justify-between px-4 py-2 border-b border-gray-200 dark:border-neutral-800/50">
+        <div className="flex items-center justify-between px-4 py-2">
           <div className="flex items-center space-x-3">
             <Button
               variant="ghost"
