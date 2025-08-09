@@ -341,6 +341,17 @@ export default function NewAgentPage() {
     // Don't automatically disable for persistent mode - let user control it
   }, [watchedExecutionMode])
 
+  // Timer update effect
+  useEffect(() => {
+    if (environmentStatus === 'running' && environmentStartTime) {
+      const interval = setInterval(() => {
+        // Force re-render to update timer
+        setEnvironmentStartTime(new Date(environmentStartTime))
+      }, 1000)
+      return () => clearInterval(interval)
+    }
+  }, [environmentStatus, environmentStartTime])
+
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
     setAttachedFiles(prev => [...prev, ...files])
@@ -1216,33 +1227,6 @@ export default function NewAgentPage() {
                           environmentStatus === 'idle' && watchedModel ? "text-green-600" : "text-gray-400"
                         )} />
                       </Button>
-                      
-                      {/* Environment Status */}
-                      {environmentStatus !== 'idle' && (
-                        <div className="ml-1 px-2 py-0.5 text-xs font-medium">
-                          {environmentStatus === 'running' && (
-                            <span className="flex items-center gap-1 text-green-600 dark:text-green-400">
-                              <span className="relative flex h-2 w-2">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                              </span>
-                              Running
-                            </span>
-                          )}
-                          {environmentStatus === 'starting' && (
-                            <span className="flex items-center gap-1 text-yellow-600 dark:text-yellow-400">
-                              <Loader2 className="w-3 h-3 animate-spin" />
-                              Starting
-                            </span>
-                          )}
-                          {environmentStatus === 'stopping' && (
-                            <span className="flex items-center gap-1 text-orange-600 dark:text-orange-400">
-                              <Loader2 className="w-3 h-3 animate-spin" />
-                              Stopping
-                            </span>
-                          )}
-                        </div>
-                      )}
                     </div>
                     
                     {/* Restart indicator when execution mode changes */}
@@ -1258,37 +1242,78 @@ export default function NewAgentPage() {
                   </div>
                 </div>
                 
-                {/* View Tabs */}
-                <div className="flex gap-1 mt-2">
-                  <button
-                    onClick={() => setTestPanelView('chat')}
-                    className={cn(
-                      "flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
-                      testPanelView === 'chat' 
-                        ? "bg-gray-100 dark:bg-neutral-800 text-gray-900 dark:text-white" 
-                        : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-                    )}
-                  >
-                    <MessageSquare className="w-4 h-4" />
-                    Chat
-                  </button>
-                  <button
-                    onClick={() => setTestPanelView('logs')}
-                    className={cn(
-                      "flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
-                      testPanelView === 'logs' 
-                        ? "bg-gray-100 dark:bg-neutral-800 text-gray-900 dark:text-white" 
-                        : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-                    )}
-                  >
-                    <Terminal className="w-4 h-4" />
-                    Logs
-                    {executionLogs.length > 0 && (
-                      <span className="ml-1 px-1.5 py-0.5 text-xs bg-gray-200 dark:bg-neutral-700 rounded-full">
-                        {executionLogs.length}
-                      </span>
-                    )}
-                  </button>
+                {/* View Tabs and Status Row */}
+                <div className="flex items-center justify-between gap-1 mt-2">
+                  <div className="flex gap-1">
+                    <button
+                      onClick={() => setTestPanelView('chat')}
+                      className={cn(
+                        "flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
+                        testPanelView === 'chat' 
+                          ? "bg-gray-100 dark:bg-neutral-800 text-gray-900 dark:text-white" 
+                          : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                      )}
+                    >
+                      <MessageSquare className="w-4 h-4" />
+                      Chat
+                    </button>
+                    <button
+                      onClick={() => setTestPanelView('logs')}
+                      className={cn(
+                        "flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
+                        testPanelView === 'logs' 
+                          ? "bg-gray-100 dark:bg-neutral-800 text-gray-900 dark:text-white" 
+                          : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                      )}
+                    >
+                      <Terminal className="w-4 h-4" />
+                      Logs
+                      {executionLogs.length > 0 && (
+                        <span className="ml-1 px-1.5 py-0.5 text-xs bg-gray-200 dark:bg-neutral-700 rounded-full">
+                          {executionLogs.length}
+                        </span>
+                      )}
+                    </button>
+                  </div>
+                  
+                  {/* Environment Status - now on the right side */}
+                  {environmentStatus !== 'idle' && (
+                    <div className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium">
+                      {environmentStatus === 'running' && (
+                        <span className="flex items-center gap-1.5 text-green-600 dark:text-green-400">
+                          <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                          </span>
+                          Running
+                        </span>
+                      )}
+                      {environmentStatus === 'starting' && (
+                        <span className="flex items-center gap-1.5 text-yellow-600 dark:text-yellow-400">
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          Starting...
+                        </span>
+                      )}
+                      {environmentStatus === 'stopping' && (
+                        <span className="flex items-center gap-1.5 text-orange-600 dark:text-orange-400">
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          Stopping...
+                        </span>
+                      )}
+                      {/* Timer when running */}
+                      {environmentStartTime && environmentStatus === 'running' && (
+                        <span className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
+                          <Clock className="w-3 h-3" />
+                          {(() => {
+                            const elapsed = Math.floor((Date.now() - environmentStartTime.getTime()) / 1000)
+                            const minutes = Math.floor(elapsed / 60)
+                            const seconds = elapsed % 60
+                            return `${minutes}:${seconds.toString().padStart(2, '0')}`
+                          })()}
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
 
