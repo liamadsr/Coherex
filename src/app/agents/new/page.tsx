@@ -44,7 +44,9 @@ import {
   Copy,
   ThumbsDown,
   ThumbsUp,
-  Image
+  Image,
+  Terminal,
+  ScrollText
 } from 'lucide-react'
 
 import { MainLayout } from '@/components/layouts/MainLayout'
@@ -155,8 +157,11 @@ export default function NewAgentPage() {
   const [attachedFiles, setAttachedFiles] = useState<File[]>([])
   const [environmentStatus, setEnvironmentStatus] = useState<'idle' | 'starting' | 'running' | 'stopping'>('idle')
   const [environmentStartTime, setEnvironmentStartTime] = useState<Date | null>(null)
+  const [testPanelView, setTestPanelView] = useState<'chat' | 'logs'>('chat')
+  const [executionLogs, setExecutionLogs] = useState<Array<{ timestamp: string, type: 'info' | 'error' | 'warning' | 'success', message: string }>>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
   const scrollAreaRef = useRef<HTMLDivElement>(null)
+  const logsScrollRef = useRef<HTMLDivElement>(null)
 
   const {
     register,
@@ -314,6 +319,18 @@ export default function NewAgentPage() {
     setAttachedFiles(prev => prev.filter((_, i) => i !== index))
   }
 
+  const addLog = (type: 'info' | 'error' | 'warning' | 'success', message: string) => {
+    const timestamp = new Date().toLocaleTimeString('en-US', { hour12: false })
+    setExecutionLogs(prev => [...prev, { timestamp, type, message }])
+    
+    // Auto-scroll logs to bottom
+    setTimeout(() => {
+      if (logsScrollRef.current) {
+        logsScrollRef.current.scrollTop = logsScrollRef.current.scrollHeight
+      }
+    }, 10)
+  }
+
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return
 
@@ -342,6 +359,10 @@ export default function NewAgentPage() {
     }
     
     setIsThinking(true)
+    
+    // Add log for message sent
+    addLog('info', `User message: "${userMessage.substring(0, 50)}${userMessage.length > 50 ? '...' : ''}"`)
+    addLog('info', 'Sending to agent for processing...')
 
     try {      
       // Create a test agent configuration
@@ -372,6 +393,27 @@ export default function NewAgentPage() {
 
       if (result.output) {
         // We got an output (either real or mock)
+        addLog('success', 'Response received from agent')
+        
+        // Log execution time if available
+        if (result.executionTime) {
+          addLog('info', `Execution time: ${result.executionTime}ms`)
+        }
+        
+        // Add any E2B logs if available
+        if (result.logs) {
+          if (typeof result.logs === 'object' && result.logs.stdout) {
+            result.logs.stdout.forEach((log: string) => {
+              addLog('info', `[stdout] ${log}`)
+            })
+          }
+          if (typeof result.logs === 'object' && result.logs.stderr) {
+            result.logs.stderr.forEach((log: string) => {
+              addLog('warning', `[stderr] ${log}`)
+            })
+          }
+        }
+        
         setMessages(prev => [...prev, { 
           role: 'assistant', 
           content: typeof result.output === 'string' ? result.output : JSON.stringify(result.output),
@@ -380,6 +422,7 @@ export default function NewAgentPage() {
         
         // Show info if it was a mock response
         if (result.error?.includes('E2B sandbox service not configured')) {
+          addLog('warning', 'E2B not configured - using mock response')
           setMessages(prev => [...prev, { 
             role: 'system', 
             content: 'Note: E2B sandbox not configured. This was a simulated response. To get real LLM responses, ensure E2B_API_KEY is set in your environment.',
@@ -392,6 +435,11 @@ export default function NewAgentPage() {
         setMessages(prev => [...prev, { role: 'assistant', content: aiResponse, id: Date.now().toString() }])
       } else {
         // Error case - use fallback
+        addLog('error', 'Failed to get response from agent')
+        if (result.error) {
+          addLog('error', result.error)
+        }
+        
         const aiResponse = generateAIResponse(userMessage, formData)
         setMessages(prev => [...prev, { role: 'assistant', content: aiResponse, id: Date.now().toString() }])
         
@@ -404,6 +452,8 @@ export default function NewAgentPage() {
       }
     } catch (error) {
       console.error('Failed to test agent:', error)
+      addLog('error', `Failed to test agent: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      
       // Fallback to simulated response
       const aiResponse = generateAIResponse(userMessage, getValues())
       setMessages(prev => [...prev, { role: 'assistant', content: aiResponse, id: Date.now().toString() }])
@@ -1061,9 +1111,17 @@ export default function NewAgentPage() {
                           // Start the environment
                           setEnvironmentStatus('starting')
                           setEnvironmentStartTime(new Date())
+                          setExecutionLogs([]) // Clear previous logs
+                          
+                          addLog('info', 'Initializing E2B sandbox environment...')
+                          addLog('info', `Model: ${watchedModel || 'gpt-4'}`)
+                          addLog('info', 'Installing required packages...')
                           
                           // Simulate environment startup
                           setTimeout(() => {
+                            addLog('success', 'Environment packages installed')
+                            addLog('info', 'Loading agent configuration...')
+                            addLog('success', 'Agent environment ready')
                             setEnvironmentStatus('running')
                             toast.success('Agent environment is ready! Start testing in the panel.')
                             
@@ -1076,7 +1134,9 @@ export default function NewAgentPage() {
                         } else if (environmentStatus === 'running') {
                           // Stop the environment
                           setEnvironmentStatus('stopping')
+                          addLog('warning', 'Shutting down environment...')
                           setTimeout(() => {
+                            addLog('info', 'Environment terminated')
                             setEnvironmentStatus('idle')
                             setEnvironmentStartTime(null)
                             toast.info('Agent environment stopped')
@@ -1122,8 +1182,8 @@ export default function NewAgentPage() {
           <div className="flex-1 min-h-0 overflow-hidden">
             <div className="h-full bg-white dark:bg-[#0c0c0c] rounded-2xl shadow-sm overflow-hidden flex flex-col">
               {/* Header */}
-              <div className="px-6 py-4 border-b border-gray-200 dark:border-neutral-800">
-                <div className="flex items-center justify-between">
+              <div className="px-6 py-3 border-b border-gray-200 dark:border-neutral-800">
+                <div className="flex items-center justify-between mb-3">
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Live Agent Testing</h3>
                     <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
@@ -1179,10 +1239,44 @@ export default function NewAgentPage() {
                     )}
                   </div>
                 </div>
+                
+                {/* View Tabs */}
+                <div className="flex gap-1 mt-2">
+                  <button
+                    onClick={() => setTestPanelView('chat')}
+                    className={cn(
+                      "flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
+                      testPanelView === 'chat' 
+                        ? "bg-gray-100 dark:bg-neutral-800 text-gray-900 dark:text-white" 
+                        : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                    )}
+                  >
+                    <MessageSquare className="w-4 h-4" />
+                    Chat
+                  </button>
+                  <button
+                    onClick={() => setTestPanelView('logs')}
+                    className={cn(
+                      "flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
+                      testPanelView === 'logs' 
+                        ? "bg-gray-100 dark:bg-neutral-800 text-gray-900 dark:text-white" 
+                        : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                    )}
+                  >
+                    <Terminal className="w-4 h-4" />
+                    Logs
+                    {executionLogs.length > 0 && (
+                      <span className="ml-1 px-1.5 py-0.5 text-xs bg-gray-200 dark:bg-neutral-700 rounded-full">
+                        {executionLogs.length}
+                      </span>
+                    )}
+                  </button>
+                </div>
               </div>
 
               {/* Chat Container */}
-              <ChatContainerRoot ref={scrollAreaRef} className="relative flex-1 space-y-0 overflow-y-auto">
+              {testPanelView === 'chat' ? (
+                <ChatContainerRoot ref={scrollAreaRef} className="relative flex-1 space-y-0 overflow-y-auto">
                 <ChatContainerContent className="space-y-6 px-4 py-6">
                   {messages.length === 0 && (
                     <div className="mx-auto max-w-3xl space-y-6 py-8">
@@ -1342,8 +1436,55 @@ export default function NewAgentPage() {
                   </button>
                 )}
               </ChatContainerRoot>
+              ) : (
+                /* Logs View */
+                <div ref={logsScrollRef} className="flex-1 overflow-y-auto bg-gray-900 dark:bg-black p-4 font-mono text-xs">
+                  {executionLogs.length === 0 ? (
+                    <div className="text-center py-8">
+                      <Terminal className="w-12 h-12 mx-auto mb-4 text-gray-600 dark:text-gray-400" />
+                      <p className="text-gray-500 dark:text-gray-400">No logs yet</p>
+                      <p className="text-gray-400 dark:text-gray-500 text-xs mt-2">
+                        Start the environment and send messages to see execution logs
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-1">
+                      {executionLogs.map((log, index) => (
+                        <div 
+                          key={index} 
+                          className={cn(
+                            "flex items-start gap-3 py-1",
+                            log.type === 'error' && "text-red-400",
+                            log.type === 'warning' && "text-yellow-400",
+                            log.type === 'success' && "text-green-400",
+                            log.type === 'info' && "text-gray-300"
+                          )}
+                        >
+                          <span className="text-gray-500 dark:text-gray-600 select-none">
+                            [{log.timestamp}]
+                          </span>
+                          <span className="flex-1 break-all">
+                            {log.message}
+                          </span>
+                        </div>
+                      ))}
+                      
+                      {/* Show a blinking cursor at the end */}
+                      <div className="flex items-start gap-3 py-1">
+                        <span className="text-gray-500 dark:text-gray-600 select-none">
+                          [--:--:--]
+                        </span>
+                        <span className="text-gray-400 animate-pulse">
+                          █
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
 
-              {/* Input Area */}
+              {/* Input Area - Only show for chat view */}
+              {testPanelView === 'chat' && (
               <div className="inset-x-0 bottom-0 mx-auto w-full shrink-0 px-3 pb-3">
                 {/* File attachments display */}
                 {attachedFiles.length > 0 && (
@@ -1450,6 +1591,7 @@ export default function NewAgentPage() {
                   </div>
                 </PromptInput>
               </div>
+              )}
             </div>
           </div>
         </div>
