@@ -1681,35 +1681,25 @@ export default function NewAgentPage() {
                           </PopoverContent>
                         </Popover>
 
-                        {/* Auto-clear toggle */}
-                        <button
-                          type="button"
-                          onClick={() => {
-                            // Only allow toggling in persistent mode
-                            if (watchedExecutionMode !== 'ephemeral') {
-                              setAutoClear(!autoClear)
-                            }
-                          }}
-                          disabled={watchedExecutionMode === 'ephemeral'}
-                          className={cn(
-                            "flex items-center gap-1.5 px-2 py-1 rounded-md transition-colors",
-                            autoClear 
-                              ? "bg-primary/10 text-primary hover:bg-primary/20" 
-                              : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
-                            watchedExecutionMode === 'ephemeral' && "opacity-60 cursor-not-allowed"
-                          )}
-                          title={watchedExecutionMode === 'ephemeral' 
-                            ? "Auto-clear is always on for ephemeral mode" 
-                            : "Toggle auto-clear messages"
-                          }
-                        >
-                          <RefreshCw className="w-4 h-4" />
-                          {autoClear && (
-                            <span className="text-xs font-medium">
-                              {watchedExecutionMode === 'ephemeral' ? 'Auto-clear (ephemeral)' : 'Auto-clear'}
-                            </span>
-                          )}
-                        </button>
+                        {/* Auto-clear toggle - only show in persistent mode */}
+                        {watchedExecutionMode !== 'ephemeral' && (
+                          <button
+                            type="button"
+                            onClick={() => setAutoClear(!autoClear)}
+                            className={cn(
+                              "flex items-center gap-1.5 px-2 py-1 rounded-md transition-colors",
+                              autoClear 
+                                ? "bg-primary/10 text-primary hover:bg-primary/20" 
+                                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                            )}
+                            title="Toggle auto-clear messages"
+                          >
+                            <RefreshCw className="w-4 h-4" />
+                            {autoClear && (
+                              <span className="text-xs font-medium">Auto-clear</span>
+                            )}
+                          </button>
+                        )}
                       </div>
 
                       <div className="flex items-center gap-2">
