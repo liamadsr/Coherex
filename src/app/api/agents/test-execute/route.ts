@@ -28,8 +28,10 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Generate a temporary agent ID for the test execution
-    const tempAgentId = `test-${Date.now()}`
+    // Use sessionId for persistent mode to reuse sandbox, otherwise generate temp ID
+    const agentId = config.executionMode === 'persistent' && sessionId 
+      ? sessionId 
+      : `test-${Date.now()}`
 
     // Build system prompt with conversation history for persistent mode
     let effectiveInput = input
@@ -86,7 +88,7 @@ export async function POST(req: NextRequest) {
 
     // Execute the agent with E2B
     const result = await e2bClient.executeAgent(
-      tempAgentId,
+      agentId,
       agentConfig,
       effectiveInput,
       envVars

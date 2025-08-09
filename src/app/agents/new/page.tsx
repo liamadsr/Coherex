@@ -1157,6 +1157,14 @@ export default function NewAgentPage() {
                           // Clear session for conversational mode
                           if (testSessionId) {
                             addLog('info', `Clearing conversation session: ${testSessionId}`)
+                            
+                            // Call cleanup endpoint to close sandbox
+                            fetch('/api/agents/test-cleanup', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ sessionId: testSessionId })
+                            }).catch(err => console.error('Cleanup error:', err))
+                            
                             setTestSessionId(null)
                           }
                           

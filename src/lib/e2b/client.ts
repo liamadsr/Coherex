@@ -140,20 +140,30 @@ class E2BClient {
     }
 
     let sandbox: Sandbox | undefined
+    let isNewSandbox = false
 
     try {
-      // Create sandbox for this agent
-      sandbox = await this.createSandbox(agentId)
-
-      // Set environment variables in sandbox
-      if (envVars) {
-        await this.setEnvironmentVariables(sandbox, envVars)
+      // Check if sandbox already exists for this agent (for persistent sessions)
+      sandbox = this.sandboxes.get(agentId)
+      
+      if (!sandbox) {
+        // Create new sandbox only if one doesn't exist
+        sandbox = await this.createSandbox(agentId)
+        isNewSandbox = true
       }
 
-      // Install required packages based on model
-      const packages = this.getRequiredPackages(agentConfig)
-      if (packages.length > 0) {
-        await this.installPackages(sandbox, packages)
+      // Only set environment variables and install packages for new sandboxes
+      if (isNewSandbox) {
+        // Set environment variables in sandbox
+        if (envVars) {
+          await this.setEnvironmentVariables(sandbox, envVars)
+        }
+
+        // Install required packages based on model
+        const packages = this.getRequiredPackages(agentConfig)
+        if (packages.length > 0) {
+          await this.installPackages(sandbox, packages)
+        }
       }
 
       // Prepare agent runtime code
@@ -170,8 +180,9 @@ class E2BClient {
         error: error instanceof Error ? error.message : 'Unknown error'
       }
     } finally {
-      // Clean up sandbox
-      if (sandbox) {
+      // Only clean up sandbox for ephemeral mode
+      // Persistent mode keeps sandbox alive for the session
+      if (sandbox && agentConfig.executionMode !== 'persistent') {
         await this.closeSandbox(agentId)
       }
     }
