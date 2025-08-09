@@ -654,6 +654,113 @@ export default function NewAgentPage() {
               <h1 className="text-base font-semibold text-gray-900 dark:text-white">Agent Builder</h1>
             </div>
           </div>
+          
+          {/* Center section with environment controls */}
+          <div className="flex items-center gap-4">
+            {/* Status indicators */}
+            <div className="flex items-center gap-3">
+              {environmentStatus === 'idle' && (
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2 h-2 bg-gray-400 rounded-full" />
+                  <span className="text-xs text-muted-foreground">Idle</span>
+                </div>
+              )}
+              {environmentStatus === 'starting' && (
+                <div className="flex items-center gap-1.5">
+                  <Loader2 className="w-3 h-3 animate-spin text-yellow-600" />
+                  <span className="text-xs text-yellow-600 dark:text-yellow-500">Starting</span>
+                </div>
+              )}
+              {environmentStatus === 'running' && (
+                <>
+                  <div className="flex items-center gap-1.5">
+                    <span className="relative flex h-1.5 w-1.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-600"></span>
+                    </span>
+                    <span className="text-xs text-green-600 dark:text-green-500">Running</span>
+                  </div>
+                  {environmentStartTime && (
+                    <span className="text-xs text-muted-foreground">
+                      {(() => {
+                        const elapsed = Math.floor((Date.now() - environmentStartTime.getTime()) / 1000)
+                        const minutes = Math.floor(elapsed / 60)
+                        const seconds = elapsed % 60
+                        return `${minutes}:${seconds.toString().padStart(2, '0')}`
+                      })()}
+                    </span>
+                  )}
+                </>
+              )}
+              {environmentStatus === 'stopping' && (
+                <div className="flex items-center gap-1.5">
+                  <Loader2 className="w-3 h-3 animate-spin text-orange-600" />
+                  <span className="text-xs text-orange-600 dark:text-orange-500">Stopping</span>
+                </div>
+              )}
+            </div>
+            
+            {/* Environment control buttons */}
+            <div className="flex items-center gap-1 h-9 bg-gray-100 dark:bg-neutral-800 p-1 rounded-lg">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={restartEnvironment}
+                disabled={!restartNeeded}
+                className={cn(
+                  "h-7 px-2.5",
+                  restartNeeded 
+                    ? "text-amber-600 hover:text-amber-700 hover:bg-amber-50 dark:hover:bg-amber-950/20 animate-pulse" 
+                    : "text-muted-foreground/50 cursor-not-allowed"
+                )}
+                title={
+                  restartNeeded 
+                    ? "Restart to apply changes" 
+                    : "No changes to apply"}
+              >
+                <RefreshCw className="w-3.5 h-3.5 mr-1" />
+                <span className="text-xs">Restart</span>
+              </Button>
+              
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => stopEnvironment()}
+                disabled={environmentStatus !== 'running'}
+                className={cn(
+                  "h-7 px-2.5",
+                  environmentStatus === 'running' 
+                    ? "text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/20" 
+                    : "text-muted-foreground/50 cursor-not-allowed"
+                )}
+                title="Stop environment"
+              >
+                <Square className="w-3.5 h-3.5 mr-1" />
+                <span className="text-xs">Stop</span>
+              </Button>
+              
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={startEnvironment}
+                disabled={environmentStatus !== 'idle' || !watchedModel}
+                className={cn(
+                  "h-7 px-2.5",
+                  environmentStatus === 'idle' && watchedModel 
+                    ? "text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-950/20" 
+                    : "text-muted-foreground/50 cursor-not-allowed"
+                )}
+                title={!watchedModel ? "Select a model first" : "Start environment"}
+              >
+                <Play className="w-3.5 h-3.5 mr-1" />
+                <span className="text-xs">Start</span>
+              </Button>
+            </div>
+          </div>
+          
           <div className="flex items-center gap-2">
             <Button
               type="button"
@@ -691,7 +798,7 @@ export default function NewAgentPage() {
         <div className="flex-1 flex overflow-hidden p-2">
           <div className="flex-1 bg-white dark:bg-[#0c0c0c] rounded-2xl shadow-sm overflow-hidden flex">
             {/* Left Panel - Configuration */}
-            <div className="w-1/2 border-r border-gray-200 dark:border-neutral-800/50 flex flex-col overflow-hidden">
+            <div className="w-1/2 flex flex-col overflow-hidden">
               <div className="p-6 flex-1 overflow-hidden flex flex-col no-scrollbar">
                 <Tabs value={currentTab} onValueChange={setCurrentTab} className="flex-1 flex flex-col min-h-0">
                   <TabsList className="grid w-full grid-cols-3 h-10 bg-gray-100 dark:bg-neutral-800 p-1 rounded-lg mb-6">
@@ -1154,150 +1261,22 @@ export default function NewAgentPage() {
 
             {/* Right Panel - Testing */}
             <div className="w-1/2 flex flex-col overflow-hidden">
-              {/* Minimal Header */}
-              <div className="border-b border-gray-200 dark:border-neutral-800/50">
-                {/* Top row with title and controls */}
-                <div className="flex items-center justify-between px-4 py-2">
-                  <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Live Testing</h3>
-                  
-                  {/* Environment Controls - more subtle */}
-                  <div className="flex items-center gap-1">
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={restartEnvironment}
-                      disabled={!restartNeeded}
-                      className={cn(
-                        "h-7 w-7 p-0",
-                        restartNeeded 
-                          ? "text-amber-500 hover:text-amber-600 hover:bg-amber-500/10 animate-pulse" 
-                          : "text-muted-foreground/50 cursor-not-allowed"
-                      )}
-                      title={
-                        restartNeeded 
-                          ? "Restart to apply changes" 
-                          : "No changes to apply"}
-                    >
-                      <RefreshCw className="w-3.5 h-3.5" />
-                    </Button>
-                    
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => stopEnvironment()}
-                      disabled={environmentStatus !== 'running'}
-                      className={cn(
-                        "h-7 w-7 p-0",
-                        environmentStatus === 'running' 
-                          ? "text-red-500 hover:text-red-600 hover:bg-red-500/10" 
-                          : "text-muted-foreground/50 cursor-not-allowed"
-                      )}
-                      title="Stop environment"
-                    >
-                      <Square className="w-3.5 h-3.5" />
-                    </Button>
-                    
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={startEnvironment}
-                      disabled={environmentStatus !== 'idle' || !watchedModel}
-                      className={cn(
-                        "h-7 w-7 p-0",
-                        environmentStatus === 'idle' && watchedModel 
-                          ? "text-green-500 hover:text-green-600 hover:bg-green-500/10" 
-                          : "text-muted-foreground/50 cursor-not-allowed"
-                      )}
-                      title={!watchedModel ? "Select a model first" : "Start environment"}
-                    >
-                      <Play className="w-3.5 h-3.5" />
-                    </Button>
-                  </div>
-                </div>
-                
-                {/* View tabs and status - cleaner style */}
-                <div className="flex items-center justify-between px-4 pb-2">
-                  <div className="flex gap-4">
-                    <button
-                      onClick={() => setTestPanelView('chat')}
-                      className={cn(
-                        "text-sm font-medium transition-colors relative pb-0.5",
-                        testPanelView === 'chat' 
-                          ? "text-foreground" 
-                          : "text-muted-foreground hover:text-foreground"
-                      )}
-                    >
-                      Chat
-                      {testPanelView === 'chat' && (
-                        <div className="absolute -bottom-2 left-0 right-0 h-0.5 bg-primary" />
-                      )}
-                    </button>
-                    <button
-                      onClick={() => setTestPanelView('logs')}
-                      className={cn(
-                        "text-sm font-medium transition-colors relative pb-0.5",
-                        testPanelView === 'logs' 
-                          ? "text-foreground" 
-                          : "text-muted-foreground hover:text-foreground"
-                      )}
-                    >
+              <div className="p-6 flex-1 overflow-hidden flex flex-col no-scrollbar">
+                {/* Tabs Section */}
+                <Tabs value={testPanelView} onValueChange={setTestPanelView} className="flex-1 flex flex-col min-h-0">
+                  <TabsList className="grid w-full grid-cols-2 h-10 bg-gray-100 dark:bg-neutral-800 p-1 rounded-lg mb-6">
+                    <TabsTrigger value="chat" className="text-xs font-medium">Agent Playground</TabsTrigger>
+                    <TabsTrigger value="logs" className="text-xs font-medium">
                       Logs
                       {executionLogs.length > 0 && (
-                        <span className="ml-1.5 text-xs text-muted-foreground">
-                          ({executionLogs.length})
-                        </span>
+                        <span className="ml-1 text-xs">({executionLogs.length})</span>
                       )}
-                      {testPanelView === 'logs' && (
-                        <div className="absolute -bottom-2 left-0 right-0 h-0.5 bg-primary" />
-                      )}
-                    </button>
-                  </div>
-                  
-                  {/* Environment Status - more subtle */}
-                  {environmentStatus !== 'idle' && (
-                    <div className="flex items-center gap-3 text-xs">
-                      {/* Timer - now on the left */}
-                      {environmentStartTime && environmentStatus === 'running' && (
-                        <span className="text-muted-foreground">
-                          {(() => {
-                            const elapsed = Math.floor((Date.now() - environmentStartTime.getTime()) / 1000)
-                            const minutes = Math.floor(elapsed / 60)
-                            const seconds = elapsed % 60
-                            return `${minutes}:${seconds.toString().padStart(2, '0')}`
-                          })()}
-                        </span>
-                      )}
-                      {environmentStatus === 'running' && (
-                        <span className="flex items-center gap-1.5 text-green-600 dark:text-green-500">
-                          <span className="relative flex h-1.5 w-1.5">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-600"></span>
-                          </span>
-                          Running
-                        </span>
-                      )}
-                      {environmentStatus === 'starting' && (
-                        <span className="flex items-center gap-1.5 text-yellow-600 dark:text-yellow-500">
-                          <Loader2 className="w-3 h-3 animate-spin" />
-                          Starting
-                        </span>
-                      )}
-                      {environmentStatus === 'stopping' && (
-                        <span className="flex items-center gap-1.5 text-orange-600 dark:text-orange-500">
-                          <Loader2 className="w-3 h-3 animate-spin" />
-                          Stopping
-                        </span>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
+                    </TabsTrigger>
+                  </TabsList>
 
-              {/* Chat Container */}
-              {testPanelView === 'chat' ? (
+                  {/* Agent Playground Tab */}
+                  <TabsContent value="chat" className="flex-1 overflow-hidden flex flex-col">
+                    {/* Chat Container */}
                 <ChatContainerRoot ref={scrollAreaRef} className="relative flex-1 space-y-0 overflow-y-auto no-scrollbar">
                 <ChatContainerContent className="space-y-6 px-4 py-6">
                   {messages.length === 0 && (
@@ -1458,55 +1437,8 @@ export default function NewAgentPage() {
                   </button>
                 )}
               </ChatContainerRoot>
-              ) : (
-                /* Logs View */
-                <div ref={logsScrollRef} className="flex-1 overflow-y-auto no-scrollbar bg-white dark:bg-[#0c0c0c] p-4 font-mono text-xs">
-                  {executionLogs.length === 0 ? (
-                    <div className="text-center py-8">
-                      <Terminal className="w-12 h-12 mx-auto mb-4 text-gray-400 dark:text-gray-600" />
-                      <p className="text-gray-600 dark:text-gray-400">No logs yet</p>
-                      <p className="text-gray-500 dark:text-gray-500 text-xs mt-2">
-                        Start the environment and send messages to see execution logs
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-1">
-                      {executionLogs.map((log, index) => (
-                        <div 
-                          key={index} 
-                          className={cn(
-                            "flex items-start gap-3 py-1",
-                            log.type === 'error' && "text-red-600 dark:text-red-400",
-                            log.type === 'warning' && "text-yellow-600 dark:text-yellow-400",
-                            log.type === 'success' && "text-green-600 dark:text-green-400",
-                            log.type === 'info' && "text-gray-700 dark:text-gray-300"
-                          )}
-                        >
-                          <span className="text-gray-400 dark:text-gray-600 select-none">
-                            [{log.timestamp}]
-                          </span>
-                          <span className="flex-1 break-all">
-                            {log.message}
-                          </span>
-                        </div>
-                      ))}
-                      
-                      {/* Show a blinking cursor at the end */}
-                      <div className="flex items-start gap-3 py-1">
-                        <span className="text-gray-400 dark:text-gray-600 select-none">
-                          [--:--:--]
-                        </span>
-                        <span className="text-gray-500 dark:text-gray-400 animate-pulse">
-                          █
-                        </span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Input Area - Only show for chat view */}
-              {testPanelView === 'chat' && (
+              
+              {/* Input Area */}
               <div className="inset-x-0 bottom-0 mx-auto w-full shrink-0 px-3 pb-3">
                 {/* File attachments display */}
                 {attachedFiles.length > 0 && (
@@ -1572,7 +1504,7 @@ export default function NewAgentPage() {
                           <Plus className="w-4 h-4" />
                         </button>
                         
-                        {/* Model selector - matching main AI panel style */}
+                        {/* Model selector */}
                         <div className="relative">
                           <button
                             type="button"
@@ -1596,7 +1528,6 @@ export default function NewAgentPage() {
                                     onClick={() => {
                                       setValue('model', model.id, { shouldValidate: true })
                                       setShowModelMenu(false)
-                                      // Show restart needed indicator if environment is running
                                       if (environmentStatus === 'running' && model.id !== runningModel) {
                                         toast.info('Model changed - restart required to apply changes')
                                       }
@@ -1658,35 +1589,36 @@ export default function NewAgentPage() {
                               </div>
 
                               <div className="space-y-2">
-                                <Label htmlFor="maxTokens-input" className="text-sm font-medium">
+                                <Label htmlFor="max-tokens" className="text-sm font-medium">
                                   Max Tokens
                                 </Label>
                                 <Input
-                                  id="maxTokens-input"
+                                  id="max-tokens"
                                   type="number"
                                   min="1"
-                                  max="4000"
-                                  className="h-9"
-                                  {...register('maxTokens', { 
-                                    valueAsNumber: true,
-                                    onChange: (e) => {
-                                      const value = parseInt(e.target.value)
+                                  max="4096"
+                                  value={watchedMaxTokens}
+                                  onChange={(e) => {
+                                    const value = parseInt(e.target.value)
+                                    if (!isNaN(value)) {
+                                      setValue('maxTokens', value)
                                       if (environmentStatus === 'running' && value !== runningMaxTokens) {
                                         toast.info('Max tokens changed - restart required to apply changes')
                                       }
                                     }
-                                  })}
+                                  }}
+                                  className="w-full"
                                 />
-                                <p className="text-xs text-gray-600 dark:text-gray-400">
-                                  Maximum response length (1-4000)
+                                <p className="text-xs text-gray-500">
+                                  Maximum number of tokens to generate
                                 </p>
                               </div>
                             </div>
                           </PopoverContent>
                         </Popover>
-
-                        {/* Auto-clear toggle - only show in persistent mode */}
-                        {watchedExecutionMode !== 'ephemeral' && (
+                        
+                        {/* Auto-clear toggle for persistent mode */}
+                        {watchedExecutionMode === 'persistent' && (
                           <button
                             type="button"
                             onClick={() => setAutoClear(!autoClear)}
@@ -1730,7 +1662,57 @@ export default function NewAgentPage() {
                   </div>
                 </PromptInput>
               </div>
-              )}
+                  </TabsContent>
+                  
+                  {/* Logs Tab */}
+                  <TabsContent value="logs" className="flex-1 overflow-hidden">
+                    <div ref={logsScrollRef} className="flex-1 h-full overflow-y-auto no-scrollbar bg-white dark:bg-[#0c0c0c] p-4 font-mono text-xs">
+                  {executionLogs.length === 0 ? (
+                    <div className="text-center py-8">
+                      <Terminal className="w-12 h-12 mx-auto mb-4 text-gray-400 dark:text-gray-600" />
+                      <p className="text-gray-600 dark:text-gray-400">No logs yet</p>
+                      <p className="text-gray-500 dark:text-gray-500 text-xs mt-2">
+                        Start the environment and send messages to see execution logs
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-1">
+                      {executionLogs.map((log, index) => (
+                        <div 
+                          key={index} 
+                          className={cn(
+                            "flex items-start gap-3 py-1",
+                            log.type === 'error' && "text-red-600 dark:text-red-400",
+                            log.type === 'warning' && "text-yellow-600 dark:text-yellow-400",
+                            log.type === 'success' && "text-green-600 dark:text-green-400",
+                            log.type === 'info' && "text-gray-700 dark:text-gray-300"
+                          )}
+                        >
+                          <span className="text-gray-400 dark:text-gray-600 select-none">
+                            [{log.timestamp}]
+                          </span>
+                          <span className="flex-1 break-all">
+                            {log.message}
+                          </span>
+                        </div>
+                      ))}
+                      
+                      {/* Show a blinking cursor at the end */}
+                      <div className="flex items-start gap-3 py-1">
+                        <span className="text-gray-400 dark:text-gray-600 select-none">
+                          [--:--:--]
+                        </span>
+                        <span className="text-gray-500 dark:text-gray-400 animate-pulse">
+                          █
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                  </TabsContent>
+                  
+                </Tabs>
+              </div>
             </div>
           </div>
         </div>
