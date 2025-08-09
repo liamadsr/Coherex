@@ -144,6 +144,7 @@ export default function NewAgentPage() {
       knowledgeSources: [],
       mcpServers: [],
       integrations: [],
+      model: 'gpt-4',  // Add default model
       temperature: 0.7,
       maxTokens: 2000,
       systemPrompt: 'You are a helpful AI assistant. Be professional, accurate, and helpful in all your responses.',
@@ -856,7 +857,7 @@ export default function NewAgentPage() {
                         <Label htmlFor="model" className="text-sm font-medium">
                           AI Model *
                         </Label>
-                        <Select onValueChange={(value) => setValue('model', value)} defaultValue="">
+                        <Select onValueChange={(value) => setValue('model', value)} defaultValue="gpt-4">
                           <SelectTrigger className="h-9 bg-white dark:bg-neutral-900">
                             <SelectValue placeholder="Select an AI model" />
                           </SelectTrigger>
