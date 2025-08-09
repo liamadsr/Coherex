@@ -691,8 +691,8 @@ export default function NewAgentPage() {
         <div className="flex-1 flex overflow-hidden p-2">
           <div className="flex-1 bg-white dark:bg-[#0c0c0c] rounded-2xl shadow-sm overflow-hidden flex">
             {/* Left Panel - Configuration */}
-            <div className="w-1/2 border-r border-gray-200 dark:border-neutral-800/50 flex flex-col">
-              <div className="p-6 flex-1 overflow-hidden flex flex-col">
+            <div className="w-1/2 border-r border-gray-200 dark:border-neutral-800/50 flex flex-col overflow-hidden">
+              <div className="p-6 flex-1 overflow-hidden flex flex-col no-scrollbar">
                 <Tabs value={currentTab} onValueChange={setCurrentTab} className="flex-1 flex flex-col min-h-0">
                   <TabsList className="grid w-full grid-cols-3 h-10 bg-gray-100 dark:bg-neutral-800 p-1 rounded-lg mb-6">
                     <TabsTrigger value="basic" className="text-xs font-medium">Interaction</TabsTrigger>
@@ -701,7 +701,7 @@ export default function NewAgentPage() {
                   </TabsList>
 
                   {/* Interaction Tab */}
-                  <TabsContent value="basic" className="space-y-6 flex-1 overflow-y-auto">
+                  <TabsContent value="basic" className="space-y-6 flex-1 overflow-y-auto no-scrollbar">
                     <div className="space-y-4">
                       <div className="space-y-2">
                         <Label htmlFor="name" className="text-sm font-medium">
@@ -1001,7 +1001,7 @@ export default function NewAgentPage() {
                   </TabsContent>
 
                   {/* Resources Tab */}
-                  <TabsContent value="personality" className="space-y-6 flex-1 overflow-y-auto">
+                  <TabsContent value="personality" className="space-y-6 flex-1 overflow-y-auto no-scrollbar">
                     <div className="space-y-4">
                       <div className="space-y-3">
                         <Label className="text-sm font-medium">
@@ -1066,7 +1066,7 @@ export default function NewAgentPage() {
                   </TabsContent>
 
                   {/* Capabilities Tab */}
-                  <TabsContent value="capabilities" className="space-y-6 flex-1 overflow-y-auto">
+                  <TabsContent value="capabilities" className="space-y-6 flex-1 overflow-y-auto no-scrollbar">
                     <div className="space-y-6">
                       <div className="space-y-3">
                         <Label className="text-sm font-medium">
@@ -1153,7 +1153,7 @@ export default function NewAgentPage() {
             </div>
 
             {/* Right Panel - Testing */}
-            <div className="w-1/2 flex flex-col">
+            <div className="w-1/2 flex flex-col overflow-hidden">
               {/* Minimal Header */}
               <div className="border-b border-gray-200 dark:border-neutral-800/50">
                 {/* Top row with title and controls */}
@@ -1298,7 +1298,7 @@ export default function NewAgentPage() {
 
               {/* Chat Container */}
               {testPanelView === 'chat' ? (
-                <ChatContainerRoot ref={scrollAreaRef} className="relative flex-1 space-y-0 overflow-y-auto">
+                <ChatContainerRoot ref={scrollAreaRef} className="relative flex-1 space-y-0 overflow-y-auto no-scrollbar">
                 <ChatContainerContent className="space-y-6 px-4 py-6">
                   {messages.length === 0 && (
                     <div className="mx-auto max-w-3xl space-y-6 py-8">
@@ -1460,7 +1460,7 @@ export default function NewAgentPage() {
               </ChatContainerRoot>
               ) : (
                 /* Logs View */
-                <div ref={logsScrollRef} className="flex-1 overflow-y-auto bg-white dark:bg-[#0c0c0c] p-4 font-mono text-xs">
+                <div ref={logsScrollRef} className="flex-1 overflow-y-auto no-scrollbar bg-white dark:bg-[#0c0c0c] p-4 font-mono text-xs">
                   {executionLogs.length === 0 ? (
                     <div className="text-center py-8">
                       <Terminal className="w-12 h-12 mx-auto mb-4 text-gray-400 dark:text-gray-600" />
