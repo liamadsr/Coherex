@@ -64,6 +64,9 @@ const statusColors = {
   inactive: 'bg-gray-400',
   error: 'bg-red-500',
   training: 'bg-yellow-500',
+  draft: 'bg-blue-500',
+  paused: 'bg-orange-500',
+  archived: 'bg-gray-400',
 }
 
 const statusIcons = {
@@ -71,6 +74,9 @@ const statusIcons = {
   inactive: XCircle,
   error: AlertCircle,
   training: Clock,
+  draft: Edit,
+  paused: Pause,
+  archived: Clock,
 }
 
 export default function AgentDetailPage() {
@@ -145,7 +151,7 @@ export default function AgentDetailPage() {
     )
   }
 
-  const StatusIcon = statusIcons[agent.status]
+  const StatusIcon = statusIcons[agent.status] || statusIcons.draft || Bot
 
   return (
     <MainLayout>
@@ -315,24 +321,19 @@ export default function AgentDetailPage() {
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div>
-                    <h4 className="text-sm font-medium mb-3">Channels</h4>
+                    <h4 className="text-sm font-medium mb-3">Type</h4>
                     <div className="flex flex-wrap gap-2">
-                      {agent.channels.map((channel) => {
-                        const Icon = channelIcons[channel] || Globe
-                        return (
-                          <Badge key={channel} variant="secondary" className="flex items-center gap-1">
-                            <Icon className="w-3 h-3" />
-                            {channel.replace('-', ' ')}
-                          </Badge>
-                        )
-                      })}
+                      <Badge variant="secondary" className="flex items-center gap-1">
+                        <Bot className="w-3 h-3" />
+                        {(agent as any).config?.type || agent.type || 'custom'}
+                      </Badge>
                     </div>
                   </div>
 
                   <div>
                     <h4 className="text-sm font-medium mb-3">Capabilities</h4>
                     <div className="flex flex-wrap gap-2">
-                      {agent.capabilities.map((capability) => (
+                      {(agent.capabilities || (agent as any).config?.tools?.map((t: any) => t.name) || []).map((capability: string) => (
                         <Badge key={capability} variant="outline">
                           {capability.replace('-', ' ')}
                         </Badge>
@@ -345,15 +346,15 @@ export default function AgentDetailPage() {
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Model:</span>
-                        <span className="font-medium">{agent.model}</span>
+                        <span className="font-medium">{(agent as any).config?.model || agent.model || 'gpt-4'}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Temperature:</span>
-                        <span className="font-medium">{agent.temperature}</span>
+                        <span className="font-medium">{(agent as any).config?.temperature || agent.temperature || 0.7}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Max Tokens:</span>
-                        <span className="font-medium">{agent.maxTokens}</span>
+                        <span className="font-medium">{(agent as any).config?.maxTokens || agent.maxTokens || 2000}</span>
                       </div>
                     </div>
                   </div>
@@ -512,15 +513,15 @@ export default function AgentDetailPage() {
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Model:</span>
-                        <span>{agent.model}</span>
+                        <span>{(agent as any).config?.model || agent.model || 'gpt-4'}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Temperature:</span>
-                        <span>{agent.temperature}</span>
+                        <span>{(agent as any).config?.temperature || agent.temperature || 0.7}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Max Tokens:</span>
-                        <span>{agent.maxTokens}</span>
+                        <span>{(agent as any).config?.maxTokens || agent.maxTokens || 2000}</span>
                       </div>
                     </div>
                   </div>
@@ -529,7 +530,7 @@ export default function AgentDetailPage() {
                 <div className="space-y-4">
                   <h4 className="font-medium">System Prompt</h4>
                   <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                    <p className="text-sm font-mono whitespace-pre-wrap">{agent.systemPrompt}</p>
+                    <p className="text-sm font-mono whitespace-pre-wrap">{(agent as any).config?.systemPrompt || agent.systemPrompt || 'No system prompt configured'}</p>
                   </div>
                 </div>
               </CardContent>
