@@ -9,7 +9,7 @@ export async function POST(
 ) {
   try {
     const { id: agentId } = await params
-    const { input, options = {} } = await req.json()
+    const { input, options = {}, sessionId = null, useSession = false } = await req.json()
 
     // Fetch agent from database
     const { data: agent, error: fetchError } = await supabase
@@ -31,6 +31,41 @@ export async function POST(
         { error: `Agent is ${agent.status}. Only active or draft agents can be executed.` },
         { status: 400 }
       )
+    }
+    
+    // Handle persistent session execution
+    if (useSession || sessionId || agent.execution_mode === 'persistent') {
+      // Import session manager dynamically to avoid circular dependency
+      const { sessionManager } = await import('@/lib/e2b/session-manager')
+      
+      // Get or create session
+      let session = sessionId ? 
+        await supabase.from('agent_sessions').select('*').eq('id', sessionId).single().then(r => r.data) :
+        await sessionManager.getOrCreateSession(agent, false)
+      
+      if (!session) {
+        return NextResponse.json(
+          { error: 'Failed to get or create session' },
+          { status: 500 }
+        )
+      }
+      
+      // Execute in session
+      const startTime = Date.now()
+      const result = await sessionManager.executeInSession(session.id, input, true)
+      const duration = Date.now() - startTime
+      
+      return NextResponse.json({
+        success: result.success,
+        executionId: null, // No execution record for session-based calls
+        sessionId: session.id,
+        output: result.output,
+        error: result.error,
+        logs: result.logs,
+        duration: duration,
+        timestamp: new Date().toISOString(),
+        mode: 'persistent'
+      })
     }
 
     // Fetch connected data sources
@@ -136,11 +171,13 @@ export async function POST(
       return NextResponse.json({
         success: actualSuccess,
         executionId: execution.id,
+        sessionId: null,
         output: finalOutput,
         error: actualSuccess ? undefined : result.error,
         logs: result.logs,
         duration: duration,
-        timestamp: completedAt
+        timestamp: completedAt,
+        mode: 'ephemeral'
       })
 
     } catch (execError) {
