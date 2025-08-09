@@ -59,10 +59,37 @@ class E2BClient {
       const execution = await sandbox.runCode(code)
       
       const executionTime = Date.now() - startTime
+      
 
+      // Parse output - E2B returns logs with stdout/stderr
+      let output = execution.results
+      
+      // Check if output is in logs.stdout
+      if (execution.logs && typeof execution.logs === 'object') {
+        const logs = execution.logs as any
+        if (logs.stdout && Array.isArray(logs.stdout) && logs.stdout.length > 0) {
+          // Get the last stdout line as output
+          output = logs.stdout[logs.stdout.length - 1]
+        }
+      }
+      
+      // If still no output but we have results array
+      if (!output && Array.isArray(execution.results) && execution.results.length > 0) {
+        // E2B returns array of results, get the last one
+        const lastResult = execution.results[execution.results.length - 1]
+        // If it's a data result with text, extract it
+        if (lastResult && typeof lastResult === 'object' && 'text' in lastResult) {
+          output = lastResult.text
+        } else if (lastResult && typeof lastResult === 'object' && 'data' in lastResult) {
+          output = lastResult.data
+        } else {
+          output = lastResult
+        }
+      }
+      
       return {
         success: !execution.error,
-        output: execution.results,
+        output: output,
         error: execution.error,
         logs: execution.logs,
         executionTime

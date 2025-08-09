@@ -174,8 +174,20 @@ export class PersistentSandboxManager {
         } catch (error) {
           console.error('Failed to reconnect to sandbox:', error)
           // If reconnection fails, create new sandbox
-          const agent = session.agents as unknown as Agent
-          sandbox = await this.createAndStoreSandbox(sessionId, agent, session)
+          // Need to fetch full agent details if not present
+          let agent = session.agents as unknown as Agent
+          if (!agent) {
+            const { data: agentData } = await supabase
+              .from('agents')
+              .select('*')
+              .eq('id', session.agent_id)
+              .single()
+            agent = agentData as Agent
+          }
+          
+          if (agent) {
+            sandbox = await this.createAndStoreSandbox(sessionId, agent, session)
+          }
         }
       }
     }
@@ -208,12 +220,26 @@ export class PersistentSandboxManager {
     const code = this.generateContextualExecution(agent, input, context)
     const result = await e2bClient.executeCode(sandbox, code, 'python')
     
+    // Parse output if it's a JSON string
+    let finalOutput = result.output
+    if (result.success && typeof result.output === 'string') {
+      try {
+        const parsed = JSON.parse(result.output)
+        if (parsed.output) {
+          finalOutput = parsed.output
+        }
+      } catch (e) {
+        // Not JSON, use as-is
+        finalOutput = result.output
+      }
+    }
+    
     // Update conversation context
     if (includeContext && result.success) {
       const newContext = [
         ...context,
         { role: 'user' as const, content: input, timestamp: new Date().toISOString() },
-        { role: 'assistant' as const, content: result.output, timestamp: new Date().toISOString() }
+        { role: 'assistant' as const, content: finalOutput, timestamp: new Date().toISOString() }
       ]
       
       // Trim context if it exceeds max messages
@@ -231,9 +257,13 @@ export class PersistentSandboxManager {
     }
     
     // Log activity
-    await this.logActivity(sessionId, 'execution', input, result.output)
+    await this.logActivity(sessionId, 'execution', input, finalOutput)
     
-    return result
+    // Return the parsed output
+    return {
+      ...result,
+      output: finalOutput
+    }
   }
   
   /**
@@ -466,7 +496,9 @@ def execute_with_context(user_input):
 
 # Execute
 result = execute_with_context("""${input}""")
-print(json.dumps({"success": True, "output": result}))
+output_json = json.dumps({"success": True, "output": result})
+print(output_json)
+sys.stdout.flush()
 `
   }
   
