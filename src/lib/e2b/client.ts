@@ -82,7 +82,8 @@ class E2BClient {
   async executeAgent(
     agentId: string,
     agentConfig: any,
-    input: any
+    input: any,
+    envVars?: Record<string, string>
   ): Promise<ExecutionResult> {
     // If E2B is not configured, use mock execution
     if (!E2B_API_KEY) {
@@ -94,6 +95,17 @@ class E2BClient {
     try {
       // Create sandbox for this agent
       sandbox = await this.createSandbox(agentId)
+
+      // Set environment variables in sandbox
+      if (envVars) {
+        await this.setEnvironmentVariables(sandbox, envVars)
+      }
+
+      // Install required packages based on model
+      const packages = this.getRequiredPackages(agentConfig)
+      if (packages.length > 0) {
+        await this.installPackages(sandbox, packages)
+      }
 
       // Prepare agent runtime code
       const runtimeCode = this.generateAgentRuntime(agentConfig, input)
@@ -206,7 +218,7 @@ class E2BClient {
    * Generate runtime code for agent execution
    */
   private generateAgentRuntime(agentConfig: any, input: any): string {
-    // Convert JavaScript null to Python None
+    // Convert JavaScript values to Python
     const pythonConfig = JSON.stringify(agentConfig, null, 2)
       .replace(/null/g, 'None')
       .replace(/true/g, 'True')
@@ -217,59 +229,178 @@ class E2BClient {
       .replace(/true/g, 'True')
       .replace(/false/g, 'False')
     
-    // This is a simplified version - we'll expand this based on agent config structure
+    // Generate Python code that uses actual LLM APIs
     const code = `
 import json
 import sys
+import os
 
 # Agent configuration
 config = ${pythonConfig}
 
-# Input data
+# Input data  
 input_data = ${pythonInput}
+
+# Initialize LLM client based on model
+def initialize_llm_client(model):
+    """Initialize the appropriate LLM client based on model name"""
+    if model.startswith('gpt') or model.startswith('text-') or 'davinci' in model:
+        # OpenAI models
+        try:
+            from openai import OpenAI
+            api_key = os.environ.get('OPENAI_API_KEY')
+            if not api_key:
+                raise ValueError("OPENAI_API_KEY not found in environment")
+            return OpenAI(api_key=api_key), 'openai'
+        except ImportError:
+            raise ImportError("OpenAI package not installed")
+    elif model.startswith('claude'):
+        # Anthropic models
+        try:
+            from anthropic import Anthropic
+            api_key = os.environ.get('ANTHROPIC_API_KEY')
+            if not api_key:
+                raise ValueError("ANTHROPIC_API_KEY not found in environment")
+            return Anthropic(api_key=api_key), 'anthropic'
+        except ImportError:
+            raise ImportError("Anthropic package not installed")
+    else:
+        # Default to OpenAI
+        from openai import OpenAI
+        api_key = os.environ.get('OPENAI_API_KEY')
+        if not api_key:
+            raise ValueError("OPENAI_API_KEY not found in environment")
+        return OpenAI(api_key=api_key), 'openai'
+
+# Call LLM with agent configuration
+def call_llm(client, provider, config, user_input):
+    """Make API call to LLM based on provider"""
+    model = config.get('model', 'gpt-4')
+    temperature = config.get('temperature', 0.7)
+    max_tokens = config.get('maxTokens', 2000)
+    system_prompt = config.get('systemPrompt', 'You are a helpful AI assistant.')
+    
+    if provider == 'openai':
+        # OpenAI API call
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": str(user_input)}
+        ]
+        
+        response = client.chat.completions.create(
+            model=model,
+            messages=messages,
+            temperature=temperature,
+            max_tokens=max_tokens
+        )
+        
+        return response.choices[0].message.content
+        
+    elif provider == 'anthropic':
+        # Anthropic API call
+        # Map common model names to Anthropic models
+        anthropic_model = model
+        if model == 'claude-3' or model == 'claude':
+            anthropic_model = 'claude-3-opus-20240229'
+        elif model == 'claude-3-sonnet':
+            anthropic_model = 'claude-3-sonnet-20240229'
+        elif model == 'claude-3-haiku':
+            anthropic_model = 'claude-3-haiku-20240307'
+            
+        message = client.messages.create(
+            model=anthropic_model,
+            max_tokens=max_tokens,
+            temperature=temperature,
+            system=system_prompt,
+            messages=[
+                {"role": "user", "content": str(user_input)}
+            ]
+        )
+        
+        return message.content[0].text
+    else:
+        raise ValueError(f"Unsupported provider: {provider}")
 
 # Agent execution logic
 def execute_agent(config, input_data):
     """Execute agent based on configuration"""
     result = {
-        "status": "completed",
+        "success": True,
         "output": None,
         "metadata": {}
     }
     
-    # Parse agent type and execute accordingly
-    agent_type = config.get("type", "generic")
-    
-    if agent_type == "data_processor":
-        # Data processing logic
-        result["output"] = process_data(input_data)
-    elif agent_type == "analyzer":
-        # Analysis logic
-        result["output"] = analyze_data(input_data)
-    else:
-        # Generic execution
-        result["output"] = f"Processed input: {input_data}"
+    try:
+        # Initialize LLM client
+        model = config.get('model', 'gpt-4')
+        client, provider = initialize_llm_client(model)
+        
+        # Get agent type
+        agent_type = config.get('type', 'chatbot')
+        
+        # Format input based on agent type
+        if agent_type == 'chatbot':
+            # Direct chat interaction
+            response = call_llm(client, provider, config, input_data)
+            result['output'] = response
+            
+        elif agent_type == 'data_processor':
+            # Process data with LLM assistance
+            prompt = f"Process the following data and provide insights: {input_data}"
+            response = call_llm(client, provider, config, prompt)
+            result['output'] = {
+                "processed": True,
+                "analysis": response,
+                "original_input": input_data
+            }
+            
+        elif agent_type == 'analyzer':
+            # Analyze input
+            prompt = f"Analyze the following and provide detailed insights: {input_data}"
+            response = call_llm(client, provider, config, prompt)
+            result['output'] = {
+                "analysis": response,
+                "input_analyzed": input_data
+            }
+            
+        elif agent_type == 'automation':
+            # Automation task
+            prompt = f"Execute the following automation task: {input_data}"
+            response = call_llm(client, provider, config, prompt)
+            result['output'] = {
+                "task": input_data,
+                "execution_result": response,
+                "status": "completed"
+            }
+            
+        else:
+            # Custom/generic execution
+            response = call_llm(client, provider, config, input_data)
+            result['output'] = response
+            
+        result['metadata'] = {
+            "model": model,
+            "provider": provider,
+            "agent_type": agent_type
+        }
+        
+    except Exception as e:
+        result['success'] = False
+        result['error'] = str(e)
+        result['output'] = None
     
     return result
-
-def process_data(data):
-    """Process data based on configuration"""
-    # Add data processing logic here
-    return {"processed": True, "data": data}
-
-def analyze_data(data):
-    """Analyze data based on configuration"""
-    # Add analysis logic here
-    return {"analysis": "completed", "insights": []}
 
 # Execute the agent
 try:
     result = execute_agent(config, input_data)
     print(json.dumps(result))
+    sys.exit(0 if result.get('success', False) else 1)
 except Exception as e:
     error_result = {
-        "status": "error",
-        "error": str(e)
+        "success": False,
+        "error": str(e),
+        "output": None
     }
     print(json.dumps(error_result))
     sys.exit(1)
@@ -322,6 +453,48 @@ except Exception as e:
       console.error('Failed to install packages:', error)
       return false
     }
+  }
+
+  /**
+   * Set environment variables in sandbox
+   */
+  async setEnvironmentVariables(
+    sandbox: Sandbox,
+    envVars: Record<string, string>
+  ): Promise<boolean> {
+    try {
+      // Create a Python script to set environment variables
+      const envCode = `
+import os
+${Object.entries(envVars).map(([key, value]) => `os.environ['${key}'] = '''${value}'''`).join('\n')}
+print("Environment variables set successfully")
+`
+      const result = await sandbox.runCode(envCode)
+      return !result.error
+    } catch (error) {
+      console.error('Failed to set environment variables:', error)
+      return false
+    }
+  }
+
+  /**
+   * Get required packages based on agent configuration
+   */
+  private getRequiredPackages(agentConfig: any): string[] {
+    const packages: string[] = []
+    const model = agentConfig.model || 'gpt-4'
+    
+    // Add packages based on model provider
+    if (model.startsWith('gpt') || model.startsWith('text-') || model.includes('davinci')) {
+      packages.push('openai')
+    } else if (model.startsWith('claude')) {
+      packages.push('anthropic')
+    }
+    
+    // Add common packages for agent functionality
+    packages.push('requests', 'json5')
+    
+    return packages
   }
 
   /**

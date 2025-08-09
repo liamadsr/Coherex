@@ -94,6 +94,8 @@ export async function POST(
 
       // Parse output if it's from stdout logs
       let finalOutput = result.output
+      let actualSuccess = result.success
+      
       if (result.logs && typeof result.logs === 'object' && 'stdout' in result.logs) {
         const stdout = (result.logs as any).stdout
         if (Array.isArray(stdout) && stdout.length > 0) {
@@ -101,17 +103,29 @@ export async function POST(
             // Try to parse the first stdout line as JSON
             const parsed = JSON.parse(stdout[0])
             finalOutput = parsed.output || parsed
+            // If the parsed output indicates success, override the result success
+            if (parsed.success === true) {
+              actualSuccess = true
+            }
           } catch (e) {
             // If not JSON, use as-is
             finalOutput = stdout.join('\n')
           }
         }
       }
+      
+      // SystemExit with code 0 is actually a success in Python
+      if (result.error && typeof result.error === 'object') {
+        const error = result.error as any
+        if (error.name === 'SystemExit' && (error.value === '0' || error.value === 0)) {
+          actualSuccess = true
+        }
+      }
 
       await supabase
         .from('agent_executions')
         .update({
-          status: result.success ? 'completed' : 'failed',
+          status: actualSuccess ? 'completed' : 'failed',
           output: finalOutput,
           logs: result.logs || [],
           duration_ms: duration,
@@ -120,10 +134,10 @@ export async function POST(
         .eq('id', execution.id)
 
       return NextResponse.json({
-        success: result.success,
+        success: actualSuccess,
         executionId: execution.id,
         output: finalOutput,
-        error: result.error,
+        error: actualSuccess ? undefined : result.error,
         logs: result.logs,
         duration: duration,
         timestamp: completedAt

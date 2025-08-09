@@ -45,18 +45,39 @@ export class AgentRuntime {
    * Parse agent configuration from database JSON
    */
   static parseConfig(agent: Agent): AgentConfig {
-    const config = agent.config as any
+    const config = agent.config as any || {}
+    
+    // Extract type from config or determine based on capabilities
+    let type: 'data_processor' | 'analyzer' | 'chatbot' | 'automation' | 'custom' = 'chatbot'
+    if (config.type) {
+      type = config.type
+    } else if (agent.capabilities) {
+      // Infer type from capabilities if not explicitly set
+      const caps = agent.capabilities as string[]
+      if (caps.includes('data-analysis')) {
+        type = 'analyzer'
+      } else if (caps.includes('data-processing')) {
+        type = 'data_processor'
+      } else if (caps.includes('automation')) {
+        type = 'automation'
+      } else if (caps.includes('chat') || caps.includes('email')) {
+        type = 'chatbot'
+      }
+    }
+    
     return {
       id: agent.id,
       name: agent.name,
-      type: config.type || 'custom',
+      type: type,
       description: agent.description || undefined,
-      model: config.model,
-      temperature: config.temperature,
-      maxTokens: config.maxTokens,
-      systemPrompt: config.systemPrompt,
+      // Use top-level fields from agent, falling back to config
+      model: agent.model || config.model || 'gpt-4',
+      temperature: agent.temperature !== null && agent.temperature !== undefined ? 
+        Number(agent.temperature) : (config.temperature || 0.7),
+      maxTokens: agent.max_tokens || config.maxTokens || 2000,
+      systemPrompt: agent.system_prompt || config.systemPrompt || `You are ${agent.name}, a helpful AI assistant.`,
       tools: config.tools || [],
-      dataSources: config.dataSources || [],
+      dataSources: agent.knowledge_sources || config.dataSources || [],
       schedule: config.schedule,
       triggers: config.triggers || [],
       outputFormat: config.outputFormat || 'text',
@@ -342,8 +363,33 @@ class AgentExecutor {
       ? AgentRuntime.generateJavaScriptRuntime(context)
       : AgentRuntime.generatePythonRuntime(context)
 
-    // Execute in E2B sandbox
-    const result = await e2bClient.executeAgent(agent.id, config, input)
+    // Prepare environment variables for the sandbox
+    const envVars: Record<string, string> = {}
+    
+    // Add API keys based on the model being used
+    const model = agent.model || config.model || 'gpt-4'
+    if (model.startsWith('gpt') || model.startsWith('text-') || model.includes('davinci')) {
+      if (process.env.OPENAI_API_KEY) {
+        envVars.OPENAI_API_KEY = process.env.OPENAI_API_KEY
+      }
+    } else if (model.startsWith('claude')) {
+      if (process.env.ANTHROPIC_API_KEY) {
+        envVars.ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
+      }
+    } else {
+      // Default to OpenAI if model is unknown
+      if (process.env.OPENAI_API_KEY) {
+        envVars.OPENAI_API_KEY = process.env.OPENAI_API_KEY
+      }
+    }
+
+    // Add other potentially useful environment variables
+    if (process.env.EXA_API_KEY) {
+      envVars.EXA_API_KEY = process.env.EXA_API_KEY
+    }
+
+    // Execute in E2B sandbox with environment variables
+    const result = await e2bClient.executeAgent(agent.id, config, input, envVars)
 
     return result
   }
