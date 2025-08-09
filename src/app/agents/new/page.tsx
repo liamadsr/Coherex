@@ -1161,149 +1161,135 @@ export default function NewAgentPage() {
           {/* Right Panel - AI Assistant Style Test Panel */}
           <div className="flex-1 min-h-0 overflow-hidden">
             <div className="h-full bg-white dark:bg-[#0c0c0c] rounded-2xl shadow-sm overflow-hidden flex flex-col">
-              {/* Header */}
-              <div className="px-6 py-3 border-b border-gray-200 dark:border-neutral-800">
-                <div className="flex items-center justify-between mb-3">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Live Agent Testing</h3>
-                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
-                      Test your agent configuration in real-time
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {/* Environment Controls */}
-                    <div className="flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-neutral-800 rounded-lg">
-                      {/* Restart Button (left) */}
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={restartEnvironment}
-                        disabled={!restartNeeded}
-                        className={cn(
-                          "p-1.5",
-                          restartNeeded 
-                            ? "text-amber-500 hover:text-amber-600 animate-pulse" 
-                            : "text-gray-400 hover:text-gray-400 cursor-not-allowed opacity-50"
-                        )}
-                        title={
-                          restartNeeded 
-                            ? "Configuration changed - restart required to apply changes" 
-                            : environmentStatus === 'running' 
-                              ? "No changes to apply"
-                              : "Start environment first"}
-                      >
-                        <RefreshCw className="w-3.5 h-3.5" />
-                      </Button>
-                      
-                      {/* Stop Button (middle) */}
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => stopEnvironment()}
-                        disabled={environmentStatus !== 'running'}
-                        className="p-1.5"
-                        title="Stop environment"
-                      >
-                        <Square className={cn(
-                          "w-3.5 h-3.5",
-                          environmentStatus === 'running' ? "text-red-600" : "text-gray-400"
-                        )} />
-                      </Button>
-                      
-                      {/* Play/Start Button (right) */}
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={startEnvironment}
-                        disabled={environmentStatus !== 'idle' || !watchedModel}
-                        className="p-1.5"
-                        title={!watchedModel ? "Select a model first" : "Start environment"}
-                      >
-                        <Play className={cn(
-                          "w-3.5 h-3.5",
-                          environmentStatus === 'idle' && watchedModel ? "text-green-600" : "text-gray-400"
-                        )} />
-                      </Button>
-                    </div>
+              {/* Minimal Header */}
+              <div className="border-b border-gray-200 dark:border-neutral-800/50">
+                {/* Top row with title and controls */}
+                <div className="flex items-center justify-between px-4 py-2">
+                  <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Live Testing</h3>
+                  
+                  {/* Environment Controls - more subtle */}
+                  <div className="flex items-center gap-1">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={restartEnvironment}
+                      disabled={!restartNeeded}
+                      className={cn(
+                        "h-7 w-7 p-0",
+                        restartNeeded 
+                          ? "text-amber-500 hover:text-amber-600 hover:bg-amber-500/10 animate-pulse" 
+                          : "text-muted-foreground/50 cursor-not-allowed"
+                      )}
+                      title={
+                        restartNeeded 
+                          ? "Restart to apply changes" 
+                          : "No changes to apply"}
+                    >
+                      <RefreshCw className="w-3.5 h-3.5" />
+                    </Button>
                     
-                    {/* Restart indicator when execution mode changes */}
-                    {environmentStatus === 'running' && runningExecutionMode && runningExecutionMode !== watchedExecutionMode && (
-                      <Badge 
-                        variant="outline" 
-                        className="text-xs flex items-center gap-1 bg-amber-500/10 text-amber-600 border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-400 animate-pulse"
-                      >
-                        <AlertCircle className="w-3 h-3" />
-                        Restart needed
-                      </Badge>
-                    )}
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => stopEnvironment()}
+                      disabled={environmentStatus !== 'running'}
+                      className={cn(
+                        "h-7 w-7 p-0",
+                        environmentStatus === 'running' 
+                          ? "text-red-500 hover:text-red-600 hover:bg-red-500/10" 
+                          : "text-muted-foreground/50 cursor-not-allowed"
+                      )}
+                      title="Stop environment"
+                    >
+                      <Square className="w-3.5 h-3.5" />
+                    </Button>
+                    
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={startEnvironment}
+                      disabled={environmentStatus !== 'idle' || !watchedModel}
+                      className={cn(
+                        "h-7 w-7 p-0",
+                        environmentStatus === 'idle' && watchedModel 
+                          ? "text-green-500 hover:text-green-600 hover:bg-green-500/10" 
+                          : "text-muted-foreground/50 cursor-not-allowed"
+                      )}
+                      title={!watchedModel ? "Select a model first" : "Start environment"}
+                    >
+                      <Play className="w-3.5 h-3.5" />
+                    </Button>
                   </div>
                 </div>
                 
-                {/* View Tabs and Status Row */}
-                <div className="flex items-center justify-between gap-1 mt-2">
-                  <div className="flex gap-1">
+                {/* View tabs and status - cleaner style */}
+                <div className="flex items-center justify-between px-4 pb-2">
+                  <div className="flex gap-4">
                     <button
                       onClick={() => setTestPanelView('chat')}
                       className={cn(
-                        "flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
+                        "text-sm font-medium transition-colors relative pb-0.5",
                         testPanelView === 'chat' 
-                          ? "bg-gray-100 dark:bg-neutral-800 text-gray-900 dark:text-white" 
-                          : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                          ? "text-foreground" 
+                          : "text-muted-foreground hover:text-foreground"
                       )}
                     >
-                      <MessageSquare className="w-4 h-4" />
                       Chat
+                      {testPanelView === 'chat' && (
+                        <div className="absolute -bottom-2 left-0 right-0 h-0.5 bg-primary" />
+                      )}
                     </button>
                     <button
                       onClick={() => setTestPanelView('logs')}
                       className={cn(
-                        "flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
+                        "text-sm font-medium transition-colors relative pb-0.5",
                         testPanelView === 'logs' 
-                          ? "bg-gray-100 dark:bg-neutral-800 text-gray-900 dark:text-white" 
-                          : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                          ? "text-foreground" 
+                          : "text-muted-foreground hover:text-foreground"
                       )}
                     >
-                      <Terminal className="w-4 h-4" />
                       Logs
                       {executionLogs.length > 0 && (
-                        <span className="ml-1 px-1.5 py-0.5 text-xs bg-gray-200 dark:bg-neutral-700 rounded-full">
-                          {executionLogs.length}
+                        <span className="ml-1.5 text-xs text-muted-foreground">
+                          ({executionLogs.length})
                         </span>
+                      )}
+                      {testPanelView === 'logs' && (
+                        <div className="absolute -bottom-2 left-0 right-0 h-0.5 bg-primary" />
                       )}
                     </button>
                   </div>
                   
-                  {/* Environment Status - now on the right side */}
+                  {/* Environment Status - more subtle */}
                   {environmentStatus !== 'idle' && (
-                    <div className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium">
+                    <div className="flex items-center gap-3 text-xs">
                       {environmentStatus === 'running' && (
-                        <span className="flex items-center gap-1.5 text-green-600 dark:text-green-400">
-                          <span className="relative flex h-2 w-2">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                        <span className="flex items-center gap-1.5 text-green-600 dark:text-green-500">
+                          <span className="relative flex h-1.5 w-1.5">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-600"></span>
                           </span>
                           Running
                         </span>
                       )}
                       {environmentStatus === 'starting' && (
-                        <span className="flex items-center gap-1.5 text-yellow-600 dark:text-yellow-400">
-                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                          Starting...
+                        <span className="flex items-center gap-1.5 text-yellow-600 dark:text-yellow-500">
+                          <Loader2 className="w-3 h-3 animate-spin" />
+                          Starting
                         </span>
                       )}
                       {environmentStatus === 'stopping' && (
-                        <span className="flex items-center gap-1.5 text-orange-600 dark:text-orange-400">
-                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                          Stopping...
+                        <span className="flex items-center gap-1.5 text-orange-600 dark:text-orange-500">
+                          <Loader2 className="w-3 h-3 animate-spin" />
+                          Stopping
                         </span>
                       )}
-                      {/* Timer when running */}
+                      {/* Timer */}
                       {environmentStartTime && environmentStatus === 'running' && (
-                        <span className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
-                          <Clock className="w-3 h-3" />
+                        <span className="text-muted-foreground">
                           {(() => {
                             const elapsed = Math.floor((Date.now() - environmentStartTime.getTime()) / 1000)
                             const minutes = Math.floor(elapsed / 60)
