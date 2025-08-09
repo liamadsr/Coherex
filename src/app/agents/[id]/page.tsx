@@ -47,10 +47,10 @@ import {
 import { Agent, Conversation, AgentMetrics } from '@/types'
 import { toast } from 'sonner'
 import { useAgent, useUpdateAgent, useDeleteAgent, useConversations } from '@/hooks/queries'
-import { mockApi } from '@/mock-data'
 import { MetricsChart } from '@/components/charts/MetricsChart'
 import { ConversationDetail } from '@/components/conversations/ConversationDetail'
 import { Textarea } from '@/components/ui/textarea'
+import { Checkbox } from '@/components/ui/checkbox'
 
 const channelIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   email: Mail,
@@ -93,6 +93,9 @@ export default function AgentDetailPage() {
   const [executionResult, setExecutionResult] = useState<any>(null)
   const [executionHistory, setExecutionHistory] = useState<any[]>([])
   const [loadingHistory, setLoadingHistory] = useState(false)
+  const [availableDataSources, setAvailableDataSources] = useState<any[]>([])
+  const [connectedDataSources, setConnectedDataSources] = useState<string[]>([])
+  const [loadingDataSources, setLoadingDataSources] = useState(false)
   
   const { data: agent, isLoading: loading } = useAgent(agentId)
   const { data: conversations = [] } = useConversations({ agentId })
@@ -103,8 +106,18 @@ export default function AgentDetailPage() {
     const loadMetrics = async () => {
       if (agentId) {
         try {
-          const metricsData = await mockApi.getAgentMetrics(agentId)
-          setMetrics(metricsData)
+          // TODO: Replace with real metrics API when available
+          // For now, use mock metrics
+          setMetrics({
+            totalConversations: 0,
+            activeConversations: 0,
+            avgResponseTime: 0,
+            satisfactionScore: 0,
+            successRate: 0,
+            uptime: 100,
+            errorsCount: 0,
+            lastActive: new Date(),
+          })
         } catch (error) {
           console.error('Error loading metrics:', error)
         }
@@ -132,6 +145,34 @@ export default function AgentDetailPage() {
     }
     loadExecutionHistory()
   }, [agentId, currentTab, executionResult]) // Reload when new execution completes
+
+  useEffect(() => {
+    const loadDataSources = async () => {
+      if (agentId && currentTab === 'configuration') {
+        setLoadingDataSources(true)
+        try {
+          // Load available data sources
+          const dsResponse = await fetch('/api/data-sources')
+          if (dsResponse.ok) {
+            const dsData = await dsResponse.json()
+            setAvailableDataSources(dsData.dataSources || [])
+          }
+
+          // Load connected data sources for this agent
+          const connResponse = await fetch(`/api/agents/${agentId}/data-sources`)
+          if (connResponse.ok) {
+            const connData = await connResponse.json()
+            setConnectedDataSources(connData.dataSourceIds || [])
+          }
+        } catch (error) {
+          console.error('Error loading data sources:', error)
+        } finally {
+          setLoadingDataSources(false)
+        }
+      }
+    }
+    loadDataSources()
+  }, [agentId, currentTab])
 
   const handleToggleStatus = async () => {
     if (!agent) return
@@ -791,6 +832,66 @@ export default function AgentDetailPage() {
                   <h4 className="font-medium">System Prompt</h4>
                   <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
                     <p className="text-sm font-mono whitespace-pre-wrap">{(agent as any).config?.systemPrompt || agent.systemPrompt || 'No system prompt configured'}</p>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h4 className="font-medium">Connected Data Sources</h4>
+                  <div className="space-y-3">
+                    {loadingDataSources ? (
+                      <div className="text-sm text-gray-500">Loading data sources...</div>
+                    ) : availableDataSources.length === 0 ? (
+                      <div className="text-sm text-gray-500">
+                        No data sources available. <a href="/knowledge/sources" className="text-blue-600 hover:underline">Create one</a>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        {availableDataSources.map((source) => {
+                          const isConnected = connectedDataSources.includes(source.id)
+                          return (
+                            <div key={source.id} className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900/50">
+                              <Checkbox
+                                checked={isConnected}
+                                onCheckedChange={async (checked) => {
+                                  try {
+                                    const method = checked ? 'POST' : 'DELETE'
+                                    const response = await fetch(`/api/agents/${agentId}/data-sources`, {
+                                      method,
+                                      headers: { 'Content-Type': 'application/json' },
+                                      body: JSON.stringify({ dataSourceId: source.id })
+                                    })
+                                    
+                                    if (response.ok) {
+                                      if (checked) {
+                                        setConnectedDataSources([...connectedDataSources, source.id])
+                                        toast.success(`Connected to ${source.name}`)
+                                      } else {
+                                        setConnectedDataSources(connectedDataSources.filter(id => id !== source.id))
+                                        toast.success(`Disconnected from ${source.name}`)
+                                      }
+                                    } else {
+                                      toast.error('Failed to update data source connection')
+                                    }
+                                  } catch (error) {
+                                    console.error('Error updating data source:', error)
+                                    toast.error('Failed to update data source connection')
+                                  }
+                                }}
+                              />
+                              <div className="flex-1">
+                                <p className="font-medium text-sm">{source.name}</p>
+                                <p className="text-xs text-gray-500">
+                                  {source.type} • {source.description || 'No description'}
+                                </p>
+                              </div>
+                              <Badge variant={source.status === 'active' ? 'default' : 'secondary'}>
+                                {source.status}
+                              </Badge>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    )}
                   </div>
                 </div>
               </CardContent>

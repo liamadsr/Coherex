@@ -55,10 +55,11 @@ export default function DashboardPage() {
   useEffect(() => {
     const loadDashboardData = async () => {
       try {
-        const [agentsResult, analyticsResult] = await Promise.all([
-          mockApi.getAgents(),
+        const [agentsResponse, analyticsResult] = await Promise.all([
+          fetch('/api/agents'),
           mockApi.getAnalytics()
         ])
+        const agentsResult = await agentsResponse.json()
 
         setAgents(agentsResult.data || [])
         setAnalytics(analyticsResult.data)

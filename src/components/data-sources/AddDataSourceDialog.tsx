@@ -30,13 +30,15 @@ interface AddDataSourceDialogProps {
 
 const dataSourceTypes = [
   { value: 'website', label: 'Website', placeholder: 'https://example.com' },
-  { value: 'database', label: 'Database', placeholder: 'postgresql://...' },
+  { value: 'database', label: 'Database', placeholder: 'PostgreSQL, MySQL, etc.' },
+  { value: 'git', label: 'Git Repository', placeholder: 'github.com/owner/repo' },
+  { value: 'files', label: 'Files', placeholder: 'Local storage path' },
+  { value: 'confluence', label: 'Confluence', placeholder: 'Space key (e.g., TECH)' },
   { value: 'api', label: 'API', placeholder: 'https://api.example.com' },
-  { value: 'file', label: 'File/Document', placeholder: 'Path or URL to file' },
-  { value: 'google_drive', label: 'Google Drive', placeholder: 'Drive folder ID' },
-  { value: 'github', label: 'GitHub Repository', placeholder: 'owner/repo' },
+  { value: 'github', label: 'GitHub', placeholder: 'owner/repo' },
+  { value: 'gmail', label: 'Gmail', placeholder: 'Gmail account' },
   { value: 'slack', label: 'Slack', placeholder: 'Workspace ID' },
-  { value: 'notion', label: 'Notion', placeholder: 'Database ID' },
+  { value: 'file', label: 'Single File', placeholder: 'Path or URL to file' },
 ]
 
 export function AddDataSourceDialog({ onSuccess }: AddDataSourceDialogProps) {
@@ -47,6 +49,12 @@ export function AddDataSourceDialog({ onSuccess }: AddDataSourceDialogProps) {
     type: 'website',
     description: '',
     url: '',
+    connection: '',
+    repository: '',
+    location: '',
+    space: '',
+    syncFrequency: 'Every 6 hours',
+    owner: '',
     apiKey: '',
   })
 
@@ -58,23 +66,50 @@ export function AddDataSourceDialog({ onSuccess }: AddDataSourceDialogProps) {
 
     setLoading(true)
     try {
-      const config: any = {}
-      
-      // Build config based on type
-      if (formData.url) config.url = formData.url
-      if (formData.apiKey) config.apiKey = formData.apiKey
+      // Build request matching mock structure
+      const requestData: any = {
+        name: formData.name,
+        type: formData.type,
+        description: formData.description,
+        syncFrequency: formData.syncFrequency,
+        owner: formData.owner || 'Current User',
+        status: 'active',
+        documents: 0,
+        size: '0 MB'
+      }
+
+      // Add type-specific fields
+      switch (formData.type) {
+        case 'website':
+        case 'api':
+          requestData.url = formData.url
+          break
+        case 'database':
+          requestData.connection = formData.connection
+          break
+        case 'git':
+        case 'github':
+          requestData.repository = formData.repository
+          break
+        case 'files':
+          requestData.location = formData.location
+          break
+        case 'confluence':
+          requestData.space = formData.space
+          break
+      }
+
+      // Store API key in config if provided
+      if (formData.apiKey) {
+        requestData.config = { apiKey: formData.apiKey }
+      }
 
       const response = await fetch('/api/data-sources', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          name: formData.name,
-          type: formData.type,
-          description: formData.description,
-          config
-        })
+        body: JSON.stringify(requestData)
       })
 
       const result = await response.json()
@@ -87,6 +122,12 @@ export function AddDataSourceDialog({ onSuccess }: AddDataSourceDialogProps) {
           type: 'website',
           description: '',
           url: '',
+          connection: '',
+          repository: '',
+          location: '',
+          space: '',
+          syncFrequency: 'Every 6 hours',
+          owner: '',
           apiKey: '',
         })
         onSuccess?.()
@@ -149,17 +190,58 @@ export function AddDataSourceDialog({ onSuccess }: AddDataSourceDialogProps) {
             </Select>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="url">
-              {formData.type === 'database' ? 'Connection String' : 'URL/Path'}
-            </Label>
-            <Input
-              id="url"
-              placeholder={selectedType?.placeholder}
-              value={formData.url}
-              onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-            />
-          </div>
+          {/* Dynamic field based on type */}
+          {formData.type === 'website' || formData.type === 'api' ? (
+            <div className="space-y-2">
+              <Label htmlFor="url">URL</Label>
+              <Input
+                id="url"
+                placeholder={selectedType?.placeholder}
+                value={formData.url}
+                onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+              />
+            </div>
+          ) : formData.type === 'database' ? (
+            <div className="space-y-2">
+              <Label htmlFor="connection">Connection</Label>
+              <Input
+                id="connection"
+                placeholder={selectedType?.placeholder}
+                value={formData.connection}
+                onChange={(e) => setFormData({ ...formData, connection: e.target.value })}
+              />
+            </div>
+          ) : formData.type === 'git' || formData.type === 'github' ? (
+            <div className="space-y-2">
+              <Label htmlFor="repository">Repository</Label>
+              <Input
+                id="repository"
+                placeholder={selectedType?.placeholder}
+                value={formData.repository}
+                onChange={(e) => setFormData({ ...formData, repository: e.target.value })}
+              />
+            </div>
+          ) : formData.type === 'files' ? (
+            <div className="space-y-2">
+              <Label htmlFor="location">Location</Label>
+              <Input
+                id="location"
+                placeholder={selectedType?.placeholder}
+                value={formData.location}
+                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+              />
+            </div>
+          ) : formData.type === 'confluence' ? (
+            <div className="space-y-2">
+              <Label htmlFor="space">Space</Label>
+              <Input
+                id="space"
+                placeholder={selectedType?.placeholder}
+                value={formData.space}
+                onChange={(e) => setFormData({ ...formData, space: e.target.value })}
+              />
+            </div>
+          ) : null}
 
           {['api', 'notion', 'slack'].includes(formData.type) && (
             <div className="space-y-2">
@@ -173,6 +255,35 @@ export function AddDataSourceDialog({ onSuccess }: AddDataSourceDialogProps) {
               />
             </div>
           )}
+
+          <div className="space-y-2">
+            <Label htmlFor="syncFrequency">Sync Frequency</Label>
+            <Select
+              value={formData.syncFrequency}
+              onValueChange={(value) => setFormData({ ...formData, syncFrequency: value })}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Every hour">Every hour</SelectItem>
+                <SelectItem value="Every 6 hours">Every 6 hours</SelectItem>
+                <SelectItem value="Daily">Daily</SelectItem>
+                <SelectItem value="Weekly">Weekly</SelectItem>
+                <SelectItem value="Manual">Manual</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="owner">Owner (Optional)</Label>
+            <Input
+              id="owner"
+              placeholder="e.g., John Smith, Dev Team"
+              value={formData.owner}
+              onChange={(e) => setFormData({ ...formData, owner: e.target.value })}
+            />
+          </div>
 
           <div className="space-y-2">
             <Label htmlFor="description">Description</Label>

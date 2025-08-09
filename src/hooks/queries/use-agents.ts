@@ -38,24 +38,8 @@ export function useAgents(filters?: {
       
       const data = await response.json()
       
-      // Transform to match existing Agent type
-      // For now, return empty array if no agents
-      return data.agents?.map((agent: any) => ({
-        id: agent.id,
-        name: agent.name,
-        email: agent.config?.email || 'agent@coherex.ai',
-        avatar: agent.config?.avatar || '🤖',
-        status: agent.status || 'draft',
-        capabilities: agent.config?.capabilities || [],
-        metrics: {
-          totalConversations: 0,
-          avgResponseTime: 0,
-          satisfactionScore: 0,
-          successRate: 0
-        },
-        createdAt: agent.created_at,
-        updatedAt: agent.updated_at
-      })) || []
+      // API returns data in mock format already
+      return data.data || []
     },
   })
 }
@@ -71,25 +55,10 @@ export function useAgent(id: string) {
         throw new Error('Failed to fetch agent')
       }
       
-      const agent = await response.json()
+      const result = await response.json()
       
-      // Transform to match existing Agent type
-      return {
-        id: agent.id,
-        name: agent.name,
-        email: agent.config?.email || 'agent@coherex.ai',
-        avatar: agent.config?.avatar || '🤖',
-        status: agent.status || 'draft',
-        capabilities: agent.config?.capabilities || [],
-        metrics: {
-          totalConversations: 0,
-          avgResponseTime: 0,
-          satisfactionScore: 0,
-          successRate: 0
-        },
-        createdAt: agent.created_at,
-        updatedAt: agent.updated_at
-      }
+      // API returns data in mock format already
+      return result.data
     },
     enabled: !!id,
   })
@@ -112,7 +81,7 @@ export function useCreateAgent() {
       }
       
       const result = await response.json()
-      return result.agent
+      return result.data
     },
     onSuccess: (data) => {
       // Invalidate and refetch agents list
@@ -132,10 +101,17 @@ export function useUpdateAgent() {
   
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Partial<Agent> }) => {
-      const result = await mockApi.updateAgent(id, data)
-      if (!result.success || !result.data) {
+      const response = await fetch(`/api/agents/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+      
+      if (!response.ok) {
         throw new Error('Failed to update agent')
       }
+      
+      const result = await response.json()
       return result.data
     },
     onSuccess: (data) => {
@@ -157,10 +133,14 @@ export function useDeleteAgent() {
   
   return useMutation({
     mutationFn: async (id: string) => {
-      const result = await mockApi.deleteAgent(id)
-      if (!result.success) {
+      const response = await fetch(`/api/agents/${id}`, {
+        method: 'DELETE'
+      })
+      
+      if (!response.ok) {
         throw new Error('Failed to delete agent')
       }
+      
       return id
     },
     onSuccess: (id) => {

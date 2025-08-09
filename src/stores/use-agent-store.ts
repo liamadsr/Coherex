@@ -1,6 +1,5 @@
 import { useStore } from './use-store'
 import { Agent } from '@/types'
-import { mockApi } from '@/mock-data'
 import { toast } from 'sonner'
 
 // Hook for agent-related operations
@@ -11,7 +10,8 @@ export const useAgentStore = () => {
   const loadAgents = async () => {
     store.setLoadingAgents(true)
     try {
-      const result = await mockApi.getAgents()
+      const response = await fetch('/api/agents')
+      const result = await response.json()
       if (result.success && result.data) {
         store.setAgents(result.data)
       }
@@ -26,7 +26,12 @@ export const useAgentStore = () => {
   // Create a new agent
   const createAgent = async (agentData: Partial<Agent>) => {
     try {
-      const result = await mockApi.createAgent(agentData as any)
+      const response = await fetch('/api/agents', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(agentData)
+      })
+      const result = await response.json()
       if (result.success && result.data) {
         store.addAgent(result.data)
         toast.success('Agent created successfully')
@@ -45,7 +50,12 @@ export const useAgentStore = () => {
       // Optimistic update
       store.updateAgent(id, updates)
       
-      const result = await mockApi.updateAgent(id, updates)
+      const response = await fetch(`/api/agents/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates)
+      })
+      const result = await response.json()
       if (result.success && result.data) {
         store.updateAgent(id, result.data)
         toast.success('Agent updated successfully')
@@ -66,7 +76,10 @@ export const useAgentStore = () => {
       // Optimistic delete
       store.deleteAgent(id)
       
-      const result = await mockApi.deleteAgent(id)
+      const response = await fetch(`/api/agents/${id}`, {
+        method: 'DELETE'
+      })
+      const result = await response.json()
       if (result.success) {
         toast.success('Agent deleted successfully')
       } else {

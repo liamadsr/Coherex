@@ -33,6 +33,28 @@ export async function POST(
       )
     }
 
+    // Fetch connected data sources
+    const { data: connections } = await supabase
+      .from('agent_data_sources')
+      .select(`
+        data_source_id,
+        permissions,
+        data_sources (
+          id,
+          name,
+          type,
+          config,
+          status
+        )
+      `)
+      .eq('agent_id', agentId)
+
+    // Extract data source information
+    const dataSources = connections?.map((conn: any) => ({
+      ...conn.data_sources,
+      permissions: conn.permissions
+    })) || []
+
     // Create execution record
     const { data: execution, error: execError } = await supabase
       .from('agent_executions')
@@ -59,8 +81,12 @@ export async function POST(
       .eq('id', execution.id)
 
     try {
-      // Execute agent in E2B sandbox
-      const result = await AgentRuntime.execute(agent, input, options)
+      // Execute agent in E2B sandbox with data source context
+      const enrichedAgent = {
+        ...agent,
+        dataSources
+      }
+      const result = await AgentRuntime.execute(enrichedAgent, input, options)
 
       // Update execution record with results
       const completedAt = new Date().toISOString()

@@ -37,11 +37,47 @@ export async function GET(req: NextRequest) {
       )
     }
 
+    // Transform to match mock structure exactly
+    const transformedAgents = (agents || []).map(agent => ({
+      id: agent.id,
+      name: agent.name,
+      email: agent.email || `${agent.name.toLowerCase().replace(/\s+/g, '.')}@coherex.ai`,
+      description: agent.description,
+      status: agent.status,
+      personality: agent.personality || [],
+      capabilities: agent.capabilities || [],
+      channels: agent.channels || [],
+      integrations: agent.integrations || [],
+      knowledgeSources: agent.knowledge_sources || [],
+      model: agent.model || 'gpt-4',
+      temperature: agent.temperature || 0.7,
+      maxTokens: agent.max_tokens || 2000,
+      systemPrompt: agent.system_prompt || '',
+      avatar: agent.avatar || '🤖',
+      metrics: agent.metrics || {
+        conversationsHandled: 0,
+        averageResponseTime: '0s',
+        satisfactionScore: 0,
+        accuracyScore: 0,
+        uptime: 100,
+        totalMessages: 0,
+        successfulResolutions: 0
+      },
+      createdAt: agent.created_at,
+      updatedAt: agent.updated_at,
+      organizationId: agent.organization_id,
+      userId: agent.user_id
+    }))
+
     return NextResponse.json({
-      agents: agents || [],
-      total: count || 0,
-      limit,
-      offset
+      success: true,
+      data: transformedAgents,
+      pagination: {
+        page: Math.floor(offset / limit) + 1,
+        limit,
+        total: count || 0,
+        totalPages: Math.ceil((count || 0) / limit)
+      }
     })
   } catch (error) {
     console.error('Fetch agents error:', error)
@@ -65,15 +101,40 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // Insert with all fields matching mock structure
+    const insertData = {
+      name: agentData.name,
+      email: agentData.email || `${agentData.name.toLowerCase().replace(/\s+/g, '.')}@coherex.ai`,
+      description: agentData.description || '',
+      status: agentData.status || 'training',
+      personality: agentData.personality || [],
+      capabilities: agentData.capabilities || [],
+      channels: agentData.channels || [],
+      integrations: agentData.integrations || [],
+      knowledge_sources: agentData.knowledgeSources || [],
+      model: agentData.model || 'gpt-4',
+      temperature: agentData.temperature || 0.7,
+      max_tokens: agentData.maxTokens || 2000,
+      system_prompt: agentData.systemPrompt || '',
+      avatar: agentData.avatar || '🤖',
+      metrics: {
+        conversationsHandled: 0,
+        averageResponseTime: '0s',
+        satisfactionScore: 0,
+        accuracyScore: 0,
+        uptime: 100,
+        totalMessages: 0,
+        successfulResolutions: 0
+      },
+      organization_id: agentData.organizationId,
+      user_id: agentData.userId,
+      config: agentData.config || {},
+      version: 1
+    }
+
     const { data: agent, error } = await supabase
       .from('agents')
-      .insert({
-        name: agentData.name,
-        description: agentData.description || '',
-        config: agentData.config || {},
-        status: agentData.status || 'draft',
-        version: 1
-      })
+      .insert(insertData)
       .select()
       .single()
 
@@ -84,10 +145,33 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // Transform response to match mock structure
+    const transformedAgent = {
+      id: agent.id,
+      name: agent.name,
+      email: agent.email,
+      description: agent.description,
+      status: agent.status,
+      personality: agent.personality || [],
+      capabilities: agent.capabilities || [],
+      channels: agent.channels || [],
+      integrations: agent.integrations || [],
+      knowledgeSources: agent.knowledge_sources || [],
+      model: agent.model,
+      temperature: agent.temperature,
+      maxTokens: agent.max_tokens,
+      systemPrompt: agent.system_prompt,
+      avatar: agent.avatar,
+      metrics: agent.metrics,
+      createdAt: agent.created_at,
+      updatedAt: agent.updated_at,
+      organizationId: agent.organization_id,
+      userId: agent.user_id
+    }
+
     return NextResponse.json({
       success: true,
-      agent,
-      message: 'Agent created successfully'
+      data: transformedAgent
     })
   } catch (error) {
     console.error('Create agent error:', error)
