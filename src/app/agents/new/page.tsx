@@ -639,65 +639,60 @@ export default function NewAgentPage() {
   return (
     <MainLayout>
       <div className="flex flex-col h-[calc(100vh-120px)]">
-        {/* Header */}
-        <div className="px-6 py-4 border-b">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => router.back()}
-                className="px-3 py-2"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back
-              </Button>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Agent Builder</h1>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Configure, test, and refine your AI assistant before creating
-                </p>
-              </div>
+        {/* Simplified Header Bar */}
+        <div className="flex items-center justify-between px-4 py-2 border-b border-gray-200 dark:border-neutral-800/50">
+          <div className="flex items-center space-x-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => router.back()}
+              className="h-8 px-2"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
+            <div>
+              <h1 className="text-base font-semibold text-gray-900 dark:text-white">Agent Builder</h1>
             </div>
-            <div className="flex items-center gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => toast.info('Save as draft feature coming soon!')}
-                size="sm"
-              >
-                <Save className="w-4 h-4 mr-2" />
-                Save Draft
-              </Button>
-              <Button
-                onClick={handleSubmit(onSubmit)}
-                disabled={!isValid || isLoading}
-                size="sm"
-                className="bg-green-600 hover:bg-green-700 text-white"
-                title={isValid ? "Save this agent to your workspace" : "Complete all required fields first"}
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Creating...
-                  </>
-                ) : (
-                  <>
-                    <CheckCircle className="w-4 h-4 mr-2" />
-                    Create Agent
-                  </>
-                )}
-              </Button>
-            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => toast.info('Save as draft feature coming soon!')}
+              size="sm"
+              className="h-8"
+            >
+              <Save className="w-4 h-4 mr-1.5" />
+              <span className="text-sm">Save Draft</span>
+            </Button>
+            <Button
+              onClick={handleSubmit(onSubmit)}
+              disabled={!isValid || isLoading}
+              size="sm"
+              className="h-8 bg-primary hover:bg-primary/90"
+              title={isValid ? "Save this agent to your workspace" : "Complete all required fields first"}
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
+                  <span className="text-sm">Creating...</span>
+                </>
+              ) : (
+                <>
+                  <CheckCircle className="w-4 h-4 mr-1.5" />
+                  <span className="text-sm">Create Agent</span>
+                </>
+              )}
+            </Button>
           </div>
         </div>
 
-        {/* Main Content - Split View */}
-        <div className="flex-1 flex flex-col lg:flex-row gap-4 p-4 overflow-hidden">
-          {/* Left Panel - Configuration */}
-          <div className="flex-1 min-h-0 overflow-hidden">
-            <Card className="h-full flex flex-col">
-              <CardContent className="p-6 flex-1 overflow-hidden flex flex-col">
+        {/* Main Content - Unified Panel */}
+        <div className="flex-1 flex overflow-hidden p-2">
+          <div className="flex-1 bg-white dark:bg-[#0c0c0c] rounded-2xl shadow-sm overflow-hidden flex">
+            {/* Left Panel - Configuration */}
+            <div className="w-1/2 border-r border-gray-200 dark:border-neutral-800/50 flex flex-col">
+              <div className="p-6 flex-1 overflow-hidden flex flex-col">
                 <Tabs value={currentTab} onValueChange={setCurrentTab} className="flex-1 flex flex-col min-h-0">
                   <TabsList className="grid w-full grid-cols-3 h-10 bg-gray-100 dark:bg-neutral-800 p-1 rounded-lg mb-6">
                     <TabsTrigger value="basic" className="text-xs font-medium">Interaction</TabsTrigger>
@@ -1154,13 +1149,11 @@ export default function NewAgentPage() {
                   </TabsContent>
 
                 </Tabs>
-              </CardContent>
-            </Card>
-          </div>
+              </div>
+            </div>
 
-          {/* Right Panel - AI Assistant Style Test Panel */}
-          <div className="flex-1 min-h-0 overflow-hidden">
-            <div className="h-full bg-white dark:bg-[#0c0c0c] rounded-2xl shadow-sm overflow-hidden flex flex-col">
+            {/* Right Panel - Testing */}
+            <div className="w-1/2 flex flex-col">
               {/* Minimal Header */}
               <div className="border-b border-gray-200 dark:border-neutral-800/50">
                 {/* Top row with title and controls */}
