@@ -95,7 +95,7 @@ export class PersistentSandboxManager {
       .from('agent_sessions')
       .insert({
         agent_id: agent.id,
-        sandbox_id: sandbox.id,
+        sandbox_id: sandbox.sandboxId,
         status: 'active' as SessionStatus,
         conversation_context: [],
         metadata: {
@@ -108,7 +108,7 @@ export class PersistentSandboxManager {
     
     if (error || !session) {
       // Clean up sandbox if database insert fails
-      await sandbox.close()
+      await sandbox.kill()
       throw new Error('Failed to create session record')
     }
     
@@ -200,7 +200,7 @@ export class PersistentSandboxManager {
     // In a real implementation, you might serialize the Python interpreter state
     
     // Close sandbox
-    await sandbox.close()
+    await sandbox.kill()
     this.activeSandboxes.delete(sessionId)
     
     // Clear idle timer
@@ -263,7 +263,7 @@ export class PersistentSandboxManager {
       .from('agent_sessions')
       .update({ 
         status: 'active' as SessionStatus,
-        sandbox_id: sandbox.id,
+        sandbox_id: sandbox.sandboxId,
         hibernated_at: null
       })
       .eq('id', session.id)
@@ -281,7 +281,7 @@ export class PersistentSandboxManager {
     // Clean up sandbox
     const sandbox = this.activeSandboxes.get(sessionId)
     if (sandbox) {
-      await sandbox.close()
+      await sandbox.kill()
       this.activeSandboxes.delete(sessionId)
     }
     
@@ -520,7 +520,7 @@ print(json.dumps({"success": True, "output": result}))
   async shutdown(): Promise<void> {
     // Stop all active sessions
     for (const [sessionId, sandbox] of this.activeSandboxes) {
-      await sandbox.close()
+      await sandbox.kill()
       await this.stopSession(sessionId)
     }
     

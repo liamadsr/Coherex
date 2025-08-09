@@ -511,7 +511,7 @@ print("Environment variables set successfully")
     const sandbox = this.sandboxes.get(agentId)
     if (sandbox) {
       try {
-        await sandbox.close()
+        await sandbox.kill()
         this.sandboxes.delete(agentId)
       } catch (error) {
         console.error('Failed to close sandbox:', error)

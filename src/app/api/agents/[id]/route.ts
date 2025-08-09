@@ -98,6 +98,8 @@ export async function PUT(
     if (updates.organizationId !== undefined) dbUpdates.organization_id = updates.organizationId
     if (updates.userId !== undefined) dbUpdates.user_id = updates.userId
     if (updates.config !== undefined) dbUpdates.config = updates.config
+    if (updates.execution_mode !== undefined) dbUpdates.execution_mode = updates.execution_mode
+    if (updates.session_config !== undefined) dbUpdates.session_config = updates.session_config
 
     // Increment version if config is being updated
     if (dbUpdates.config) {
