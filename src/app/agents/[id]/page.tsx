@@ -26,7 +26,10 @@ import {
   Globe,
   Activity,
   Calendar,
-  Zap
+  Zap,
+  RefreshCw,
+  Info,
+  StopCircle
 } from 'lucide-react'
 
 import { MainLayout } from '@/components/layouts/MainLayout'
@@ -51,6 +54,7 @@ import { MetricsChart } from '@/components/charts/MetricsChart'
 import { ConversationDetail } from '@/components/conversations/ConversationDetail'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 
 const channelIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   email: Mail,
@@ -96,6 +100,8 @@ export default function AgentDetailPage() {
   const [availableDataSources, setAvailableDataSources] = useState<any[]>([])
   const [connectedDataSources, setConnectedDataSources] = useState<string[]>([])
   const [loadingDataSources, setLoadingDataSources] = useState(false)
+  const [activeSession, setActiveSession] = useState<any>(null)
+  const [conversationHistory, setConversationHistory] = useState<any[]>([])
   
   const { data: agent, isLoading: loading } = useAgent(agentId)
   const { data: conversations = [] } = useConversations({ agentId })
@@ -203,21 +209,47 @@ export default function AgentDetailPage() {
     setExecutionResult(null)
 
     try {
+      // Include session ID if in persistent mode
+      const requestBody: any = {
+        input: testInput,
+        options: {}
+      }
+
+      // If agent is in persistent mode and has an active session, include session ID
+      if (agent.execution_mode === 'persistent' && activeSession) {
+        requestBody.sessionId = activeSession.id
+      }
+
       const response = await fetch(`/api/agents/${agent.id}/execute`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          input: testInput,
-          options: {}
-        })
+        body: JSON.stringify(requestBody)
       })
 
       const result = await response.json()
 
       if (response.ok) {
         setExecutionResult(result)
+        
+        // Update conversation history for persistent mode
+        if (agent.execution_mode === 'persistent') {
+          setConversationHistory(prev => [
+            ...prev,
+            { role: 'user', content: testInput, timestamp: new Date().toISOString() },
+            { role: 'assistant', content: result.output, timestamp: new Date().toISOString() }
+          ])
+          
+          // Store session info if it's a new session
+          if (!activeSession && result.sessionId) {
+            setActiveSession({ id: result.sessionId, status: 'active' })
+          }
+          
+          // Clear input for next message in persistent mode
+          setTestInput('')
+        }
+        
         toast.success('Agent executed successfully')
       } else {
         toast.error(result.error || 'Failed to execute agent')
@@ -506,37 +538,116 @@ export default function AgentDetailPage() {
           <TabsContent value="test" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Test Agent Execution</CardTitle>
-                <CardDescription>
-                  Test your agent by providing input and seeing the output in real-time
-                </CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Test Agent Execution</CardTitle>
+                    <CardDescription>
+                      {agent?.execution_mode === 'persistent' 
+                        ? 'Have a conversation with your agent - context is maintained between messages'
+                        : 'Test your agent by providing input and seeing the output'}
+                    </CardDescription>
+                  </div>
+                  {agent?.execution_mode === 'persistent' && (
+                    <div className="flex items-center gap-2">
+                      {activeSession ? (
+                        <>
+                          <Badge variant="outline" className="flex items-center gap-1">
+                            <Activity className="w-3 h-3" />
+                            Session Active
+                          </Badge>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setActiveSession(null)
+                              setConversationHistory([])
+                              toast.info('Session cleared. Next message will start a new session.')
+                            }}
+                          >
+                            <RefreshCw className="w-4 h-4 mr-1" />
+                            New Session
+                          </Button>
+                        </>
+                      ) : (
+                        <Badge variant="secondary">No Active Session</Badge>
+                      )}
+                    </div>
+                  )}
+                </div>
               </CardHeader>
               <CardContent className="space-y-6">
+                {agent?.execution_mode === 'persistent' && (
+                  <Alert className="border-blue-200 bg-blue-50 dark:bg-blue-950/20">
+                    <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                    <AlertDescription>
+                      <strong>Conversational Mode:</strong> Your agent maintains context for up to 1 hour. 
+                      {activeSession 
+                        ? 'Continue your conversation below or start a new session.'
+                        : 'Send your first message to start a conversation.'}
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                {agent?.execution_mode === 'persistent' && conversationHistory.length > 0 && (
+                  <div className="border rounded-lg p-4 max-h-[300px] overflow-y-auto space-y-3 bg-gray-50 dark:bg-gray-900/50">
+                    {conversationHistory.map((msg, idx) => (
+                      <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                        <div className={`max-w-[70%] rounded-lg px-3 py-2 text-sm ${
+                          msg.role === 'user' 
+                            ? 'bg-blue-600 text-white' 
+                            : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
+                        }`}>
+                          {msg.content}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
                 <div className="space-y-4">
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Input</label>
+                    <label className="text-sm font-medium mb-2 block">
+                      {agent?.execution_mode === 'persistent' ? 'Message' : 'Input'}
+                    </label>
                     <Textarea
-                      placeholder="Enter your test input here..."
+                      placeholder={agent?.execution_mode === 'persistent' 
+                        ? "Type your message..." 
+                        : "Enter your test input here..."}
                       value={testInput}
                       onChange={(e) => setTestInput(e.target.value)}
                       className="min-h-[120px]"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey && agent?.execution_mode === 'persistent') {
+                          e.preventDefault()
+                          handleExecuteAgent()
+                        }
+                      }}
                     />
                   </div>
 
                   <Button
                     onClick={handleExecuteAgent}
-                    disabled={isExecuting || !testInput.trim() || agent.status === 'inactive'}
+                    disabled={isExecuting || !testInput.trim() || agent?.status === 'inactive'}
                     className="w-full"
                   >
                     {isExecuting ? (
                       <>
                         <Clock className="w-4 h-4 mr-2 animate-spin" />
-                        Executing...
+                        {agent?.execution_mode === 'persistent' ? 'Sending...' : 'Executing...'}
                       </>
                     ) : (
                       <>
-                        <Play className="w-4 h-4 mr-2" />
-                        Run Agent
+                        {agent?.execution_mode === 'persistent' ? (
+                          <>
+                            <MessageSquare className="w-4 h-4 mr-2" />
+                            Send Message
+                          </>
+                        ) : (
+                          <>
+                            <Play className="w-4 h-4 mr-2" />
+                            Run Agent
+                          </>
+                        )}
                       </>
                     )}
                   </Button>

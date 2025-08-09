@@ -33,7 +33,10 @@ import {
   ChevronRight,
   RefreshCw,
   Send,
-  Check
+  Check,
+  Info,
+  Clock,
+  Activity
 } from 'lucide-react'
 
 import { MainLayout } from '@/components/layouts/MainLayout'
@@ -58,6 +61,7 @@ import { toast } from 'sonner'
 const agentSchema = z.object({
   name: z.string().min(2, 'Agent name must be at least 2 characters'),
   description: z.string().min(10, 'Description must be at least 10 characters'),
+  executionMode: z.enum(['ephemeral', 'persistent']).default('ephemeral'),
   channels: z.array(z.string()).min(1, 'Select at least one communication channel'),
   channelConfig: z.record(z.string(), z.any()).optional(),
   knowledgeSources: z.array(z.string()).optional(),
@@ -135,6 +139,7 @@ export default function NewAgentPage() {
     resolver: zodResolver(agentSchema),
     mode: 'onChange',
     defaultValues: {
+      executionMode: 'ephemeral',
       channels: [],
       knowledgeSources: [],
       mcpServers: [],
@@ -150,6 +155,7 @@ export default function NewAgentPage() {
   const watchedMcpServers = watch('mcpServers') || []
   const watchedIntegrations = watch('integrations') || []
   const watchedTemperature = watch('temperature')
+  const watchedExecutionMode = watch('executionMode')
 
   const toggleSelection = (field: 'channels' | 'knowledgeSources' | 'mcpServers' | 'integrations', value: string) => {
     const currentValues = getValues(field) || []
@@ -204,6 +210,7 @@ export default function NewAgentPage() {
         body: JSON.stringify({
           name: data.name,
           description: data.description,
+          execution_mode: data.executionMode,
           config,
           status: 'draft'
         })
@@ -379,6 +386,113 @@ export default function NewAgentPage() {
                             {errors.description.message}
                           </p>
                         )}
+                      </div>
+
+                      <div className="space-y-3">
+                        <Label className="text-sm font-medium">
+                          Execution Mode
+                        </Label>
+                        <p className="text-xs text-gray-600 dark:text-gray-400">
+                          Choose how your agent handles conversations
+                        </p>
+                        <div className="space-y-3">
+                          <div 
+                            className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                              watchedExecutionMode === 'ephemeral' 
+                                ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/20' 
+                                : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                            }`}
+                            onClick={() => setValue('executionMode', 'ephemeral', { shouldValidate: true })}
+                          >
+                            <div className="flex items-start gap-3">
+                              <div className="mt-0.5">
+                                <Zap className={`w-5 h-5 ${
+                                  watchedExecutionMode === 'ephemeral' 
+                                    ? 'text-blue-600 dark:text-blue-400' 
+                                    : 'text-gray-500 dark:text-gray-400'
+                                }`} />
+                              </div>
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2">
+                                  <h4 className="text-sm font-semibold text-gray-900 dark:text-white">
+                                    Ephemeral Mode
+                                  </h4>
+                                  <Badge variant="secondary" className="text-xs">
+                                    Recommended for email & webhooks
+                                  </Badge>
+                                </div>
+                                <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                                  Perfect for single-response scenarios like emails, form submissions, or API calls. 
+                                  The agent processes the request, provides a response, and immediately shuts down. 
+                                  Cost-efficient and ideal for tasks that don't require conversation history.
+                                </p>
+                                <div className="flex items-center gap-4 mt-2">
+                                  <span className="text-xs text-gray-500 dark:text-gray-500 flex items-center gap-1">
+                                    <Clock className="w-3 h-3" /> Instant response
+                                  </span>
+                                  <span className="text-xs text-gray-500 dark:text-gray-500 flex items-center gap-1">
+                                    <Activity className="w-3 h-3" /> No state maintained
+                                  </span>
+                                </div>
+                              </div>
+                              {watchedExecutionMode === 'ephemeral' && (
+                                <Check className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                              )}
+                            </div>
+                          </div>
+
+                          <div 
+                            className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                              watchedExecutionMode === 'persistent' 
+                                ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/20' 
+                                : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                            }`}
+                            onClick={() => setValue('executionMode', 'persistent', { shouldValidate: true })}
+                          >
+                            <div className="flex items-start gap-3">
+                              <div className="mt-0.5">
+                                <MessageSquare className={`w-5 h-5 ${
+                                  watchedExecutionMode === 'persistent' 
+                                    ? 'text-blue-600 dark:text-blue-400' 
+                                    : 'text-gray-500 dark:text-gray-400'
+                                }`} />
+                              </div>
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2">
+                                  <h4 className="text-sm font-semibold text-gray-900 dark:text-white">
+                                    Conversational Mode
+                                  </h4>
+                                  <Badge variant="secondary" className="text-xs">
+                                    Best for chat & support
+                                  </Badge>
+                                </div>
+                                <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                                  Ideal for ongoing conversations like customer support, chatbots, or interactive assistants. 
+                                  The agent stays active for up to 1 hour, maintaining conversation context between messages. 
+                                  Perfect for multi-turn dialogues where context matters.
+                                </p>
+                                <div className="flex items-center gap-4 mt-2">
+                                  <span className="text-xs text-gray-500 dark:text-gray-500 flex items-center gap-1">
+                                    <Clock className="w-3 h-3" /> Stays active for 1 hour
+                                  </span>
+                                  <span className="text-xs text-gray-500 dark:text-gray-500 flex items-center gap-1">
+                                    <Activity className="w-3 h-3" /> Maintains context
+                                  </span>
+                                </div>
+                              </div>
+                              {watchedExecutionMode === 'persistent' && (
+                                <Check className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        <Alert className="border-blue-200 bg-blue-50 dark:bg-blue-950/20">
+                          <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                          <AlertDescription className="text-xs text-gray-700 dark:text-gray-300">
+                            You can change the execution mode later in agent settings. Conversational mode uses 
+                            more resources but provides a better experience for interactive use cases.
+                          </AlertDescription>
+                        </Alert>
                       </div>
 
                       <div className="space-y-3">
