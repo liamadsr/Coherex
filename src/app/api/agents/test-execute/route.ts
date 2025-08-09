@@ -3,7 +3,15 @@ import { e2bClient } from '@/lib/e2b/client'
 
 export async function POST(req: NextRequest) {
   try {
-    const { config, input } = await req.json()
+    const { config, input, sessionId, conversationHistory } = await req.json()
+    
+    console.log('Test execution request:', {
+      config,
+      input,
+      sessionId,
+      conversationHistory: conversationHistory?.length || 0,
+      executionMode: config?.executionMode
+    })
 
     if (!config || !input) {
       return NextResponse.json(
@@ -23,6 +31,19 @@ export async function POST(req: NextRequest) {
     // Generate a temporary agent ID for the test execution
     const tempAgentId = `test-${Date.now()}`
 
+    // Build system prompt with conversation history for persistent mode
+    let effectiveInput = input
+    let systemPrompt = config.systemPrompt || 'You are a helpful AI assistant.'
+    
+    if (config.executionMode === 'persistent' && conversationHistory && conversationHistory.length > 0) {
+      // Include conversation history in the prompt for context
+      const historyText = conversationHistory.map((msg: any) => 
+        `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.content}`
+      ).join('\n')
+      
+      effectiveInput = `Previous conversation:\n${historyText}\n\nUser: ${input}`
+    }
+    
     // Create agent configuration matching the expected format
     const agentConfig = {
       name: config.name || 'Test Agent',
@@ -30,7 +51,8 @@ export async function POST(req: NextRequest) {
       model: config.model,
       temperature: config.temperature || 0.7,
       maxTokens: config.maxTokens || 2000,
-      systemPrompt: config.systemPrompt || 'You are a helpful AI assistant.'
+      systemPrompt: systemPrompt,
+      executionMode: config.executionMode || 'ephemeral'
     }
 
     // Get environment variables for the model
@@ -66,20 +88,22 @@ export async function POST(req: NextRequest) {
     const result = await e2bClient.executeAgent(
       tempAgentId,
       agentConfig,
-      input,
+      effectiveInput,
       envVars
     )
 
     if (!result.success) {
       console.error('Test execution failed:', result.error)
       console.error('Agent config:', agentConfig)
-      console.error('Input:', input)
+      console.error('Original input:', input)
+      console.error('Effective input:', effectiveInput)
       
       // Provide more helpful error message
       let errorMessage = 'Failed to execute test agent'
-      if (result.error?.includes('E2B_API_KEY')) {
+      const errorString = typeof result.error === 'string' ? result.error : String(result.error || '')
+      if (errorString.includes('E2B_API_KEY')) {
         errorMessage = 'E2B sandbox service not configured. The agent returned a simulated response.'
-      } else if (result.error?.includes('OPENAI_API_KEY') || result.error?.includes('ANTHROPIC_API_KEY')) {
+      } else if (errorString.includes('OPENAI_API_KEY') || errorString.includes('ANTHROPIC_API_KEY')) {
         errorMessage = 'API key for the selected model is not configured'
       }
       
@@ -102,6 +126,7 @@ export async function POST(req: NextRequest) {
 
   } catch (error) {
     console.error('Test execution error:', error)
+    console.error('Stack trace:', error instanceof Error ? error.stack : 'No stack trace')
     return NextResponse.json(
       { 
         error: 'Internal server error during test execution',

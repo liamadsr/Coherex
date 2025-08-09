@@ -159,6 +159,7 @@ export default function NewAgentPage() {
   const [environmentStartTime, setEnvironmentStartTime] = useState<Date | null>(null)
   const [testPanelView, setTestPanelView] = useState<'chat' | 'logs'>('chat')
   const [executionLogs, setExecutionLogs] = useState<Array<{ timestamp: string, type: 'info' | 'error' | 'warning' | 'success', message: string }>>([])
+  const [testSessionId, setTestSessionId] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const scrollAreaRef = useRef<HTMLDivElement>(null)
   const logsScrollRef = useRef<HTMLDivElement>(null)
@@ -377,6 +378,11 @@ export default function NewAgentPage() {
         executionMode: formData.executionMode || 'ephemeral'
       }
 
+      // Build conversation history for conversational mode
+      const conversationHistory = formData.executionMode === 'persistent' && !autoClear
+        ? messages.filter(m => m.role !== 'system')
+        : []
+      
       // Call the test execution endpoint
       const response = await fetch('/api/agents/test-execute', {
         method: 'POST',
@@ -385,7 +391,9 @@ export default function NewAgentPage() {
         },
         body: JSON.stringify({
           config: testConfig,
-          input: userMessage
+          input: userMessage,
+          sessionId: testSessionId,
+          conversationHistory: conversationHistory
         })
       })
 
@@ -1112,9 +1120,19 @@ export default function NewAgentPage() {
                           setEnvironmentStatus('starting')
                           setEnvironmentStartTime(new Date())
                           setExecutionLogs([]) // Clear previous logs
+                          setMessages([]) // Clear chat messages
+                          
+                          // Generate session ID for conversational mode
+                          const formData = getValues()
+                          if (formData.executionMode === 'persistent') {
+                            const sessionId = `test-session-${Date.now()}`
+                            setTestSessionId(sessionId)
+                            addLog('info', `Creating conversation session: ${sessionId}`)
+                          }
                           
                           addLog('info', 'Initializing E2B sandbox environment...')
                           addLog('info', `Model: ${watchedModel || 'gpt-4'}`)
+                          addLog('info', `Mode: ${formData.executionMode === 'persistent' ? 'Conversational (maintains context)' : 'Ephemeral (stateless)'}`)
                           addLog('info', 'Installing required packages...')
                           
                           // Simulate environment startup
@@ -1135,6 +1153,13 @@ export default function NewAgentPage() {
                           // Stop the environment
                           setEnvironmentStatus('stopping')
                           addLog('warning', 'Shutting down environment...')
+                          
+                          // Clear session for conversational mode
+                          if (testSessionId) {
+                            addLog('info', `Clearing conversation session: ${testSessionId}`)
+                            setTestSessionId(null)
+                          }
+                          
                           setTimeout(() => {
                             addLog('info', 'Environment terminated')
                             setEnvironmentStatus('idle')

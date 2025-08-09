@@ -63,6 +63,16 @@ class E2BClient {
 
       // Parse output - E2B returns logs with stdout/stderr
       let output = execution.results
+      let actualError = execution.error
+      
+      // Check if this is a SystemExit which means successful completion
+      if (execution.error && typeof execution.error === 'object') {
+        const error = execution.error as any
+        if (error.name === 'SystemExit' && error.value === '0') {
+          // This is actually a successful exit, not an error
+          actualError = null
+        }
+      }
       
       // Check if output is in logs.stdout
       if (execution.logs && typeof execution.logs === 'object') {
@@ -87,10 +97,22 @@ class E2BClient {
         }
       }
       
+      // Try to parse JSON output if it looks like JSON
+      if (typeof output === 'string' && output.trim().startsWith('{')) {
+        try {
+          const parsed = JSON.parse(output)
+          if (parsed.success && parsed.output) {
+            output = parsed.output
+          }
+        } catch {
+          // Not JSON or failed to parse, keep as-is
+        }
+      }
+      
       return {
-        success: !execution.error,
+        success: !actualError,
         output: output,
-        error: execution.error,
+        error: actualError,
         logs: execution.logs,
         executionTime
       }
@@ -165,6 +187,7 @@ class E2BClient {
     logs.push(`[${new Date().toISOString()}] E2B not configured - running in simulation mode`)
     logs.push(`[${new Date().toISOString()}] Agent '${agentConfig.name}' started`)
     logs.push(`[${new Date().toISOString()}] Processing input with ${agentConfig.model || 'default model'}`)
+    logs.push(`[${new Date().toISOString()}] Execution mode: ${agentConfig.executionMode || 'ephemeral'}`)
     
     let output: any
     const agentType = agentConfig.type || 'custom'
@@ -196,9 +219,50 @@ class E2BClient {
         break
         
       case 'chatbot':
-        output = `Hello! I'm ${agentConfig.name}. You said: "${input}". ` +
-                `\n\nNote: E2B_API_KEY not configured - running in simulation mode. In production, this would process with ${agentConfig.model || 'AI'}.`
+        // Check if this appears to be a conversation with history
+        if (input.includes('Previous conversation:')) {
+          // Extract the actual user message from the formatted input
+          const lines = input.split('\n')
+          const userLineIndex = lines.findIndex(line => line.startsWith('User:') && lines.indexOf(line) === lines.length - 1)
+          const actualMessage = userLineIndex >= 0 ? lines[userLineIndex].replace('User: ', '') : input
+          
+          // Check for name context
+          if (actualMessage.toLowerCase().includes("what's my name") || actualMessage.toLowerCase().includes("what is my name")) {
+            // Look for name in conversation history
+            const nameMatch = input.match(/User: .*?[Ii]'m ([A-Z][a-z]+)/);
+            if (nameMatch) {
+              output = `Your name is ${nameMatch[1]}. How else can I help you today?`
+            } else {
+              output = `I don't believe you've told me your name yet. What would you like me to call you?`
+            }
+          } else if (actualMessage.toLowerCase().includes("hi") || actualMessage.toLowerCase().includes("hello")) {
+            // Check if name was mentioned
+            const nameIntro = actualMessage.match(/[Ii]'m ([A-Z][a-z]+)/);
+            if (nameIntro) {
+              output = `Hello ${nameIntro[1]}! It's nice to meet you. How can I assist you today?`
+            } else {
+              output = `Hello! How can I help you today?`
+            }
+          } else {
+            output = `I understand you said: "${actualMessage}". ` +
+                    `\n\nNote: E2B_API_KEY not configured - running in simulation mode with conversation context.`
+          }
+        } else {
+          // Single message without history
+          if (input.toLowerCase().includes("hi") || input.toLowerCase().includes("hello")) {
+            const nameIntro = input.match(/[Ii]'m ([A-Z][a-z]+)/);
+            if (nameIntro) {
+              output = `Hello ${nameIntro[1]}! It's nice to meet you. How can I assist you today?`
+            } else {
+              output = `Hello! How can I help you today?`
+            }
+          } else {
+            output = `Hello! I'm ${agentConfig.name}. You said: "${input}". ` +
+                    `\n\nNote: E2B_API_KEY not configured - running in simulation mode. In production, this would process with ${agentConfig.model || 'AI'}.`
+          }
+        }
         logs.push(`[${new Date().toISOString()}] Response generated`)
+        logs.push(`[${new Date().toISOString()}] Mode: ${agentConfig.executionMode === 'persistent' ? 'Conversational (with context)' : 'Ephemeral (stateless)'}`)
         break
         
       case 'automation':
