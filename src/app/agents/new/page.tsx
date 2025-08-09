@@ -1558,14 +1558,14 @@ export default function NewAgentPage() {
 
                     <PromptInputActions className="mt-3 flex w-full items-center justify-between gap-2 p-2">
                       <div className="flex items-center gap-1">
-                        {/* File upload button */}
+                        {/* File upload button - Plus icon on far left */}
                         <button
                           type="button"
                           onClick={() => fileInputRef.current?.click()}
                           className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-muted/50"
                           title="Attach files"
                         >
-                          <Paperclip className="w-4 h-4" />
+                          <Plus className="w-4 h-4" />
                         </button>
                         
                         {/* Model selector - matching main AI panel style */}

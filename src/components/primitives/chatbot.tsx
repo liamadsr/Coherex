@@ -30,6 +30,7 @@ import {
   ChevronDown,
   Sparkles,
   Paperclip,
+  Plus,
   Search,
   Globe,
   FileText,
@@ -338,6 +339,16 @@ function ConversationPromptInput() {
 
             <PromptInputActions className="mt-3 flex w-full items-center justify-between gap-2 p-2">
               <div className="flex items-center gap-1">
+                {/* File upload button - Plus icon on far left */}
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-muted/50"
+                  title="Attach files"
+                >
+                  <Plus className="w-4 h-4" />
+                </button>
+                
                 {/* Model selector */}
                 <div className="relative">
                   <button
@@ -379,16 +390,6 @@ function ConversationPromptInput() {
                   </div>
                 )}
                 </div>
-                
-                {/* File upload button */}
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-muted/50"
-                  title="Attach files"
-                >
-                  <Paperclip className="w-4 h-4" />
-                </button>
                 
                 {/* Web search toggle */}
                 <button
