@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { useForm } from 'react-hook-form'
@@ -31,6 +31,7 @@ import {
   Settings,
   Paperclip,
   ChevronRight,
+  ChevronDown,
   RefreshCw,
   Send,
   Check,
@@ -39,7 +40,11 @@ import {
   Info,
   Clock,
   Activity,
-  Play
+  Play,
+  Copy,
+  ThumbsDown,
+  ThumbsUp,
+  Image
 } from 'lucide-react'
 
 import { MainLayout } from '@/components/layouts/MainLayout'
@@ -60,6 +65,24 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { mockApi } from '@/mock-data'
 import { toast } from 'sonner'
+import {
+  ChatContainerContent,
+  ChatContainerRoot,
+} from "@/components/prompt-kit/chat-container"
+import { DotsLoader } from "@/components/prompt-kit/loader"
+import {
+  Message,
+  MessageAction,
+  MessageActions,
+  MessageContent,
+} from "@/components/prompt-kit/message"
+import {
+  PromptInput,
+  PromptInputActions,
+  PromptInputTextarea,
+} from "@/components/prompt-kit/prompt-input"
+import { PromptSuggestion } from "@/components/ui/prompt-suggestion"
+import { cn } from "@/lib/utils"
 
 const agentSchema = z.object({
   name: z.string().min(2, 'Agent name must be at least 2 characters'),
@@ -124,12 +147,14 @@ export default function NewAgentPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [currentTab, setCurrentTab] = useState('basic')
-  const [messages, setMessages] = useState<Array<{ role: 'user' | 'assistant' | 'system', content: string }>>([
-    { role: 'system', content: "👋 Welcome to the Agent Builder! Configure your agent on the left, then test it here in real-time. Once you're happy with how it responds, click 'Create Agent' at the top to save it." }
-  ])
+  const [messages, setMessages] = useState<Array<{ role: 'user' | 'assistant' | 'system', content: string, id?: string }>>([])
   const [inputValue, setInputValue] = useState('')
   const [isThinking, setIsThinking] = useState(false)
   const [autoClear, setAutoClear] = useState(false)
+  const [showScrollButton, setShowScrollButton] = useState(false)
+  const [attachedFiles, setAttachedFiles] = useState<File[]>([])
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const scrollAreaRef = useRef<HTMLDivElement>(null)
 
   const {
     register,
@@ -250,6 +275,43 @@ export default function NewAgentPage() {
     return 'Very Creative'
   }
 
+  const scrollToBottom = () => {
+    if (scrollAreaRef.current) {
+      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight
+    }
+  }
+
+  // Monitor scroll position
+  useEffect(() => {
+    const handleScroll = () => {
+      if (scrollAreaRef.current) {
+        const { scrollTop, scrollHeight, clientHeight } = scrollAreaRef.current
+        const isNearBottom = scrollHeight - scrollTop - clientHeight < 100
+        setShowScrollButton(!isNearBottom)
+      }
+    }
+
+    const scrollArea = scrollAreaRef.current
+    if (scrollArea) {
+      scrollArea.addEventListener('scroll', handleScroll)
+      return () => scrollArea.removeEventListener('scroll', handleScroll)
+    }
+  }, [])
+
+  // Auto-scroll on new messages
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages])
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+    setAttachedFiles(prev => [...prev, ...files])
+  }
+
+  const removeFile = (index: number) => {
+    setAttachedFiles(prev => prev.filter((_, i) => i !== index))
+  }
+
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return
 
@@ -262,12 +324,13 @@ export default function NewAgentPage() {
 
     const userMessage = inputValue
     setInputValue('')
+    setAttachedFiles([])
     
     // If auto-clear is enabled, start fresh
     if (autoClear) {
-      setMessages([{ role: 'user', content: userMessage }])
+      setMessages([{ role: 'user', content: userMessage, id: Date.now().toString() }])
     } else {
-      setMessages(prev => [...prev, { role: 'user', content: userMessage }])
+      setMessages(prev => [...prev, { role: 'user', content: userMessage, id: Date.now().toString() }])
     }
     
     setIsThinking(true)
@@ -303,24 +366,26 @@ export default function NewAgentPage() {
         // We got an output (either real or mock)
         setMessages(prev => [...prev, { 
           role: 'assistant', 
-          content: typeof result.output === 'string' ? result.output : JSON.stringify(result.output) 
+          content: typeof result.output === 'string' ? result.output : JSON.stringify(result.output),
+          id: Date.now().toString()
         }])
         
         // Show info if it was a mock response
         if (result.error?.includes('E2B sandbox service not configured')) {
           setMessages(prev => [...prev, { 
             role: 'system', 
-            content: '⚠️ Note: E2B sandbox not configured. This was a simulated response. To get real LLM responses, ensure E2B_API_KEY is set in your environment.' 
+            content: 'Note: E2B sandbox not configured. This was a simulated response. To get real LLM responses, ensure E2B_API_KEY is set in your environment.',
+            id: (Date.now() + 1).toString()
           }])
         }
       } else if (response.ok && !result.output) {
         // No output but successful - shouldn't happen
         const aiResponse = generateAIResponse(userMessage, formData)
-        setMessages(prev => [...prev, { role: 'assistant', content: aiResponse }])
+        setMessages(prev => [...prev, { role: 'assistant', content: aiResponse, id: Date.now().toString() }])
       } else {
         // Error case - use fallback
         const aiResponse = generateAIResponse(userMessage, formData)
-        setMessages(prev => [...prev, { role: 'assistant', content: aiResponse }])
+        setMessages(prev => [...prev, { role: 'assistant', content: aiResponse, id: Date.now().toString() }])
         
         if (result.error) {
           console.warn('Test execution issue:', result.error)
@@ -333,7 +398,7 @@ export default function NewAgentPage() {
       console.error('Failed to test agent:', error)
       // Fallback to simulated response
       const aiResponse = generateAIResponse(userMessage, getValues())
-      setMessages(prev => [...prev, { role: 'assistant', content: aiResponse }])
+      setMessages(prev => [...prev, { role: 'assistant', content: aiResponse, id: Date.now().toString() }])
     } finally {
       setIsThinking(false)
     }
@@ -1010,16 +1075,17 @@ export default function NewAgentPage() {
             </Card>
           </div>
 
-          {/* Right Panel - AI Assistant */}
+          {/* Right Panel - AI Assistant Style Test Panel */}
           <div className="flex-1 min-h-0 overflow-hidden">
-            <Card className="h-full flex flex-col">
-              <CardHeader className="pb-3">
+            <div className="h-full bg-white dark:bg-[#0c0c0c] rounded-2xl shadow-sm overflow-hidden flex flex-col">
+              {/* Header */}
+              <div className="px-6 py-4 border-b border-gray-200 dark:border-neutral-800">
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle className="text-lg">Live Agent Testing</CardTitle>
-                    <CardDescription className="text-xs mt-1">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Live Agent Testing</h3>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
                       Test your agent configuration in real-time
-                    </CardDescription>
+                    </p>
                   </div>
                   <div className="flex items-center gap-2">
                     {watchedModel ? (
@@ -1034,120 +1100,236 @@ export default function NewAgentPage() {
                     )}
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent className="flex-1 overflow-y-auto p-0">
-                <div className="p-6">
-                  {messages.map((message, index) => (
-                    <div key={index} className="mb-6">
-                      {message.role === 'user' ? (
-                        <div className="flex items-start space-x-3">
-                          <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-neutral-800 flex items-center justify-center flex-shrink-0">
-                            <span className="text-xs font-medium text-gray-600 dark:text-gray-400">You</span>
-                          </div>
-                          <div className="flex-1">
-                            <p className="text-sm text-gray-900 dark:text-gray-100">{message.content}</p>
-                          </div>
-                        </div>
-                      ) : message.role === 'system' ? (
-                        <div className="p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                          <div className="flex items-start space-x-2">
-                            <Info className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
-                            <p className="text-xs text-blue-800 dark:text-blue-200">{message.content}</p>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="flex items-start space-x-3">
-                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center flex-shrink-0">
-                            <Sparkles className="w-4 h-4 text-white" />
-                          </div>
-                          <div className="flex-1">
-                            <p className="text-sm text-gray-900 dark:text-gray-100 leading-relaxed">{message.content}</p>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                  {isThinking && (
-                    <div className="flex items-start space-x-3">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center flex-shrink-0">
-                        <Sparkles className="w-4 h-4 text-white animate-pulse" />
+              </div>
+
+              {/* Chat Container */}
+              <ChatContainerRoot ref={scrollAreaRef} className="relative flex-1 space-y-0 overflow-y-auto">
+                <ChatContainerContent className="space-y-6 px-4 py-6">
+                  {messages.length === 0 && (
+                    <div className="mx-auto max-w-3xl space-y-6 py-8">
+                      <div className="text-center space-y-2">
+                        <h2 className="text-xl font-semibold">Test Your Agent</h2>
+                        <p className="text-sm text-muted-foreground">
+                          Configure your agent on the left, then test it here
+                        </p>
                       </div>
-                      <div className="flex-1 pt-2">
-                        <div className="flex space-x-1">
-                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
-                        </div>
+                      <div className="flex flex-wrap gap-2 justify-center">
+                        <PromptSuggestion
+                          onClick={() => setInputValue("What can you help me with?")}
+                        >
+                          What can you help me with?
+                        </PromptSuggestion>
+                        <PromptSuggestion
+                          onClick={() => setInputValue("Tell me about your capabilities")}
+                        >
+                          Tell me about your capabilities
+                        </PromptSuggestion>
+                        <PromptSuggestion
+                          onClick={() => setInputValue("How do you access knowledge?")}
+                        >
+                          How do you access knowledge?
+                        </PromptSuggestion>
                       </div>
                     </div>
                   )}
-                </div>
-              </CardContent>
-              <div className="p-4 border-t border-gray-200 dark:border-gray-800">
-                <div className="flex items-center gap-2">
-                  {/* Text input with attachment button */}
-                  <div className="flex-1 relative flex items-center">
-                    <button
-                      type="button"
-                      className="absolute left-3 z-10 h-8 w-8 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md flex items-center justify-center transition-colors"
-                    >
-                      <Paperclip className="h-4 w-4" />
-                    </button>
-                    
-                    <Textarea
-                      placeholder={watchedModel ? "Test your agent configuration..." : "Select an AI model in Advanced tab to start testing..."}
-                      value={inputValue}
-                      onChange={(e) => setInputValue(e.target.value)}
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter' && !e.shiftKey) {
-                          e.preventDefault()
-                          handleSendMessage()
-                        }
-                      }}
-                      className="w-full min-h-[40px] max-h-[120px] resize-none bg-white dark:bg-neutral-900 border border-gray-300 dark:border-gray-700 rounded-lg pl-12 pr-4 py-2.5 text-sm placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                      rows={1}
+
+                  {messages.map((message, index) => {
+                    const isLastMessage = index === messages.length - 1
+                    const isAssistant = message.role === 'assistant'
+                    const isSystem = message.role === 'system'
+
+                    if (isSystem) {
+                      return (
+                        <div key={message.id || index} className="mx-auto max-w-3xl">
+                          <Alert className="border-blue-200 bg-blue-50 dark:bg-blue-950/20">
+                            <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                            <AlertDescription className="text-xs">
+                              {message.content}
+                            </AlertDescription>
+                          </Alert>
+                        </div>
+                      )
+                    }
+
+                    return (
+                      <Message
+                        key={message.id || index}
+                        className={cn(
+                          "mx-auto flex w-full max-w-3xl flex-col gap-2 px-2",
+                          isAssistant ? "items-start" : "items-end"
+                        )}
+                      >
+                        {isAssistant ? (
+                          <div className="group flex w-full flex-col gap-2">
+                            <MessageContent
+                              className="text-foreground prose w-full min-w-0 flex-1 rounded-lg bg-transparent p-0"
+                              markdown
+                            >
+                              {message.content}
+                            </MessageContent>
+                            <MessageActions
+                              className={cn(
+                                "-ml-2.5 flex gap-0 opacity-0 transition-opacity duration-150 group-hover:opacity-100",
+                                isLastMessage && "opacity-100"
+                              )}
+                            >
+                              <MessageAction tooltip="Copy" delayDuration={100}>
+                                <Button variant="ghost" size="icon" className="rounded-full">
+                                  <Copy />
+                                </Button>
+                              </MessageAction>
+                              <MessageAction tooltip="Upvote" delayDuration={100}>
+                                <Button variant="ghost" size="icon" className="rounded-full">
+                                  <ThumbsUp />
+                                </Button>
+                              </MessageAction>
+                              <MessageAction tooltip="Downvote" delayDuration={100}>
+                                <Button variant="ghost" size="icon" className="rounded-full">
+                                  <ThumbsDown />
+                                </Button>
+                              </MessageAction>
+                            </MessageActions>
+                          </div>
+                        ) : (
+                          <div className="group flex w-full flex-col items-end gap-1">
+                            <MessageContent className="bg-muted text-primary max-w-[85%] rounded-3xl px-5 py-2.5 whitespace-pre-wrap">
+                              {message.content}
+                            </MessageContent>
+                            <MessageActions
+                              className={cn(
+                                "flex gap-0 opacity-0 transition-opacity duration-150 group-hover:opacity-100"
+                              )}
+                            >
+                              <MessageAction tooltip="Copy" delayDuration={100}>
+                                <Button variant="ghost" size="icon" className="rounded-full">
+                                  <Copy />
+                                </Button>
+                              </MessageAction>
+                            </MessageActions>
+                          </div>
+                        )}
+                      </Message>
+                    )
+                  })}
+
+                  {isThinking && (
+                    <Message className="mx-auto flex w-full max-w-3xl flex-col items-start gap-2 px-2">
+                      <div className="group flex w-full flex-col gap-0">
+                        <div className="text-foreground prose w-full min-w-0 flex-1 rounded-lg bg-transparent p-0">
+                          <DotsLoader />
+                        </div>
+                      </div>
+                    </Message>
+                  )}
+                </ChatContainerContent>
+
+                {/* Scroll to bottom button */}
+                {showScrollButton && (
+                  <button
+                    onClick={scrollToBottom}
+                    className="absolute bottom-4 right-4 p-2 bg-background border border-border rounded-full shadow-lg hover:shadow-xl transition-all"
+                    aria-label="Scroll to bottom"
+                  >
+                    <ChevronDown className="w-5 h-5" />
+                  </button>
+                )}
+              </ChatContainerRoot>
+
+              {/* Input Area */}
+              <div className="inset-x-0 bottom-0 mx-auto w-full shrink-0 px-3 pb-3">
+                {/* File attachments display */}
+                {attachedFiles.length > 0 && (
+                  <div className="mb-2 flex flex-wrap gap-2">
+                    {attachedFiles.map((file, index) => (
+                      <div key={index} className="flex items-center gap-2 bg-muted rounded-lg px-3 py-1.5">
+                        {file.type.startsWith('image/') ? (
+                          <Image className="w-4 h-4 text-muted-foreground" />
+                        ) : (
+                          <FileText className="w-4 h-4 text-muted-foreground" />
+                        )}
+                        <span className="text-sm">{file.name}</span>
+                        <button
+                          onClick={() => removeFile(index)}
+                          className="text-muted-foreground hover:text-foreground"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <PromptInput
+                  isLoading={isThinking}
+                  value={inputValue}
+                  onValueChange={setInputValue}
+                  onSubmit={handleSendMessage}
+                  className="border-input bg-popover relative z-10 w-full rounded-3xl border p-0 pt-1 shadow-xs"
+                >
+                  <div className="flex flex-col">
+                    <PromptInputTextarea
+                      placeholder={watchedModel ? "Test your agent configuration..." : "Select an AI model to start testing..."}
+                      className="min-h-[44px] pt-3 pl-4 text-base leading-[1.3]"
                     />
-                  </div>
 
-                  {/* Controls */}
-                  <div className="flex items-center gap-2">
-                    {/* Auto-clear toggle */}
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className={`h-10 px-3 ${
-                        autoClear 
-                          ? 'bg-gray-100 dark:bg-neutral-800 border-gray-300 dark:border-gray-600' 
-                          : ''
-                      }`}
-                      onClick={() => setAutoClear(!autoClear)}
-                    >
-                      <RefreshCw className="h-4 w-4 mr-2" />
-                      Auto-clear
-                    </Button>
+                    {/* Hidden file input */}
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      multiple
+                      onChange={handleFileSelect}
+                      className="hidden"
+                      accept="image/*,.pdf,.txt,.doc,.docx"
+                    />
 
-                    {/* Send button */}
-                    <Button
-                      onClick={handleSendMessage}
-                      disabled={!inputValue.trim() || isThinking || !watchedModel}
-                      size="sm"
-                      className="h-10 px-4 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                      title={!watchedModel ? "Please select an AI model first" : ""}
-                    >
-                      {isThinking ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <>
-                          <Send className="h-4 w-4 mr-2" />
-                          Send
-                        </>
-                      )}
-                    </Button>
+                    <PromptInputActions className="mt-3 flex w-full items-center justify-between gap-2 p-2">
+                      <div className="flex items-center gap-1">
+                        {/* File upload button */}
+                        <button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-muted/50"
+                          title="Attach files"
+                        >
+                          <Paperclip className="w-4 h-4" />
+                        </button>
+
+                        {/* Auto-clear toggle */}
+                        <button
+                          type="button"
+                          onClick={() => setAutoClear(!autoClear)}
+                          className={cn(
+                            "flex items-center gap-1.5 px-2 py-1 rounded-md transition-colors",
+                            autoClear 
+                              ? "bg-primary/10 text-primary hover:bg-primary/20" 
+                              : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                          )}
+                          title="Toggle auto-clear"
+                        >
+                          <RefreshCw className="w-4 h-4" />
+                          {autoClear && <span className="text-xs font-medium">Auto-clear</span>}
+                        </button>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <Button
+                          size="icon"
+                          disabled={!inputValue.trim() || isThinking || !watchedModel}
+                          onClick={handleSendMessage}
+                          className="size-9 rounded-full"
+                        >
+                          {isThinking ? (
+                            <span className="size-3 rounded-xs bg-white" />
+                          ) : (
+                            <ArrowUp size={18} />
+                          )}
+                        </Button>
+                      </div>
+                    </PromptInputActions>
                   </div>
-                </div>
+                </PromptInput>
               </div>
-            </Card>
+            </div>
           </div>
         </div>
       </div>
