@@ -1266,6 +1266,17 @@ export default function NewAgentPage() {
                   {/* Environment Status - more subtle */}
                   {environmentStatus !== 'idle' && (
                     <div className="flex items-center gap-3 text-xs">
+                      {/* Timer - now on the left */}
+                      {environmentStartTime && environmentStatus === 'running' && (
+                        <span className="text-muted-foreground">
+                          {(() => {
+                            const elapsed = Math.floor((Date.now() - environmentStartTime.getTime()) / 1000)
+                            const minutes = Math.floor(elapsed / 60)
+                            const seconds = elapsed % 60
+                            return `${minutes}:${seconds.toString().padStart(2, '0')}`
+                          })()}
+                        </span>
+                      )}
                       {environmentStatus === 'running' && (
                         <span className="flex items-center gap-1.5 text-green-600 dark:text-green-500">
                           <span className="relative flex h-1.5 w-1.5">
@@ -1285,17 +1296,6 @@ export default function NewAgentPage() {
                         <span className="flex items-center gap-1.5 text-orange-600 dark:text-orange-500">
                           <Loader2 className="w-3 h-3 animate-spin" />
                           Stopping
-                        </span>
-                      )}
-                      {/* Timer */}
-                      {environmentStartTime && environmentStatus === 'running' && (
-                        <span className="text-muted-foreground">
-                          {(() => {
-                            const elapsed = Math.floor((Date.now() - environmentStartTime.getTime()) / 1000)
-                            const minutes = Math.floor(elapsed / 60)
-                            const seconds = elapsed % 60
-                            return `${minutes}:${seconds.toString().padStart(2, '0')}`
-                          })()}
                         </span>
                       )}
                     </div>
