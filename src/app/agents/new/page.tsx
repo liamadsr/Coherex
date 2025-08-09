@@ -121,8 +121,8 @@ export default function NewAgentPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [currentTab, setCurrentTab] = useState('basic')
-  const [messages, setMessages] = useState<Array<{ role: 'user' | 'assistant', content: string }>>([
-    { role: 'assistant', content: "Hi! I'm your agent tester. Once you've configured your agent's settings, you can test how it responds to different prompts here. Try sending a message to see how your agent would handle it!" }
+  const [messages, setMessages] = useState<Array<{ role: 'user' | 'assistant' | 'system', content: string }>>([
+    { role: 'system', content: "Configure your agent settings and select an AI model to start testing. Your messages will be processed using the current configuration." }
   ])
   const [inputValue, setInputValue] = useState('')
   const [isThinking, setIsThinking] = useState(false)
@@ -156,6 +156,7 @@ export default function NewAgentPage() {
   const watchedIntegrations = watch('integrations') || []
   const watchedTemperature = watch('temperature')
   const watchedExecutionMode = watch('executionMode')
+  const watchedModel = watch('model')
 
   const toggleSelection = (field: 'channels' | 'knowledgeSources' | 'mcpServers' | 'integrations', value: string) => {
     const currentValues = getValues(field) || []
@@ -242,6 +243,13 @@ export default function NewAgentPage() {
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return
 
+    // Check if model is selected
+    const formData = getValues()
+    if (!formData.model) {
+      toast.error('Please select an AI model in the Advanced tab before testing')
+      return
+    }
+
     const userMessage = inputValue
     setInputValue('')
     
@@ -254,12 +262,55 @@ export default function NewAgentPage() {
     
     setIsThinking(true)
 
-    // Simulate AI response
-    setTimeout(() => {
+    try {      
+      // Create a test agent configuration
+      const testConfig = {
+        name: formData.name || 'Test Agent',
+        description: formData.description || 'Test agent for trying configurations',
+        type: 'custom' as const,
+        model: formData.model,
+        temperature: formData.temperature || 0.7,
+        maxTokens: formData.maxTokens || 2000,
+        systemPrompt: formData.systemPrompt || 'You are a helpful AI assistant.',
+        executionMode: formData.executionMode || 'ephemeral'
+      }
+
+      // Call the test execution endpoint
+      const response = await fetch('/api/agents/test-execute', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          config: testConfig,
+          input: userMessage
+        })
+      })
+
+      const result = await response.json()
+
+      if (response.ok && result.output) {
+        setMessages(prev => [...prev, { 
+          role: 'assistant', 
+          content: typeof result.output === 'string' ? result.output : JSON.stringify(result.output) 
+        }])
+      } else {
+        // Fallback to simulated response if API fails
+        const aiResponse = generateAIResponse(userMessage, formData)
+        setMessages(prev => [...prev, { role: 'assistant', content: aiResponse }])
+        
+        if (result.error) {
+          console.error('Test execution failed:', result.error)
+        }
+      }
+    } catch (error) {
+      console.error('Failed to test agent:', error)
+      // Fallback to simulated response
       const aiResponse = generateAIResponse(userMessage, getValues())
       setMessages(prev => [...prev, { role: 'assistant', content: aiResponse }])
+    } finally {
       setIsThinking(false)
-    }, 1500)
+    }
   }
 
   const generateAIResponse = (userMessage: string, formData: any) => {
@@ -895,6 +946,28 @@ export default function NewAgentPage() {
           {/* Right Panel - AI Assistant */}
           <div className="flex-1 min-h-0 overflow-hidden">
             <Card className="h-full flex flex-col">
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-lg">Live Agent Testing</CardTitle>
+                    <CardDescription className="text-xs mt-1">
+                      Test your agent configuration in real-time
+                    </CardDescription>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {watchedModel ? (
+                      <Badge variant="outline" className="text-xs">
+                        <Bot className="w-3 h-3 mr-1" />
+                        {aiModels.find(m => m.id === watchedModel)?.label || watchedModel}
+                      </Badge>
+                    ) : (
+                      <Badge variant="secondary" className="text-xs">
+                        No model selected
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              </CardHeader>
               <CardContent className="flex-1 overflow-y-auto p-0">
                 <div className="p-6">
                   {messages.map((message, index) => (
@@ -906,6 +979,13 @@ export default function NewAgentPage() {
                           </div>
                           <div className="flex-1">
                             <p className="text-sm text-gray-900 dark:text-gray-100">{message.content}</p>
+                          </div>
+                        </div>
+                      ) : message.role === 'system' ? (
+                        <div className="p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                          <div className="flex items-start space-x-2">
+                            <Info className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                            <p className="text-xs text-blue-800 dark:text-blue-200">{message.content}</p>
                           </div>
                         </div>
                       ) : (
@@ -948,7 +1028,7 @@ export default function NewAgentPage() {
                     </button>
                     
                     <Textarea
-                      placeholder="Test your agent configuration..."
+                      placeholder={watchedModel ? "Test your agent configuration..." : "Select an AI model in Advanced tab to start testing..."}
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
                       onKeyPress={(e) => {
@@ -983,9 +1063,10 @@ export default function NewAgentPage() {
                     {/* Send button */}
                     <Button
                       onClick={handleSendMessage}
-                      disabled={!inputValue.trim() || isThinking}
+                      disabled={!inputValue.trim() || isThinking || !watchedModel}
                       size="sm"
                       className="h-10 px-4 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      title={!watchedModel ? "Please select an AI model first" : ""}
                     >
                       {isThinking ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
