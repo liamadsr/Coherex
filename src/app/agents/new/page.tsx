@@ -41,6 +41,7 @@ import {
   Clock,
   Activity,
   Play,
+  Square,
   Copy,
   ThumbsDown,
   ThumbsUp,
@@ -160,6 +161,7 @@ export default function NewAgentPage() {
   const [testPanelView, setTestPanelView] = useState<'chat' | 'logs'>('chat')
   const [executionLogs, setExecutionLogs] = useState<Array<{ timestamp: string, type: 'info' | 'error' | 'warning' | 'success', message: string }>>([])
   const [testSessionId, setTestSessionId] = useState<string | null>(null)
+  const [runningExecutionMode, setRunningExecutionMode] = useState<'ephemeral' | 'persistent' | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const scrollAreaRef = useRef<HTMLDivElement>(null)
   const logsScrollRef = useRef<HTMLDivElement>(null)
@@ -311,6 +313,14 @@ export default function NewAgentPage() {
     scrollToBottom()
   }, [messages])
 
+  // Auto-enable clear for ephemeral mode
+  useEffect(() => {
+    if (watchedExecutionMode === 'ephemeral') {
+      setAutoClear(true)
+    }
+    // Don't automatically disable for persistent mode - let user control it
+  }, [watchedExecutionMode])
+
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
     setAttachedFiles(prev => [...prev, ...files])
@@ -330,6 +340,86 @@ export default function NewAgentPage() {
         logsScrollRef.current.scrollTop = logsScrollRef.current.scrollHeight
       }
     }, 10)
+  }
+
+  const startEnvironment = () => {
+    if (!watchedModel) {
+      toast.error('Please select an AI model in the Advanced tab first')
+      return
+    }
+    
+    // Start the environment
+    setEnvironmentStatus('starting')
+    setEnvironmentStartTime(new Date())
+    setExecutionLogs([]) // Clear previous logs
+    setMessages([]) // Clear chat messages
+    
+    // Generate session ID for conversational mode
+    const formData = getValues()
+    setRunningExecutionMode(formData.executionMode) // Track what mode is running
+    
+    if (formData.executionMode === 'persistent') {
+      const sessionId = `test-session-${Date.now()}`
+      setTestSessionId(sessionId)
+      addLog('info', `Creating conversation session: ${sessionId}`)
+    }
+    
+    addLog('info', 'Initializing E2B sandbox environment...')
+    addLog('info', `Model: ${watchedModel || 'gpt-4'}`)
+    addLog('info', `Mode: ${formData.executionMode === 'persistent' ? 'Conversational (maintains context)' : 'Ephemeral (stateless)'}`)
+    addLog('info', 'Installing required packages...')
+    
+    // Simulate environment startup
+    setTimeout(() => {
+      addLog('success', 'Environment packages installed')
+      addLog('info', 'Loading agent configuration...')
+      addLog('success', 'Agent environment ready')
+      setEnvironmentStatus('running')
+      toast.success('Agent environment is ready! Start testing in the panel.')
+      
+      // Focus on the test panel input
+      const testInput = document.querySelector('textarea[placeholder*="Test your agent"]') as HTMLTextAreaElement
+      if (testInput) {
+        testInput.focus()
+      }
+    }, 1500)
+  }
+
+  const stopEnvironment = (callback?: () => void) => {
+    setEnvironmentStatus('stopping')
+    addLog('warning', 'Shutting down environment...')
+    
+    // Clear session for conversational mode
+    if (testSessionId) {
+      addLog('info', `Clearing conversation session: ${testSessionId}`)
+      
+      // Call cleanup endpoint to close sandbox
+      fetch('/api/agents/test-cleanup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId: testSessionId })
+      }).catch(err => console.error('Cleanup error:', err))
+      
+      setTestSessionId(null)
+    }
+    
+    setTimeout(() => {
+      addLog('info', 'Environment terminated')
+      setEnvironmentStatus('idle')
+      setEnvironmentStartTime(null)
+      setRunningExecutionMode(null) // Clear running mode
+      toast.info('Agent environment stopped')
+      if (callback) callback()
+    }, 500)
+  }
+
+  const restartEnvironment = () => {
+    addLog('info', 'Restarting environment...')
+    stopEnvironment(() => {
+      setTimeout(() => {
+        startEnvironment()
+      }, 200)
+    })
   }
 
   const handleSendMessage = async () => {
@@ -533,6 +623,95 @@ export default function NewAgentPage() {
               </div>
             </div>
             <div className="flex items-center gap-2">
+              {/* Environment Controls */}
+              <div className="flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-neutral-800 rounded-lg">
+                {/* Play/Start Button */}
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={startEnvironment}
+                  disabled={environmentStatus !== 'idle' || !watchedModel}
+                  className="p-2"
+                  title={!watchedModel ? "Select a model first" : "Start environment"}
+                >
+                  <Play className={cn(
+                    "w-4 h-4",
+                    environmentStatus === 'idle' && watchedModel ? "text-green-600" : "text-gray-400"
+                  )} />
+                </Button>
+                
+                {/* Stop Button */}
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => stopEnvironment()}
+                  disabled={environmentStatus !== 'running'}
+                  className="p-2"
+                  title="Stop environment"
+                >
+                  <Square className={cn(
+                    "w-4 h-4",
+                    environmentStatus === 'running' ? "text-red-600" : "text-gray-400"
+                  )} />
+                </Button>
+                
+                {/* Restart Button */}
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={restartEnvironment}
+                  disabled={environmentStatus !== 'running'}
+                  className={cn(
+                    "p-2",
+                    runningExecutionMode && runningExecutionMode !== watchedExecutionMode && "animate-pulse"
+                  )}
+                  title={runningExecutionMode && runningExecutionMode !== watchedExecutionMode 
+                    ? "Execution mode changed - restart required" 
+                    : "Restart environment"}
+                >
+                  <RefreshCw className={cn(
+                    "w-4 h-4",
+                    environmentStatus === 'running' 
+                      ? runningExecutionMode && runningExecutionMode !== watchedExecutionMode 
+                        ? "text-amber-600" 
+                        : "text-blue-600"
+                      : "text-gray-400"
+                  )} />
+                </Button>
+                
+                {/* Environment Status */}
+                {environmentStatus !== 'idle' && (
+                  <div className="ml-2 px-2 py-1 text-xs font-medium">
+                    {environmentStatus === 'running' && (
+                      <span className="flex items-center gap-1 text-green-600 dark:text-green-400">
+                        <span className="relative flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                        </span>
+                        Running
+                      </span>
+                    )}
+                    {environmentStatus === 'starting' && (
+                      <span className="flex items-center gap-1 text-yellow-600 dark:text-yellow-400">
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                        Starting
+                      </span>
+                    )}
+                    {environmentStatus === 'stopping' && (
+                      <span className="flex items-center gap-1 text-orange-600 dark:text-orange-400">
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                        Stopping
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+              
+              <div className="w-px h-6 bg-gray-300 dark:bg-neutral-700" />
+              
               <Button
                 type="button"
                 variant="outline"
@@ -1096,117 +1275,6 @@ export default function NewAgentPage() {
                     </div>
                   </TabsContent>
                 </Tabs>
-                
-                {/* Test Agent Button */}
-                <div className="mt-4 pt-4 border-t flex-shrink-0">
-                  <div className="space-y-3">
-                    <Alert className="border-blue-200 bg-blue-50 dark:bg-blue-950/20">
-                      <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                      <AlertDescription className="text-xs">
-                        Test your agent configuration in the panel on the right. Once you're satisfied with the responses, 
-                        click "Create Agent" in the top bar to save it.
-                      </AlertDescription>
-                    </Alert>
-                    <Button
-                      type="button"
-                      onClick={() => {
-                        if (!watchedModel) {
-                          toast.error('Please select an AI model in the Advanced tab first')
-                          return
-                        }
-                        
-                        if (environmentStatus === 'idle') {
-                          // Start the environment
-                          setEnvironmentStatus('starting')
-                          setEnvironmentStartTime(new Date())
-                          setExecutionLogs([]) // Clear previous logs
-                          setMessages([]) // Clear chat messages
-                          
-                          // Generate session ID for conversational mode
-                          const formData = getValues()
-                          if (formData.executionMode === 'persistent') {
-                            const sessionId = `test-session-${Date.now()}`
-                            setTestSessionId(sessionId)
-                            addLog('info', `Creating conversation session: ${sessionId}`)
-                          }
-                          
-                          addLog('info', 'Initializing E2B sandbox environment...')
-                          addLog('info', `Model: ${watchedModel || 'gpt-4'}`)
-                          addLog('info', `Mode: ${formData.executionMode === 'persistent' ? 'Conversational (maintains context)' : 'Ephemeral (stateless)'}`)
-                          addLog('info', 'Installing required packages...')
-                          
-                          // Simulate environment startup
-                          setTimeout(() => {
-                            addLog('success', 'Environment packages installed')
-                            addLog('info', 'Loading agent configuration...')
-                            addLog('success', 'Agent environment ready')
-                            setEnvironmentStatus('running')
-                            toast.success('Agent environment is ready! Start testing in the panel.')
-                            
-                            // Focus on the test panel input
-                            const testInput = document.querySelector('textarea[placeholder*="Test your agent"]') as HTMLTextAreaElement
-                            if (testInput) {
-                              testInput.focus()
-                            }
-                          }, 1500)
-                        } else if (environmentStatus === 'running') {
-                          // Stop the environment
-                          setEnvironmentStatus('stopping')
-                          addLog('warning', 'Shutting down environment...')
-                          
-                          // Clear session for conversational mode
-                          if (testSessionId) {
-                            addLog('info', `Clearing conversation session: ${testSessionId}`)
-                            
-                            // Call cleanup endpoint to close sandbox
-                            fetch('/api/agents/test-cleanup', {
-                              method: 'POST',
-                              headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify({ sessionId: testSessionId })
-                            }).catch(err => console.error('Cleanup error:', err))
-                            
-                            setTestSessionId(null)
-                          }
-                          
-                          setTimeout(() => {
-                            addLog('info', 'Environment terminated')
-                            setEnvironmentStatus('idle')
-                            setEnvironmentStartTime(null)
-                            toast.info('Agent environment stopped')
-                          }, 500)
-                        }
-                      }}
-                      className="w-full"
-                      variant={watchedModel ? "default" : "outline"}
-                      disabled={environmentStatus === 'starting' || environmentStatus === 'stopping'}
-                    >
-                      {environmentStatus === 'idle' && (
-                        <>
-                          <Play className="w-4 h-4 mr-2" />
-                          {watchedModel ? 'Start Agent Environment →' : 'Select Model to Test Agent'}
-                        </>
-                      )}
-                      {environmentStatus === 'starting' && (
-                        <>
-                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          Starting Environment...
-                        </>
-                      )}
-                      {environmentStatus === 'running' && (
-                        <>
-                          <Activity className="w-4 h-4 mr-2" />
-                          Stop Environment
-                        </>
-                      )}
-                      {environmentStatus === 'stopping' && (
-                        <>
-                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          Stopping...
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                </div>
               </CardContent>
             </Card>
           </div>
@@ -1256,6 +1324,17 @@ export default function NewAgentPage() {
                             Stopping...
                           </>
                         )}
+                      </Badge>
+                    )}
+                    
+                    {/* Restart indicator when execution mode changes */}
+                    {environmentStatus === 'running' && runningExecutionMode && runningExecutionMode !== watchedExecutionMode && (
+                      <Badge 
+                        variant="outline" 
+                        className="text-xs flex items-center gap-1 bg-amber-500/10 text-amber-600 border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-400 animate-pulse"
+                      >
+                        <AlertCircle className="w-3 h-3" />
+                        Restart needed
                       </Badge>
                     )}
                     
@@ -1321,7 +1400,7 @@ export default function NewAgentPage() {
                             </div>
                             <h2 className="text-xl font-semibold">Start Agent Environment</h2>
                             <p className="text-sm text-muted-foreground">
-                              Click "Start Agent Environment" on the left to begin testing
+                              Click the play button (▶) in the header to begin testing
                             </p>
                           </>
                         ) : environmentStatus === 'starting' ? (
@@ -1586,17 +1665,31 @@ export default function NewAgentPage() {
                         {/* Auto-clear toggle */}
                         <button
                           type="button"
-                          onClick={() => setAutoClear(!autoClear)}
+                          onClick={() => {
+                            // Only allow toggling in persistent mode
+                            if (watchedExecutionMode !== 'ephemeral') {
+                              setAutoClear(!autoClear)
+                            }
+                          }}
+                          disabled={watchedExecutionMode === 'ephemeral'}
                           className={cn(
                             "flex items-center gap-1.5 px-2 py-1 rounded-md transition-colors",
                             autoClear 
                               ? "bg-primary/10 text-primary hover:bg-primary/20" 
-                              : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                              : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
+                            watchedExecutionMode === 'ephemeral' && "opacity-60 cursor-not-allowed"
                           )}
-                          title="Toggle auto-clear"
+                          title={watchedExecutionMode === 'ephemeral' 
+                            ? "Auto-clear is always on for ephemeral mode" 
+                            : "Toggle auto-clear messages"
+                          }
                         >
                           <RefreshCw className="w-4 h-4" />
-                          {autoClear && <span className="text-xs font-medium">Auto-clear</span>}
+                          {autoClear && (
+                            <span className="text-xs font-medium">
+                              {watchedExecutionMode === 'ephemeral' ? 'Auto-clear (ephemeral)' : 'Auto-clear'}
+                            </span>
+                          )}
                         </button>
                       </div>
 
