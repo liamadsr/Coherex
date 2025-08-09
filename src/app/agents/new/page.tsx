@@ -299,18 +299,34 @@ export default function NewAgentPage() {
 
       const result = await response.json()
 
-      if (response.ok && result.output) {
+      if (result.output) {
+        // We got an output (either real or mock)
         setMessages(prev => [...prev, { 
           role: 'assistant', 
           content: typeof result.output === 'string' ? result.output : JSON.stringify(result.output) 
         }])
+        
+        // Show info if it was a mock response
+        if (result.error?.includes('E2B sandbox service not configured')) {
+          setMessages(prev => [...prev, { 
+            role: 'system', 
+            content: '⚠️ Note: E2B sandbox not configured. This was a simulated response. To get real LLM responses, ensure E2B_API_KEY is set in your environment.' 
+          }])
+        }
+      } else if (response.ok && !result.output) {
+        // No output but successful - shouldn't happen
+        const aiResponse = generateAIResponse(userMessage, formData)
+        setMessages(prev => [...prev, { role: 'assistant', content: aiResponse }])
       } else {
-        // Fallback to simulated response if API fails
+        // Error case - use fallback
         const aiResponse = generateAIResponse(userMessage, formData)
         setMessages(prev => [...prev, { role: 'assistant', content: aiResponse }])
         
         if (result.error) {
-          console.error('Test execution failed:', result.error)
+          console.warn('Test execution issue:', result.error)
+          if (result.details) {
+            console.warn('Details:', result.details)
+          }
         }
       }
     } catch (error) {

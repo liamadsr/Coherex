@@ -55,6 +55,13 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Check if E2B is configured
+    if (!process.env.E2B_API_KEY) {
+      console.warn('E2B_API_KEY not configured, using mock execution')
+      // Fall back to mock execution if E2B is not configured
+      // This allows testing without E2B setup
+    }
+
     // Execute the agent with E2B
     const result = await e2bClient.executeAgent(
       tempAgentId,
@@ -65,12 +72,24 @@ export async function POST(req: NextRequest) {
 
     if (!result.success) {
       console.error('Test execution failed:', result.error)
+      console.error('Agent config:', agentConfig)
+      console.error('Input:', input)
+      
+      // Provide more helpful error message
+      let errorMessage = 'Failed to execute test agent'
+      if (result.error?.includes('E2B_API_KEY')) {
+        errorMessage = 'E2B sandbox service not configured. The agent returned a simulated response.'
+      } else if (result.error?.includes('OPENAI_API_KEY') || result.error?.includes('ANTHROPIC_API_KEY')) {
+        errorMessage = 'API key for the selected model is not configured'
+      }
+      
       return NextResponse.json(
         { 
-          error: 'Failed to execute test agent',
-          details: result.error 
+          error: errorMessage,
+          details: result.error,
+          output: result.output // Still return mock output if available
         },
-        { status: 500 }
+        { status: 200 } // Return 200 so frontend can handle gracefully
       )
     }
 
