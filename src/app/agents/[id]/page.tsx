@@ -361,7 +361,7 @@ export default function AgentDetailPage() {
                 <DropdownMenuContent align="end">
                   <DropdownMenuLabel>Actions</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => router.push(`/agents/${agent.id}/edit`)}>
+                  <DropdownMenuItem onClick={() => router.push(`/agents/new?edit=${agent.id}`)}>
                     <Edit className="mr-2 h-4 w-4" />
                     Edit Agent
                   </DropdownMenuItem>

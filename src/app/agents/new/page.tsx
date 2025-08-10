@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -155,6 +155,9 @@ const aiModels = [
 
 export default function NewAgentPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const editId = searchParams.get('edit')
+  const isEditMode = !!editId
   const [isLoading, setIsLoading] = useState(false)
   const [currentTab, setCurrentTab] = useState('basic')
   const [messages, setMessages] = useState<Array<{ role: 'user' | 'assistant' | 'system', content: string, id?: string }>>([])
@@ -173,9 +176,14 @@ export default function NewAgentPage() {
   const [runningTemperature, setRunningTemperature] = useState<number | null>(null)
   const [runningMaxTokens, setRunningMaxTokens] = useState<number | null>(null)
   const [showModelMenu, setShowModelMenu] = useState(false)
+  const [agentId, setAgentId] = useState<string | null>(null)
+  const [lastSaved, setLastSaved] = useState<Date | null>(null)
+  const [isSaving, setIsSaving] = useState(false)
+  const [hasChanges, setHasChanges] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const scrollAreaRef = useRef<HTMLDivElement>(null)
   const logsScrollRef = useRef<HTMLDivElement>(null)
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const {
     register,
@@ -228,67 +236,86 @@ export default function NewAgentPage() {
   const onSubmit = async (data: AgentFormData) => {
     setIsLoading(true)
     try {
-      // Create agent configuration that matches both config format AND database columns
-      const config = {
-        name: data.name,
-        description: data.description,
-        type: 'custom' as const,
-        model: data.model,
-        temperature: data.temperature,
-        maxTokens: data.maxTokens,
-        systemPrompt: data.systemPrompt,
-        tools: [],
-        dataSources: data.knowledgeSources || [],
-        outputFormat: 'json' as const,
-        settings: {
-          channels: data.channels,
-          mcpServers: data.mcpServers || [],
-          integrations: data.integrations || []
+      // If no agentId exists, create the agent directly as active
+      if (!agentId) {
+        const response = await fetch('/api/agents', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: data.name,
+            description: data.description,
+            execution_mode: data.executionMode,
+            channels: data.channels,
+            model: data.model,
+            temperature: data.temperature,
+            maxTokens: data.maxTokens,
+            systemPrompt: data.systemPrompt,
+            knowledgeSources: data.knowledgeSources || [],
+            mcpServers: data.mcpServers || [],
+            integrations: data.integrations || [],
+            config: {
+              name: data.name,
+              description: data.description,
+              type: 'custom',
+              model: data.model,
+              temperature: data.temperature,
+              maxTokens: data.maxTokens,
+              systemPrompt: data.systemPrompt,
+              tools: [],
+              dataSources: data.knowledgeSources || [],
+              outputFormat: 'json',
+              settings: {
+                channels: data.channels,
+                mcpServers: data.mcpServers || [],
+                integrations: data.integrations || []
+              }
+            },
+            status: 'active'
+          })
+        })
+        
+        if (response.ok) {
+          const result = await response.json()
+          const newAgentId = result.agent?.id || result.data?.id || result.id
+          toast.success('Agent created successfully!')
+          router.push(`/agents/${newAgentId}`)
+        } else {
+          const error = await response.json()
+          toast.error(error.error || 'Failed to create agent')
         }
-      }
-
-      // Save to database via API
-      const response = await fetch('/api/data-sources', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: data.name,
-          description: data.description,
-          config,
-          status: 'draft'
-        })
-      })
-
-      // Actually, let me use the correct endpoint
-      const agentResponse = await fetch('/api/agents', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: data.name,
-          description: data.description,
-          execution_mode: data.executionMode,
-          channels: data.channels,
-          model: data.model,
-          temperature: data.temperature,
-          maxTokens: data.maxTokens,
-          systemPrompt: data.systemPrompt,
-          knowledgeSources: data.knowledgeSources || [],
-          config,
-          status: 'draft'
-        })
-      })
-
-      if (agentResponse.ok) {
-        const result = await agentResponse.json()
-        toast.success('Agent created successfully!')
-        router.push(`/agents/${result.agent.id}`)
       } else {
-        const error = await agentResponse.json()
-        toast.error(error.error || 'Failed to create agent')
+        // Update existing agent status from draft to active
+        const response = await fetch(`/api/agents/${agentId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: data.name,
+            description: data.description,
+            execution_mode: data.executionMode,
+            channels: data.channels,
+            model: data.model,
+            temperature: data.temperature,
+            maxTokens: data.maxTokens,
+            systemPrompt: data.systemPrompt,
+            knowledgeSources: data.knowledgeSources || [],
+            mcpServers: data.mcpServers || [],
+            integrations: data.integrations || [],
+            status: 'active'
+          })
+        })
+
+        if (response.ok) {
+          const result = await response.json()
+          toast.success(isEditMode ? 'Agent updated successfully!' : 'Agent created successfully!')
+          router.push(`/agents/${agentId}`)
+        } else {
+          const error = await response.json()
+          toast.error(error.error || 'Failed to create agent')
+        }
       }
     } catch (error) {
       console.error('Error creating agent:', error)
@@ -351,6 +378,149 @@ export default function NewAgentPage() {
       return () => clearInterval(interval)
     }
   }, [environmentStatus, environmentStartTime])
+
+  // Load existing agent for editing (but don't create new draft automatically)
+  useEffect(() => {
+    if (editId) {
+      // Load existing agent (draft or active)
+      const loadAgent = async () => {
+        try {
+          const response = await fetch(`/api/agents/${editId}`)
+          if (response.ok) {
+            const result = await response.json()
+            // The API returns { success: true, data: agent }
+            const agent = result.data
+            
+            if (!agent || !agent.id) {
+              console.error('Invalid agent data:', result)
+              toast.error('Failed to load agent data')
+              return
+            }
+            
+            setAgentId(agent.id)
+            
+            // Populate form with existing data from the transformed agent
+            setValue('name', agent.name || '')
+            setValue('description', agent.description || '')
+            // executionMode might not exist in older agents
+            setValue('executionMode', agent.executionMode || agent.execution_mode || 'ephemeral')
+            setValue('model', agent.model || 'gpt-4-turbo')
+            setValue('temperature', agent.temperature ?? 0.7)
+            setValue('maxTokens', agent.maxTokens ?? 2000)
+            setValue('systemPrompt', agent.systemPrompt || '')
+            setValue('channels', agent.channels || [])
+            setValue('knowledgeSources', agent.knowledgeSources || [])
+            // mcpServers might not exist in the mock data
+            setValue('mcpServers', agent.mcpServers || [])
+            setValue('integrations', agent.integrations || [])
+            
+            setLastSaved(agent.updatedAt ? new Date(agent.updatedAt) : new Date())
+          } else {
+            console.error('Failed to fetch agent:', response.status)
+            toast.error('Agent not found')
+            router.push('/agents')
+          }
+        } catch (error) {
+          console.error('Failed to load agent:', error)
+          toast.error('Failed to load agent data')
+        }
+      }
+      loadAgent()
+    }
+    // Don't create a draft automatically for new agents
+  }, [editId, setValue])
+
+  // Auto-save function with debouncing and draft creation
+  const autoSave = async (formData: any) => {
+    if (isSaving) return
+    
+    // Clear existing timeout
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current)
+    }
+    
+    // Set new timeout for debounced save
+    saveTimeoutRef.current = setTimeout(async () => {
+      setIsSaving(true)
+      try {
+        // If no agentId exists yet, create a draft first
+        if (!agentId) {
+          const createResponse = await fetch('/api/agents/draft', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: formData.name || 'Untitled Agent',
+              description: formData.description || '',
+              executionMode: formData.executionMode || 'ephemeral',
+              model: formData.model || 'gpt-4-turbo',
+              temperature: formData.temperature ?? 0.7,
+              maxTokens: formData.maxTokens ?? 2000,
+              systemPrompt: formData.systemPrompt || '',
+              channels: formData.channels || [],
+              knowledgeSources: formData.knowledgeSources || [],
+              mcpServers: formData.mcpServers || [],
+              integrations: formData.integrations || []
+            })
+          })
+          
+          if (createResponse.ok) {
+            const data = await createResponse.json()
+            setAgentId(data.agent.id)
+            setLastSaved(new Date())
+          } else {
+            console.error('Failed to create draft')
+            setIsSaving(false)
+            return
+          }
+        } else {
+          // Update existing draft
+          const response = await fetch('/api/agents/draft', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              agentId,
+              ...formData
+            })
+          })
+          
+          if (response.ok) {
+            setLastSaved(new Date())
+          }
+        }
+      } catch (error) {
+        console.error('Auto-save failed:', error)
+      } finally {
+        setIsSaving(false)
+      }
+    }, 1000) // Save after 1 second of no changes
+  }
+
+  // Watch for form changes and auto-save
+  useEffect(() => {
+    const subscription = watch((formData) => {
+      // Only track changes and auto-save if user has actually modified something
+      if (!hasChanges && !editId) {
+        // Check if any meaningful changes were made (not just initial default values)
+        const hasActualChanges = 
+          (formData.name && formData.name !== '') ||
+          (formData.description && formData.description !== '') ||
+          (formData.systemPrompt && formData.systemPrompt !== '') ||
+          (formData.channels && formData.channels.length > 0) ||
+          (formData.knowledgeSources && formData.knowledgeSources.length > 0) ||
+          (formData.mcpServers && formData.mcpServers.length > 0) ||
+          (formData.integrations && formData.integrations.length > 0)
+        
+        if (hasActualChanges) {
+          setHasChanges(true)
+          autoSave(formData)
+        }
+      } else if (hasChanges || editId) {
+        // Continue auto-saving after first change or when editing
+        autoSave(formData)
+      }
+    })
+    return () => subscription.unsubscribe()
+  }, [agentId, hasChanges, editId, watch])
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
@@ -651,7 +821,9 @@ export default function NewAgentPage() {
               <ArrowLeft className="w-4 h-4" />
             </Button>
             <div>
-              <h1 className="text-base font-semibold text-gray-900 dark:text-white">Agent Builder</h1>
+              <h1 className="text-base font-semibold text-gray-900 dark:text-white">
+                {isEditMode ? 'Edit Agent' : 'Agent Builder'}
+              </h1>
             </div>
           </div>
           
@@ -772,16 +944,19 @@ export default function NewAgentPage() {
           </div>
           
           <div className="flex items-center gap-2">
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => toast.info('Save as draft feature coming soon!')}
-              size="sm"
-              className="h-8"
-            >
-              <Save className="w-4 h-4 mr-1.5" />
-              <span className="text-sm">Save Draft</span>
-            </Button>
+            {/* Auto-save indicator - only show when we have an agentId */}
+            {agentId && isSaving && (
+              <div className="flex items-center gap-1.5 px-2 py-1 text-xs text-gray-500 dark:text-gray-400">
+                <Loader2 className="w-3 h-3 animate-spin" />
+                <span>Saving draft...</span>
+              </div>
+            )}
+            {agentId && !isSaving && lastSaved && (
+              <div className="flex items-center gap-1.5 px-2 py-1 text-xs text-gray-500 dark:text-gray-400">
+                <CheckCircle className="w-3 h-3 text-green-500" />
+                <span>Draft saved</span>
+              </div>
+            )}
             <Button
               onClick={handleSubmit(onSubmit)}
               disabled={!isValid || isLoading}
@@ -792,12 +967,12 @@ export default function NewAgentPage() {
               {isLoading ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
-                  <span className="text-sm">Creating...</span>
+                  <span className="text-sm">{isEditMode ? 'Updating...' : 'Creating...'}</span>
                 </>
               ) : (
                 <>
                   <CheckCircle className="w-4 h-4 mr-1.5" />
-                  <span className="text-sm">Create Agent</span>
+                  <span className="text-sm">{isEditMode ? 'Update Agent' : 'Create Agent'}</span>
                 </>
               )}
             </Button>

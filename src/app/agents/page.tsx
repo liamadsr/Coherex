@@ -113,6 +113,7 @@ export default function AgentsPage() {
       case 'inactive': return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
       case 'training': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400'
       case 'error': return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+      case 'draft': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400'
       default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
     }
   }
@@ -148,7 +149,10 @@ export default function AgentsPage() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="z-50">
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuItem onClick={() => handleAgentAction('Edit', agent.name)}>
+                <DropdownMenuItem onClick={(e) => {
+                  e.stopPropagation()
+                  router.push(`/agents/new?edit=${agent.id}`)
+                }}>
                   <Edit className="w-4 h-4 mr-2" />
                   Edit Agent
                 </DropdownMenuItem>
@@ -303,7 +307,10 @@ export default function AgentsPage() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuItem onClick={() => handleAgentAction('Edit', agent.name)}>
+                <DropdownMenuItem onClick={(e) => {
+                  e.stopPropagation()
+                  router.push(`/agents/new?edit=${agent.id}`)
+                }}>
                   <Edit className="w-4 h-4 mr-2" />
                   Edit Agent
                 </DropdownMenuItem>
