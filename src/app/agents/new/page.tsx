@@ -48,7 +48,10 @@ import {
   ThumbsUp,
   Image,
   Terminal,
-  ScrollText
+  ScrollText,
+  GitBranch,
+  Share2,
+  Rocket
 } from 'lucide-react'
 
 import { MainLayout } from '@/components/layouts/MainLayout'
@@ -93,6 +96,8 @@ import {
 } from "@/components/prompt-kit/prompt-input"
 import { PromptSuggestion } from "@/components/ui/prompt-suggestion"
 import { cn } from "@/lib/utils"
+import { VersionHistory } from "@/components/agents/VersionHistory"
+import { SharePreviewModal } from "@/components/agents/SharePreviewModal"
 
 const agentSchema = z.object({
   name: z.string().min(2, 'Agent name must be at least 2 characters'),
@@ -180,6 +185,21 @@ export default function NewAgentPage() {
   const [lastSaved, setLastSaved] = useState<Date | null>(null)
   const [isSaving, setIsSaving] = useState(false)
   const [hasChanges, setHasChanges] = useState(false)
+  
+  // Version-related state
+  const [versionInfo, setVersionInfo] = useState<{
+    currentVersionId?: string | null
+    draftVersionId?: string | null
+    versionNumber?: number
+    isDraft?: boolean
+    needsDraft?: boolean
+  }>({})
+  const [showVersionHistory, setShowVersionHistory] = useState(false)
+  const [showShareModal, setShowShareModal] = useState(false)
+  const [selectedVersionForShare, setSelectedVersionForShare] = useState<{
+    id: string
+    versionNumber: number
+  } | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const scrollAreaRef = useRef<HTMLDivElement>(null)
   const logsScrollRef = useRef<HTMLDivElement>(null)
@@ -399,6 +419,26 @@ export default function NewAgentPage() {
             
             setAgentId(agent.id)
             
+            // Set version information if available
+            if (agent.current_version_id || agent.draft_version_id) {
+              setVersionInfo({
+                currentVersionId: agent.current_version_id,
+                draftVersionId: agent.draft_version_id,
+                isDraft: !!agent.draft_version_id
+              })
+              
+              // If we have version info, load the draft version if it exists
+              if (agent.draft_version_id) {
+                loadVersionData(agent.id, agent.draft_version_id)
+                return
+              } else if (agent.current_version_id) {
+                // If editing a production agent without a draft, we'll create one on first change
+                loadVersionData(agent.id, agent.current_version_id)
+                setVersionInfo(prev => ({ ...prev, needsDraft: true }))
+                return
+              }
+            }
+            
             // Populate form with existing data from the transformed agent
             setValue('name', agent.name || '')
             setValue('description', agent.description || '')
@@ -431,6 +471,48 @@ export default function NewAgentPage() {
   }, [editId, setValue])
 
   // Auto-save function with debouncing and draft creation
+  const loadVersionData = async (agentId: string, versionId: string) => {
+    try {
+      const response = await fetch(`/api/agents/${agentId}/versions/${versionId}`)
+      if (response.ok) {
+        const result = await response.json()
+        const version = result.version
+        
+        if (version && version.config) {
+          // Set version info
+          setVersionInfo(prev => ({
+            ...prev,
+            versionNumber: version.version_number,
+            isDraft: version.status === 'draft'
+          }))
+          
+          // Populate form with version data
+          setValue('name', version.name || '')
+          setValue('description', version.description || '')
+          
+          // Extract from config JSONB
+          const config = version.config
+          setValue('executionMode', config.executionMode || 'ephemeral')
+          setValue('model', config.model || 'gpt-4-turbo')
+          setValue('temperature', config.temperature ?? 0.7)
+          setValue('maxTokens', config.maxTokens ?? 2000)
+          setValue('systemPrompt', config.systemPrompt || '')
+          setValue('channels', config.channels || [])
+          setValue('knowledgeSources', config.knowledgeSources || [])
+          setValue('mcpServers', config.mcpServers || [])
+          setValue('integrations', config.integrations || [])
+          
+          setLastSaved(version.updated_at ? new Date(version.updated_at) : new Date())
+        }
+      } else {
+        toast.error('Failed to load version data')
+      }
+    } catch (error) {
+      console.error('Error loading version:', error)
+      toast.error('Failed to load version data')
+    }
+  }
+
   const autoSave = async (formData: any) => {
     if (isSaving) return
     
@@ -443,8 +525,55 @@ export default function NewAgentPage() {
     saveTimeoutRef.current = setTimeout(async () => {
       setIsSaving(true)
       try {
+        // If we need to create a draft version from production
+        if (agentId && versionInfo.needsDraft && !versionInfo.draftVersionId) {
+          const draftResponse = await fetch(`/api/agents/${agentId}/versions`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          })
+          
+          if (draftResponse.ok) {
+            const { version } = await draftResponse.json()
+            setVersionInfo(prev => ({
+              ...prev,
+              draftVersionId: version.id,
+              isDraft: true,
+              needsDraft: false,
+              versionNumber: version.version_number
+            }))
+            toast.success('Created draft version for editing')
+          }
+        }
+        
+        // If we have a draft version, update it
+        if (agentId && versionInfo.draftVersionId) {
+          const updateResponse = await fetch(`/api/agents/${agentId}/versions/${versionInfo.draftVersionId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: formData.name || 'Untitled Agent',
+              description: formData.description || '',
+              config: {
+                executionMode: formData.executionMode || 'ephemeral',
+                model: formData.model || 'gpt-4-turbo',
+                temperature: formData.temperature ?? 0.7,
+                maxTokens: formData.maxTokens ?? 2000,
+                systemPrompt: formData.systemPrompt || '',
+                channels: formData.channels || [],
+                knowledgeSources: formData.knowledgeSources || [],
+                mcpServers: formData.mcpServers || [],
+                integrations: formData.integrations || []
+              }
+            })
+          })
+          
+          if (updateResponse.ok) {
+            setLastSaved(new Date())
+            setHasChanges(true)
+          }
+        }
         // If no agentId exists yet, create a draft first
-        if (!agentId) {
+        else if (!agentId) {
           const createResponse = await fetch('/api/agents/draft', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -820,10 +949,25 @@ export default function NewAgentPage() {
             >
               <ArrowLeft className="w-4 h-4" />
             </Button>
-            <div>
+            <div className="flex items-center gap-3">
               <h1 className="text-base font-semibold text-gray-900 dark:text-white">
                 {isEditMode ? 'Edit Agent' : 'Agent Builder'}
               </h1>
+              {versionInfo.versionNumber && (
+                <>
+                  <Badge 
+                    variant={versionInfo.isDraft ? "secondary" : "default"}
+                    className={versionInfo.isDraft ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" : ""}
+                  >
+                    v{versionInfo.versionNumber} {versionInfo.isDraft ? 'DRAFT' : 'PRODUCTION'}
+                  </Badge>
+                  {versionInfo.currentVersionId && !versionInfo.isDraft && (
+                    <Badge variant="outline" className="text-xs">
+                      Viewing Production
+                    </Badge>
+                  )}
+                </>
+              )}
             </div>
           </div>
           
@@ -957,6 +1101,75 @@ export default function NewAgentPage() {
                 <span>Draft saved</span>
               </div>
             )}
+            
+            {/* Version management buttons */}
+            {agentId && (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowVersionHistory(true)}
+                  className="h-8"
+                >
+                  <GitBranch className="w-4 h-4 mr-1.5" />
+                  <span className="text-sm">History</span>
+                </Button>
+                {versionInfo.draftVersionId && (
+                  <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setSelectedVersionForShare({
+                          id: versionInfo.draftVersionId!,
+                          versionNumber: versionInfo.versionNumber || 1
+                        })
+                        setShowShareModal(true)
+                      }}
+                      className="h-8"
+                    >
+                      <Share2 className="w-4 h-4 mr-1.5" />
+                      <span className="text-sm">Share Preview</span>
+                    </Button>
+                    {hasChanges && (
+                      <Button
+                        size="sm"
+                        onClick={async () => {
+                          if (!versionInfo.draftVersionId) return
+                          
+                          try {
+                            const res = await fetch(`/api/agents/${agentId}/versions/${versionInfo.draftVersionId}/publish`, {
+                              method: 'POST'
+                            })
+                            
+                            if (res.ok) {
+                              const data = await res.json()
+                              toast.success(data.message || 'Published to production!')
+                              setVersionInfo(prev => ({
+                                ...prev,
+                                currentVersionId: versionInfo.draftVersionId,
+                                draftVersionId: null,
+                                isDraft: false
+                              }))
+                              setHasChanges(false)
+                            } else {
+                              toast.error('Failed to publish')
+                            }
+                          } catch (error) {
+                            toast.error('Failed to publish')
+                          }
+                        }}
+                        className="h-8 bg-green-600 hover:bg-green-700 text-white"
+                      >
+                        <Rocket className="w-4 h-4 mr-1.5" />
+                        <span className="text-sm">Publish to Production</span>
+                      </Button>
+                    )}
+                  </>
+                )}
+              </>
+            )}
+            
             <Button
               onClick={handleSubmit(onSubmit)}
               disabled={!isValid || isLoading}
@@ -981,6 +1194,16 @@ export default function NewAgentPage() {
 
         {/* Main Content - Unified Panel */}
         <div className="flex-1 flex overflow-hidden p-2">
+          {/* Draft Mode Banner */}
+          {versionInfo.isDraft && (
+            <div className="absolute top-16 left-1/2 transform -translate-x-1/2 z-10">
+              <Badge className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 px-3 py-1">
+                <AlertCircle className="w-3 h-3 mr-1" />
+                Working in Draft Mode - Changes won't affect production until published
+              </Badge>
+            </div>
+          )}
+          
           <div className="flex-1 bg-white dark:bg-[#0c0c0c] rounded-2xl shadow-sm overflow-hidden flex">
             {/* Left Panel - Configuration */}
             <div className="w-1/2 flex flex-col overflow-hidden">
@@ -1902,6 +2125,54 @@ export default function NewAgentPage() {
           </div>
         </div>
       </div>
+      
+      {/* Version History Modal */}
+      {agentId && showVersionHistory && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white dark:bg-gray-900 rounded-lg w-full max-w-4xl max-h-[80vh] overflow-hidden">
+            <div className="p-6 overflow-y-auto max-h-[80vh]">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold">Version History</h2>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowVersionHistory(false)}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+              <VersionHistory
+                agentId={agentId}
+                currentVersionId={versionInfo.currentVersionId}
+                draftVersionId={versionInfo.draftVersionId}
+                onVersionSelect={(version) => {
+                  // Load the selected version into the form
+                  loadVersionData(agentId, version.id)
+                  setShowVersionHistory(false)
+                }}
+                onRefresh={() => {
+                  // Refresh version info if needed
+                  if (editId) {
+                    // Reload agent data
+                    window.location.reload()
+                  }
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Share Preview Modal */}
+      {selectedVersionForShare && (
+        <SharePreviewModal
+          open={showShareModal}
+          onOpenChange={setShowShareModal}
+          agentId={agentId!}
+          versionId={selectedVersionForShare.id}
+          versionNumber={selectedVersionForShare.versionNumber}
+        />
+      )}
     </MainLayout>
   )
 }
