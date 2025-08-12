@@ -24,7 +24,7 @@ import { Badge } from '@/components/ui/badge'
 import { mockApi } from '@/mock-data'
 import { Agent, AnalyticsData } from '@/types'
 import { toast } from 'sonner'
-import { useAuth } from '@/contexts/auth-context'
+import { useSupabaseAuth } from '@/contexts/supabase-auth-context'
 import { AuthLoading } from '@/components/auth/auth-loading'
 
 // Mock chart data
@@ -46,7 +46,7 @@ const channelData = [
 
 export default function DashboardPage() {
   const router = useRouter()
-  const { isLoading: authLoading } = useAuth()
+  const { isLoading: authLoading } = useSupabaseAuth()
   const [agents, setAgents] = useState<Agent[]>([])
   const [recentActivity, setRecentActivity] = useState<Array<{id: string; type: string; title: string; description: string; time: string; icon: any; color: string}>>([])
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)

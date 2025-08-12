@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase/client'
+import { createSupabaseBrowserClient } from '@/lib/supabase/browser-client'
 import { User as SupabaseUser, Session } from '@supabase/supabase-js'
 import { toast } from 'sonner'
 
@@ -29,6 +29,7 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
     isAuthenticated: false,
     isLoading: true,
   })
+  const [supabase] = useState(() => createSupabaseBrowserClient())
 
   // Initialize auth state and set up listener
   useEffect(() => {

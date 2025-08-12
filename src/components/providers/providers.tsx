@@ -1,7 +1,7 @@
 'use client'
 
 import { ThemeProvider } from 'next-themes'
-import { AuthProvider } from '@/contexts/auth-context'
+import { SupabaseAuthProvider } from '@/contexts/supabase-auth-context'
 import { QueryProvider } from '@/providers/query-provider'
 import { ThemeColorMeta } from '@/components/theme-color-meta'
 
@@ -15,9 +15,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
     >
       <ThemeColorMeta />
       <QueryProvider>
-        <AuthProvider>
+        <SupabaseAuthProvider>
           {children}
-        </AuthProvider>
+        </SupabaseAuthProvider>
       </QueryProvider>
     </ThemeProvider>
   )
