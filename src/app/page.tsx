@@ -377,21 +377,6 @@ export default function LandingPage() {
                 Get early access and help shape the future of AI agents
               </p>
             </div>
-            
-            <div className="mt-12 flex items-center justify-center space-x-8 text-gray-600 dark:text-gray-500">
-              <div className="flex items-center">
-                <Check className="w-5 h-5 mr-2 text-black dark:text-white" />
-                <span>100% Open Source</span>
-              </div>
-              <div className="flex items-center">
-                <Check className="w-5 h-5 mr-2 text-black dark:text-white" />
-                <span>Community Driven</span>
-              </div>
-              <div className="flex items-center">
-                <Check className="w-5 h-5 mr-2 text-black dark:text-white" />
-                <span>Easy to Use</span>
-              </div>
-            </div>
           </motion.div>
           </div>
         </div>
