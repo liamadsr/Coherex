@@ -400,7 +400,7 @@ export default function LandingPage() {
       {/* Features Section: dashed cards */}
       <section id="features" className="py-20 relative no-flash">
         <div className="absolute inset-0" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl 2xl:max-w-[calc(100%-4rem)] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="panel panel-grid panel-grid-light dark:panel-grid-dark p-8 md:p-12">
           <motion.div
             initial={mounted ? { opacity: 0 } : { opacity: 1 }}
@@ -453,7 +453,7 @@ export default function LandingPage() {
       <section id="integrations" className="py-20 relative overflow-hidden no-flash">
         <div className="absolute inset-0" />
         
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="max-w-7xl 2xl:max-w-[calc(100%-4rem)] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="panel panel-grid panel-grid-light dark:panel-grid-dark p-8 md:p-12">
           <motion.div
             initial={mounted ? { opacity: 0 } : { opacity: 1 }}
@@ -528,7 +528,7 @@ export default function LandingPage() {
       {/* CTA Section */}
       <section className="py-20 relative">
         <div className="absolute inset-0" />
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="max-w-4xl 2xl:max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={mounted ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }}
             whileInView={mounted ? { opacity: 1, y: 0 } : undefined}
@@ -584,7 +584,7 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="py-12 border-t border-gray-200 dark:border-neutral-800/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl 2xl:max-w-[calc(100%-4rem)] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-3 mb-4">

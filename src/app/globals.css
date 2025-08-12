@@ -176,7 +176,7 @@
 
   /* Reusable panel surface to separate sections from page background */
   .panel {
-    @apply border-4 border-solid border-black dark:border-white bg-white dark:bg-black;
+    @apply border-2 border-solid border-black dark:border-white bg-white dark:bg-black;
   }
 
   /* Dotted vertical guide columns across the page */
@@ -276,7 +276,7 @@
 /* Unify header/hero container width and padding */
 .page-container {
   width: 100%;
-  max-width: 80rem; /* Tailwind's max-w-7xl */
+  max-width: 80rem; /* Keep default for smaller screens */
   margin-left: auto;
   margin-right: auto;
   padding-left: 1rem; /* px-4 */
@@ -287,4 +287,11 @@
 }
 @media (min-width: 1024px) { /* lg */
   .page-container { padding-left: 2rem; padding-right: 2rem; } /* px-8 */
+}
+@media (min-width: 1536px) { /* 2xl - full size screens */
+  .page-container { 
+    max-width: calc(100% - 4rem); /* Almost full width with 2rem padding on each side */
+    padding-left: 2rem; 
+    padding-right: 2rem;
+  }
 }
