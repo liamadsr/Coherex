@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createRouteHandlerClient } from '@/lib/supabase/api-client-production'
+import { sanitizePostgrestQuery } from '@/lib/utils/query-sanitizer'
 
 // POST - Search knowledge documents
 export async function POST(req: NextRequest) {
@@ -33,10 +34,13 @@ export async function POST(req: NextRequest) {
 
     if (error) {
       // If text search fails, fall back to simple pattern matching
+      // Sanitize the query to prevent PostgREST injection
+      const sanitizedQuery = sanitizePostgrestQuery(query)
+      
       const { data: fallbackDocs, error: fallbackError } = await supabase
         .from('knowledge_documents')
         .select('*')
-        .or(`title.ilike.%${query}%,content.ilike.%${query}%`)
+        .or(`title.ilike.%${sanitizedQuery}%,content.ilike.%${sanitizedQuery}%`)
         .limit(limit)
 
       if (fallbackError) {
@@ -70,6 +74,7 @@ export async function POST(req: NextRequest) {
 // GET - Get knowledge document by ID
 export async function GET(req: NextRequest) {
   try {
+    const { supabase } = await createRouteHandlerClient(req)
     const { searchParams } = new URL(req.url)
     const documentId = searchParams.get('id')
     const dataSourceId = searchParams.get('dataSourceId')

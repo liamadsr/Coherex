@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import type { Database } from '@/lib/supabase/types'
+import { getSafeRedirectUrl } from '@/lib/utils/url-validator'
 
 // Define public routes that don't require authentication
 const publicRoutes = [
@@ -87,9 +88,9 @@ export async function middleware(request: NextRequest) {
   if (isAuthenticated && isPublicRoute && pathname !== '/' && pathname !== '/auth/callback' && !pathname.startsWith('/preview')) {
     // Only redirect if it's an auth page
     if (pathname.startsWith('/auth/login') || pathname.startsWith('/auth/signup') || pathname.startsWith('/forgot-password')) {
-      // If there's a 'from' parameter, redirect there instead of dashboard
+      // If there's a 'from' parameter, validate it to prevent open redirect
       const from = request.nextUrl.searchParams.get('from')
-      const redirectTo = from && from !== '/auth/login' ? from : '/dashboard'
+      const redirectTo = getSafeRedirectUrl(from !== '/auth/login' ? from : null, '/dashboard')
       return NextResponse.redirect(new URL(redirectTo, request.url))
     }
   }

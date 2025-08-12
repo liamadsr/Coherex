@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createRouteHandlerClient } from '@/lib/supabase/api-client-production'
+import { sanitizePostgrestQuery } from '@/lib/utils/query-sanitizer'
 
 // GET - List all agents for authenticated user
 export async function GET(req: NextRequest) {
@@ -34,7 +35,9 @@ export async function GET(req: NextRequest) {
     }
 
     if (search) {
-      query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%`)
+      // Sanitize the search query to prevent PostgREST injection
+      const sanitizedSearch = sanitizePostgrestQuery(search)
+      query = query.or(`name.ilike.%${sanitizedSearch}%,description.ilike.%${sanitizedSearch}%`)
     }
 
     // Apply pagination
