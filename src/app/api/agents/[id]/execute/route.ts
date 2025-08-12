@@ -213,9 +213,20 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { supabase } = await createRouteHandlerClient(req)
     const { id: agentId } = await params
     const { searchParams } = new URL(req.url)
     const executionId = searchParams.get('executionId')
+    
+    // Get the authenticated user
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
 
     if (executionId) {
       // Get specific execution
@@ -231,9 +242,39 @@ export async function GET(
           { status: 404 }
         )
       }
+      
+      // Verify the execution belongs to an agent owned by the user
+      const { data: agent } = await supabase
+        .from('agents')
+        .select('id')
+        .eq('id', data.agent_id)
+        .eq('created_by', user.id)
+        .single()
+      
+      if (!agent) {
+        return NextResponse.json(
+          { error: 'Unauthorized' },
+          { status: 403 }
+        )
+      }
 
       return NextResponse.json(data)
     } else {
+      // First verify the agent belongs to the user
+      const { data: agent } = await supabase
+        .from('agents')
+        .select('id')
+        .eq('id', agentId)
+        .eq('created_by', user.id)
+        .single()
+      
+      if (!agent) {
+        return NextResponse.json(
+          { error: 'Agent not found or unauthorized' },
+          { status: 404 }
+        )
+      }
+      
       // Get all executions for agent
       const { data, error } = await supabase
         .from('agent_executions')
