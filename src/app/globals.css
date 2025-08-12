@@ -259,6 +259,51 @@
   .parallax-guides {
     background-attachment: fixed, fixed, fixed, fixed, fixed;
   }
+  
+  /* Crosshatch texture for filled buttons */
+  .btn-texture-light {
+    background-image: 
+      repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 1px,
+        rgba(255, 255, 255, 0.25) 1px,
+        rgba(255, 255, 255, 0.25) 2px,
+        transparent 2px,
+        transparent 3px,
+        rgba(255, 255, 255, 0.15) 3px,
+        rgba(255, 255, 255, 0.15) 4px
+      ),
+      repeating-linear-gradient(
+        -60deg,
+        transparent,
+        transparent 4px,
+        rgba(255, 255, 255, 0.1) 4px,
+        rgba(255, 255, 255, 0.1) 5px
+      );
+  }
+  
+  .btn-texture-dark {
+    background-image: 
+      repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 1px,
+        rgba(0, 0, 0, 0.25) 1px,
+        rgba(0, 0, 0, 0.25) 2px,
+        transparent 2px,
+        transparent 3px,
+        rgba(0, 0, 0, 0.15) 3px,
+        rgba(0, 0, 0, 0.15) 4px
+      ),
+      repeating-linear-gradient(
+        -60deg,
+        transparent,
+        transparent 4px,
+        rgba(0, 0, 0, 0.1) 4px,
+        rgba(0, 0, 0, 0.1) 5px
+      );
+  }
 }
 
 /* Fix for Framer Motion flashing */
