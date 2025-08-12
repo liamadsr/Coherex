@@ -433,10 +433,10 @@ export default function LandingPage() {
                   delay: index * 0.1,
                   ease: "easeOut"
                 } : undefined}
-                className="group relative bg-white dark:bg-black rounded-2xl p-8 hover:bg-gray-50 dark:hover:bg-gray-900 transition-all duration-300 no-flash border-2 border-solid border-black dark:border-white"
+                className="group relative bg-white dark:bg-black p-8 hover:bg-gray-50 dark:hover:bg-gray-900 transition-all duration-300 no-flash border-2 border-solid border-black dark:border-white"
                 style={{ minHeight: '250px' }}
               >
-                <div className="w-14 h-14 rounded-xl p-3 mb-6">
+                <div className="w-14 h-14 p-3 mb-6">
                   <feature.icon className="w-full h-full text-gray-700 dark:text-white" />
                 </div>
                 <h3 className="text-2xl font-bold mb-3">{feature.title}</h3>
@@ -486,12 +486,12 @@ export default function LandingPage() {
                   delay: index * 0.05,
                   ease: "easeOut"
                 } : undefined}
-                className="bg-white dark:bg-black rounded-xl p-6 text-center hover:bg-gray-50 dark:hover:bg-gray-900 transition-all duration-300 hover:scale-105 no-flash border-2 border-solid border-black dark:border-white"
+                className="bg-white dark:bg-black p-6 text-center hover:bg-gray-50 dark:hover:bg-gray-900 transition-all duration-300 hover:scale-105 no-flash border-2 border-solid border-black dark:border-white"
               >
                 <div className="mb-3 w-12 h-12 flex items-center justify-center mx-auto">
                   {(integration.name === 'Teams' || integration.name === 'SharePoint') ? (
                     // Use fallback text for Teams and SharePoint since they might not be available
-                    <div className="w-12 h-12 bg-gray-200 dark:bg-gray-800 rounded-lg flex items-center justify-center text-gray-800 dark:text-white font-bold text-sm">
+                    <div className="w-12 h-12 bg-gray-200 dark:bg-gray-800 flex items-center justify-center text-gray-800 dark:text-white font-bold text-sm">
                       {integration.name === 'Teams' ? 'T' : 'SP'}
                     </div>
                   ) : (

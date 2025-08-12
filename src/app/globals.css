@@ -55,7 +55,7 @@
 }
 
 :root {
-  --radius: 0.625rem;
+  --radius: 0;
   --background: #ffffff;
   --foreground: #000000;
   --card: #ffffff;
@@ -176,7 +176,7 @@
 
   /* Reusable panel surface to separate sections from page background */
   .panel {
-    @apply rounded-2xl border-4 border-solid border-black dark:border-white bg-white dark:bg-black;
+    @apply border-4 border-solid border-black dark:border-white bg-white dark:bg-black;
   }
 
   /* Dotted vertical guide columns across the page */
