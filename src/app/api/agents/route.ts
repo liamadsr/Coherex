@@ -1,11 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createRouteHandlerClient } from '@/lib/supabase/api-client-production'
 
-// GET - List all agents
+// GET - List all agents for authenticated user
 export async function GET(req: NextRequest) {
   try {
     // Use authenticated client with proper cookie handling
     const { supabase, response } = await createRouteHandlerClient(req)
+    
+    // Get the authenticated user
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
     
     const { searchParams } = new URL(req.url)
     const status = searchParams.get('status')
@@ -16,6 +26,7 @@ export async function GET(req: NextRequest) {
     let query = supabase
       .from('agents')
       .select('*', { count: 'exact' })
+      .eq('created_by', user.id)  // Filter by authenticated user
 
     // Apply filters
     if (status) {

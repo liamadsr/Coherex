@@ -1,18 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createRouteHandlerClient } from '@/lib/supabase/api-client-production'
 
-// GET - Fetch single agent
+// GET - Fetch single agent (only if owned by authenticated user)
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { supabase } = await createRouteHandlerClient(req)
+    
+    // Get the authenticated user
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+    
     const { id } = await params
     const { data: agent, error } = await supabase
       .from('agents')
       .select('*')
       .eq('id', id)
+      .eq('created_by', user.id)  // Ensure agent belongs to user
       .single()
 
     if (error || !agent) {
@@ -67,13 +79,24 @@ export async function GET(
   }
 }
 
-// PUT - Update agent
+// PUT - Update agent (only if owned by authenticated user)
 export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { supabase } = await createRouteHandlerClient(req)
+    
+    // Get the authenticated user
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+    
     const { id } = await params
     const updates = await req.json()
 
@@ -109,7 +132,15 @@ export async function PUT(
         .from('agents')
         .select('version')
         .eq('id', id)
+        .eq('created_by', user.id)  // Ensure ownership
         .single()
+      
+      if (!currentAgent) {
+        return NextResponse.json(
+          { error: 'Agent not found or access denied' },
+          { status: 404 }
+        )
+      }
       
       dbUpdates.version = (currentAgent?.version || 1) + 1
     }
@@ -121,6 +152,7 @@ export async function PUT(
         updated_at: new Date().toISOString()
       })
       .eq('id', id)
+      .eq('created_by', user.id)  // Ensure ownership
       .select()
       .single()
 
@@ -168,18 +200,30 @@ export async function PUT(
   }
 }
 
-// DELETE - Delete agent
+// DELETE - Delete agent (only if owned by authenticated user)
 export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { supabase } = await createRouteHandlerClient(req)
+    
+    // Get the authenticated user
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+    
     const { id } = await params
     const { error } = await supabase
       .from('agents')
       .delete()
       .eq('id', id)
+      .eq('created_by', user.id)  // Ensure ownership
 
     if (error) {
       return NextResponse.json(
@@ -201,13 +245,24 @@ export async function DELETE(
   }
 }
 
-// PATCH - Update agent status
+// PATCH - Update agent status (only if owned by authenticated user)
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { supabase } = await createRouteHandlerClient(req)
+    
+    // Get the authenticated user
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+    
     const { id } = await params
     const { status } = await req.json()
 
@@ -225,6 +280,7 @@ export async function PATCH(
         updated_at: new Date().toISOString()
       })
       .eq('id', id)
+      .eq('created_by', user.id)  // Ensure ownership
       .select()
       .single()
 
