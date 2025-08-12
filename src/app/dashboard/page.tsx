@@ -46,7 +46,7 @@ const channelData = [
 
 export default function DashboardPage() {
   const router = useRouter()
-  const { isLoading: authLoading } = useSupabaseAuth()
+  const { user, isLoading: authLoading } = useSupabaseAuth()
   const [agents, setAgents] = useState<Agent[]>([])
   const [recentActivity, setRecentActivity] = useState<Array<{id: string; type: string; title: string; description: string; time: string; icon: any; color: string}>>([])
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
@@ -179,7 +179,7 @@ export default function DashboardPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 md:mb-8">
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-                Welcome back, John! 👋
+                Welcome back, {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'there'}! 👋
               </h1>
               <p className="text-gray-600 dark:text-gray-400 mt-1">
                 Here&apos;s what&apos;s happening with your AI agents today
