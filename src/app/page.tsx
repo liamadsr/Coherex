@@ -337,7 +337,7 @@ export default function LandingPage() {
         <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gray-600 rounded-full filter blur-[120px] opacity-10 blur-stable" />
 
         <div className="relative z-10 page-container text-center">
-          <div className="panel panel-grid panel-grid-small-light dark:panel-grid-small-dark w-full px-3 sm:px-4 md:px-6 py-10 md:py-12">
+          <div className="panel panel-grid panel-grid-light dark:panel-grid-dark w-full px-3 sm:px-4 md:px-6 py-10 md:py-12">
           <motion.div
             initial={mounted ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }}
             animate={mounted ? { opacity: 1, y: 0 } : undefined}
