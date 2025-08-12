@@ -163,7 +163,7 @@ export default function LandingPage() {
     <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white page-guides-light dark:page-guides-dark">
       {/* Navigation */}
       <nav className={`fixed top-0 w-full z-50 transition-all duration-300 bg-transparent py-2`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="page-container">
           <div className={`panel flex items-center justify-between h-14 sm:h-16 px-3 sm:px-4 ${scrolled ? 'shadow-md' : ''}` }>
             <div className="flex items-center">
               <Link href="/" className="flex items-center space-x-3">
@@ -336,8 +336,8 @@ export default function LandingPage() {
         <div className="absolute top-1/4 left-1/4 w-80 h-80 bg-gray-500 rounded-full filter blur-[120px] opacity-10 blur-stable" />
         <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gray-600 rounded-full filter blur-[120px] opacity-10 blur-stable" />
 
-        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="panel panel-grid panel-grid-small-light dark:panel-grid-small-dark p-6 sm:p-10 md:p-12">
+        <div className="relative z-10 page-container text-center">
+          <div className="panel panel-grid panel-grid-small-light dark:panel-grid-small-dark w-full px-3 sm:px-4 md:px-6 py-10 md:py-12">
           <motion.div
             initial={mounted ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }}
             animate={mounted ? { opacity: 1, y: 0 } : undefined}
