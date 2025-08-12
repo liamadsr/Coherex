@@ -80,7 +80,10 @@ export async function GET(req: NextRequest) {
       createdAt: agent.created_at,
       updatedAt: agent.updated_at,
       organizationId: agent.organization_id,
-      userId: agent.user_id
+      userId: agent.user_id,
+      // Include version IDs for version management
+      current_version_id: agent.current_version_id,
+      draft_version_id: agent.draft_version_id
     }))
 
     return NextResponse.json({
@@ -173,6 +176,58 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // Create version 1 for the new agent
+    const versionData = {
+      agent_id: agent.id,
+      version_number: 1,
+      status: agent.status === 'draft' ? 'draft' : 'production',
+      name: agent.name,
+      description: agent.description,
+      config: {
+        model: agent.model,
+        temperature: agent.temperature,
+        maxTokens: agent.max_tokens,
+        systemPrompt: agent.system_prompt,
+        personality: agent.personality,
+        capabilities: agent.capabilities,
+        channels: agent.channels,
+        integrations: agent.integrations,
+        knowledgeSources: agent.knowledge_sources,
+        email: agent.email,
+        avatar: agent.avatar,
+        executionMode: agent.execution_mode,
+        config: agent.config
+      },
+      created_by: user.id,
+      published_at: agent.status !== 'draft' ? new Date().toISOString() : null
+    }
+
+    const { data: version, error: versionError } = await supabase
+      .from('agent_versions')
+      .insert(versionData)
+      .select()
+      .single()
+
+    if (versionError) {
+      console.error('Failed to create initial version:', versionError)
+      // Don't fail the whole operation, but log it
+    } else {
+      // Update agent with version references
+      const updateData: any = {}
+      if (agent.status === 'draft') {
+        updateData.draft_version_id = version.id
+      } else {
+        updateData.current_version_id = version.id
+      }
+      
+      if (Object.keys(updateData).length > 0) {
+        await supabase
+          .from('agents')
+          .update(updateData)
+          .eq('id', agent.id)
+      }
+    }
+
     // Transform response to match mock structure
     const transformedAgent = {
       id: agent.id,
@@ -194,7 +249,10 @@ export async function POST(req: NextRequest) {
       createdAt: agent.created_at,
       updatedAt: agent.updated_at,
       organizationId: agent.organization_id,
-      userId: agent.user_id
+      userId: agent.user_id,
+      // Include version IDs
+      current_version_id: agent.status !== 'draft' && version ? version.id : null,
+      draft_version_id: agent.status === 'draft' && version ? version.id : null
     }
 
     return NextResponse.json({

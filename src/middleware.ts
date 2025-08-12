@@ -16,10 +16,7 @@ const publicRoutes = [
 ]
 
 // Development/Test routes that should only be accessible in development
-const devOnlyRoutes = [
-  '/test-auth',
-  '/clear-storage',
-]
+const devOnlyRoutes: string[] = []
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -90,6 +87,11 @@ export async function middleware(request: NextRequest) {
     const from = request.nextUrl.searchParams.get('from')
     const redirectTo = from && from !== '/auth/login' ? from : '/dashboard'
     return NextResponse.redirect(new URL(redirectTo, request.url))
+  }
+  
+  // Allow dev routes without auth in development
+  if (isDevRoute && process.env.NODE_ENV !== 'production') {
+    return response
   }
   
   // All routes are protected by default - redirect unauthenticated users to login

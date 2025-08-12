@@ -9,6 +9,24 @@ export async function GET(
   try {
     const { id } = await params
     const supabase = await createClient()
+    
+    // Check authentication
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    
+    // Verify user owns the agent
+    const { data: agent } = await supabase
+      .from('agents')
+      .select('id')
+      .eq('id', id)
+      .eq('created_by', user.id)
+      .single()
+    
+    if (!agent) {
+      return NextResponse.json({ error: 'Agent not found or unauthorized' }, { status: 404 })
+    }
 
     // Get all versions for this agent
     const { data: versions, error } = await supabase
@@ -40,6 +58,24 @@ export async function POST(
   try {
     const { id } = await params
     const supabase = await createClient()
+    
+    // Check authentication
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    
+    // Verify user owns the agent
+    const { data: agent } = await supabase
+      .from('agents')
+      .select('id')
+      .eq('id', id)
+      .eq('created_by', user.id)
+      .single()
+    
+    if (!agent) {
+      return NextResponse.json({ error: 'Agent not found or unauthorized' }, { status: 404 })
+    }
 
     // Call the create_draft_version function
     const { data, error } = await supabase

@@ -51,6 +51,36 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // Create version 1 for the draft agent
+    const versionData = {
+      agent_id: agent.id,
+      version_number: 1,
+      status: 'draft',
+      name: agent.name,
+      description: agent.description,
+      config: agent.config,
+      created_by: user.id
+    }
+
+    const { data: version, error: versionError } = await supabase
+      .from('agent_versions')
+      .insert(versionData)
+      .select()
+      .single()
+
+    if (versionError) {
+      console.error('Failed to create initial version:', versionError)
+    } else {
+      // Update agent with draft version reference
+      await supabase
+        .from('agents')
+        .update({ draft_version_id: version.id })
+        .eq('id', agent.id)
+      
+      // Include version ID in response
+      agent.draft_version_id = version.id
+    }
+
     return NextResponse.json({
       success: true,
       agent,

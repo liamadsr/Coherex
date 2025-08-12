@@ -63,7 +63,10 @@ export async function GET(
       createdAt: agent.created_at,
       updatedAt: agent.updated_at,
       organizationId: agent.organization_id,
-      userId: agent.user_id
+      userId: agent.user_id,
+      // Include version IDs for version management
+      current_version_id: agent.current_version_id,
+      draft_version_id: agent.draft_version_id
     }
 
     return NextResponse.json({
