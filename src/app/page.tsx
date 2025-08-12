@@ -350,11 +350,13 @@ export default function LandingPage() {
                   <div className="flex flex-row gap-4">
                     <Button 
                       size="lg" 
-                      className="bg-amber-400 text-black hover:bg-amber-500 focus:ring-0 focus:ring-offset-0 transition-colors px-6 py-3 text-base font-medium btn-texture-light"
-                      onClick={() => setWaitlistModalOpen(true)}
+                      className="bg-[#F7941C] text-black hover:bg-[#E5861A] focus:ring-0 focus:ring-offset-0 transition-colors px-6 py-3 text-base font-medium btn-texture-light"
+                      asChild
                     >
-                      Get started
-                      <ChevronRight className="w-4 h-4 ml-1" />
+                      <Link href="/auth/login">
+                        Get started
+                        <ChevronRight className="w-4 h-4 ml-1" />
+                      </Link>
                     </Button>
                     <Button 
                       size="lg" 
@@ -363,7 +365,7 @@ export default function LandingPage() {
                       asChild
                     >
                       <a href="https://github.com/liamadsr/Coherex" target="_blank" rel="noopener noreferrer">
-                        npx create-coherex-app
+                        github.com/coherex
                         <svg className="w-4 h-4 ml-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <rect x="3" y="3" width="18" height="18" />
                           <polyline points="8 12 12 16 16 12" />
