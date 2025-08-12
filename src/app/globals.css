@@ -176,7 +176,7 @@
 
   /* Reusable panel surface to separate sections from page background */
   .panel {
-    @apply rounded-2xl border-2 border-dashed border-gray-300 dark:border-neutral-700 bg-white/85 dark:bg-black/70 backdrop-blur-md;
+    @apply rounded-2xl border-4 border-solid border-black dark:border-white bg-white dark:bg-black;
   }
 
   /* Dotted vertical guide columns across the page */

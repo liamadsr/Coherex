@@ -433,7 +433,7 @@ export default function LandingPage() {
                   delay: index * 0.1,
                   ease: "easeOut"
                 } : undefined}
-                className="group relative bg-gray-50 dark:bg-[#050505] rounded-2xl p-8 hover:bg-gray-100 dark:hover:bg-[#0a0a0a] transition-all duration-300 no-flash border-2 border-dashed border-gray-300 dark:border-neutral-700"
+                className="group relative bg-white dark:bg-black rounded-2xl p-8 hover:bg-gray-50 dark:hover:bg-gray-900 transition-all duration-300 no-flash border-2 border-solid border-black dark:border-white"
                 style={{ minHeight: '250px' }}
               >
                 <div className="w-14 h-14 rounded-xl p-3 mb-6">
@@ -486,7 +486,7 @@ export default function LandingPage() {
                   delay: index * 0.05,
                   ease: "easeOut"
                 } : undefined}
-                className="bg-gray-50 dark:bg-[#050505] rounded-xl p-6 text-center hover:bg-gray-100 dark:hover:bg-[#0a0a0a] transition-all duration-300 hover:scale-105 no-flash border-2 border-dashed border-gray-300 dark:border-neutral-700"
+                className="bg-white dark:bg-black rounded-xl p-6 text-center hover:bg-gray-50 dark:hover:bg-gray-900 transition-all duration-300 hover:scale-105 no-flash border-2 border-solid border-black dark:border-white"
               >
                 <div className="mb-3 w-12 h-12 flex items-center justify-center mx-auto">
                   {(integration.name === 'Teams' || integration.name === 'SharePoint') ? (
