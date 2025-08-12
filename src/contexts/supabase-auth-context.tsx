@@ -83,14 +83,33 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
 
   const signOut = async () => {
     try {
+      // Clear auth state immediately for better UX
+      setAuthState({
+        user: null,
+        session: null,
+        isAuthenticated: false,
+        isLoading: false,
+      })
+      
       const { error } = await supabase.auth.signOut()
       if (error) throw error
+
+      // Clear any remaining localStorage items
+      if (typeof window !== 'undefined') {
+        // Clear all Supabase-related localStorage keys
+        const keysToRemove = Object.keys(localStorage).filter(key => 
+          key.startsWith('sb-') || key.includes('supabase')
+        )
+        keysToRemove.forEach(key => localStorage.removeItem(key))
+      }
 
       toast.success('Signed out successfully')
       router.push('/auth/login')
     } catch (error: any) {
       console.error('Sign out error:', error)
       toast.error('Failed to sign out')
+      // Even on error, redirect to login
+      router.push('/auth/login')
     }
   }
 
