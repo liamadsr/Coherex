@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase/client'
+import { createRouteHandlerClient } from '@/lib/supabase/api-client-production'
 
 // GET - List all agents
 export async function GET(req: NextRequest) {
   try {
+    // Use authenticated client with proper cookie handling
+    const { supabase, response } = await createRouteHandlerClient(req)
+    
     const { searchParams } = new URL(req.url)
     const status = searchParams.get('status')
     const search = searchParams.get('search')
@@ -91,7 +94,19 @@ export async function GET(req: NextRequest) {
 // POST - Create new agent
 export async function POST(req: NextRequest) {
   try {
+    // Use authenticated client with proper cookie handling
+    const { supabase, response } = await createRouteHandlerClient(req)
     const agentData = await req.json()
+    
+    // Get the authenticated user
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      )
+    }
 
     // Ensure required fields
     if (!agentData.name) {
@@ -129,6 +144,7 @@ export async function POST(req: NextRequest) {
       },
       organization_id: agentData.organizationId,
       user_id: agentData.userId,
+      created_by: user.id,  // Set the created_by field to the authenticated user
       config: agentData.config || {},
       version: 1
     }

@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase/client'
+import { createRouteHandlerClient } from '@/lib/supabase/api-client-production'
 
 // POST - Search knowledge documents
 export async function POST(req: NextRequest) {
   try {
+    const { supabase } = await createRouteHandlerClient(req)
     const { query, dataSourceIds, limit = 10 } = await req.json()
 
     if (!query) {

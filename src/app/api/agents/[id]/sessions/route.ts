@@ -42,6 +42,7 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { supabase } = await createRouteHandlerClient(req)
     const { id: agentId } = await params
     const { forceNew = false } = await req.json()
     

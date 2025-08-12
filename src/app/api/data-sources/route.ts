@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase/client'
+import { createRouteHandlerClient } from '@/lib/supabase/api-client-production'
 
 // Helper to format time ago (matches mock format)
 function formatTimeAgo(date: Date | string): string {
@@ -20,6 +20,7 @@ function formatTimeAgo(date: Date | string): string {
 // GET /api/data-sources - List all data sources
 export async function GET(req: NextRequest) {
   try {
+    const { supabase } = await createRouteHandlerClient(req)
     const { data, error } = await supabase
       .from('data_sources')
       .select('*')
@@ -69,6 +70,7 @@ export async function GET(req: NextRequest) {
 // POST /api/data-sources - Create a new data source
 export async function POST(req: NextRequest) {
   try {
+    const { supabase } = await createRouteHandlerClient(req)
     const body = await req.json()
     
     // Use proper database columns (after migration is applied)

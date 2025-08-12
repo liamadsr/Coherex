@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase/client'
+import { createRouteHandlerClient } from '@/lib/supabase/api-client-production'
 import { AgentRuntime } from '@/lib/e2b/runtime'
 import { e2bClient } from '@/lib/e2b/client'
 
@@ -8,6 +8,7 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { supabase } = await createRouteHandlerClient(req)
     const { id: agentId } = await params
     const { input, options = {}, sessionId = null, useSession = false } = await req.json()
 

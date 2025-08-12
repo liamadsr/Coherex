@@ -1,9 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase/client'
+import { createRouteHandlerClient } from '@/lib/supabase/api-client-production'
 
 export async function POST(req: NextRequest) {
   try {
+    const { supabase, response } = await createRouteHandlerClient(req)
     const body = await req.json()
+    
+    // Get the authenticated user
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    
+    if (authError || !user) {
+      console.error('Auth error:', authError)
+      return NextResponse.json(
+        { error: 'Authentication required', details: authError?.message },
+        { status: 401 }
+      )
+    }
     
     // Create a new draft agent with minimal required fields
     const { data: agent, error } = await supabase
@@ -24,6 +36,7 @@ export async function POST(req: NextRequest) {
           settings: body.settings || {}
         },
         status: 'draft',
+        created_by: user.id,  // Set the created_by field
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       })
@@ -42,6 +55,9 @@ export async function POST(req: NextRequest) {
       success: true,
       agent,
       message: 'Draft created successfully'
+    }, {
+      status: 200,
+      headers: response.headers
     })
   } catch (error) {
     console.error('Draft creation error:', error)
@@ -57,7 +73,18 @@ export async function POST(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
   try {
+    const { supabase, response } = await createRouteHandlerClient(req)
     const { agentId, ...updates } = await req.json()
+    
+    // Get the authenticated user
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      )
+    }
     
     if (!agentId) {
       return NextResponse.json(
@@ -102,6 +129,9 @@ export async function PUT(req: NextRequest) {
       success: true,
       agent,
       message: 'Draft saved'
+    }, {
+      status: 200,
+      headers: response.headers
     })
   } catch (error) {
     console.error('Draft update error:', error)

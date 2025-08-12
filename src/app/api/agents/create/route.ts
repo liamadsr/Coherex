@@ -30,6 +30,7 @@ const AgentConfigSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
+    const { supabase } = await createRouteHandlerClient(req)
     const { messages, requirements } = await req.json()
     
     // Check if OpenAI API key is configured

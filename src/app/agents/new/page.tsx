@@ -577,6 +577,7 @@ export default function NewAgentPage() {
           const createResponse = await fetch('/api/agents/draft', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({
               name: formData.name || 'Untitled Agent',
               description: formData.description || '',
@@ -606,6 +607,7 @@ export default function NewAgentPage() {
           const response = await fetch('/api/agents/draft', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({
               agentId,
               ...formData

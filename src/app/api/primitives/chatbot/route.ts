@@ -1,11 +1,13 @@
 import { openai } from "@ai-sdk/openai"
 import { convertToModelMessages, streamText, tool, UIMessage } from "ai"
 import { z } from "zod"
-import { supabase } from "@/lib/supabase/client"
+import { createRouteHandlerClient } from '@/lib/supabase/api-client-production'
+import { NextRequest } from 'next/server'
 
 export const maxDuration = 30
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
+  const { supabase } = await createRouteHandlerClient(req)
   const { messages }: { messages: UIMessage[] } = await req.json()
 
   const result = streamText({

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase/client'
+import { createRouteHandlerClient } from '@/lib/supabase/api-client-production'
 
 // GET - Fetch single agent
 export async function GET(
@@ -7,6 +7,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { supabase } = await createRouteHandlerClient(req)
     const { id } = await params
     const { data: agent, error } = await supabase
       .from('agents')
@@ -72,6 +73,7 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { supabase } = await createRouteHandlerClient(req)
     const { id } = await params
     const updates = await req.json()
 
@@ -172,6 +174,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { supabase } = await createRouteHandlerClient(req)
     const { id } = await params
     const { error } = await supabase
       .from('agents')
@@ -204,6 +207,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { supabase } = await createRouteHandlerClient(req)
     const { id } = await params
     const { status } = await req.json()
 

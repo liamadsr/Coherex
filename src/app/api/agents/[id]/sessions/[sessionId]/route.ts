@@ -50,6 +50,7 @@ export async function POST(
   { params }: { params: Promise<{ id: string; sessionId: string }> }
 ) {
   try {
+    const { supabase } = await createRouteHandlerClient(req)
     const { sessionId } = await params
     const { input, includeContext = true } = await req.json()
     

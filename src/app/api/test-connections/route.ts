@@ -1,8 +1,8 @@
-import { NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase/client'
+import { NextResponse, NextRequest } from 'next/server'
+import { createRouteHandlerClient } from '@/lib/supabase/api-client-production'
 import { Sandbox } from '@e2b/code-interpreter'
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const results = {
     supabase: false,
     e2b: false,
@@ -11,6 +11,7 @@ export async function GET() {
 
   // Test Supabase connection
   try {
+    const { supabase } = await createRouteHandlerClient(req)
     const { data, error } = await supabase
       .from('agents')
       .select('count')
