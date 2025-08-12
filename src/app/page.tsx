@@ -160,7 +160,7 @@ export default function LandingPage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white page-guides-light dark:page-guides-dark">
+    <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white page-guides-light dark:page-guides-dark parallax-guides">
       {/* Navigation */}
       <nav className={`fixed top-0 w-full z-50 transition-all duration-300 bg-transparent py-2`}>
         <div className="page-container">
