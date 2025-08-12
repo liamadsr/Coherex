@@ -229,7 +229,7 @@ export default function DashboardPage() {
                     Active Agents
                   </p>
                   <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                    {analytics?.platformStats.totalAgents || 0}
+                    {agents.filter(a => a.status === 'active').length}
                   </p>
                   <p className="text-sm text-green-600 dark:text-green-400 flex items-center mt-1">
                     <ArrowUpRight className="w-4 h-4 mr-1" />
