@@ -3,6 +3,8 @@
 import { ReactNode } from 'react'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
+import Link from 'next/link'
+import { ArrowLeft } from 'lucide-react'
 
 interface AuthLayoutProps {
   children: ReactNode
@@ -24,16 +26,20 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
               transition={{ duration: 0.8 }}
             >
               <div className="flex items-center mb-8">
-                <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center mr-4">
-                  <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg" />
-                </div>
-                <h1 className="text-3xl font-bold text-white">coherex</h1>
+                <Image
+                  src="/images/coherex-Dark.png"
+                  alt="COHEREX Logo"
+                  width={48}
+                  height={48}
+                  className="mr-4"
+                />
+                <h1 className="text-3xl font-bold text-white">COHEREX</h1>
               </div>
               
               <h2 className="text-4xl xl:text-5xl font-bold text-white mb-6 leading-tight">
                 The Future of
                 <br />
-                <span className="bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">
+                <span className="text-white">
                   AI Workforce
                 </span>
               </h2>
@@ -45,15 +51,15 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
               
               <div className="space-y-4">
                 <div className="flex items-center text-blue-100">
-                  <div className="w-2 h-2 bg-yellow-300 rounded-full mr-3" />
+                  <div className="w-2 h-2 bg-white rounded-full mr-3" />
                   <span>Conversational agent creation with Orchestrator AI</span>
                 </div>
                 <div className="flex items-center text-blue-100">
-                  <div className="w-2 h-2 bg-yellow-300 rounded-full mr-3" />
+                  <div className="w-2 h-2 bg-white rounded-full mr-3" />
                   <span>Real-time collaboration and team formation</span>
                 </div>
                 <div className="flex items-center text-blue-100">
-                  <div className="w-2 h-2 bg-yellow-300 rounded-full mr-3" />
+                  <div className="w-2 h-2 bg-white rounded-full mr-3" />
                   <span>Advanced evaluation and quality monitoring</span>
                 </div>
               </div>
@@ -68,13 +74,23 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
 
         {/* Right side - Form */}
         <div className="flex-1 flex flex-col justify-center px-6 py-12 lg:px-8">
+          {/* Back to home link */}
+          <Link href="/" className="absolute top-6 left-6 flex items-center text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition-colors">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to home
+          </Link>
+          
           <div className="mx-auto w-full max-w-md">
             {/* Mobile logo */}
             <div className="lg:hidden flex items-center justify-center mb-8">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center mr-3">
-                <div className="w-6 h-6 bg-white rounded-md" />
-              </div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">coherex</h1>
+              <Image
+                src="/images/coherex-Dark.png"
+                alt="COHEREX Logo"
+                width={40}
+                height={40}
+                className="mr-3"
+              />
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">COHEREX</h1>
             </div>
 
             <motion.div

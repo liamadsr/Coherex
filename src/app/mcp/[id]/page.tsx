@@ -717,17 +717,17 @@ export default function MCPServerDetailPage() {
               <CardContent>
                 <ScrollArea className="h-[500px] rounded-md border bg-black p-4">
                   <div className="font-mono text-xs text-green-400 space-y-1">
-                    <div>[2024-01-15 10:23:45] INFO: Server started successfully</div>
-                    <div>[2024-01-15 10:23:45] INFO: Listening on port 3001</div>
-                    <div>[2024-01-15 10:23:46] INFO: Connected to filesystem at /Users/liamalizadeh/code</div>
-                    <div>[2024-01-15 10:23:47] INFO: Loaded 6 tools</div>
-                    <div>[2024-01-15 10:24:12] INFO: Tool called: read_file {`{"path": "/src/index.ts"}`}</div>
-                    <div>[2024-01-15 10:24:12] INFO: Successfully read file: 2048 bytes</div>
-                    <div>[2024-01-15 10:24:34] INFO: Tool called: list_directory {`{"path": "/src/components"}`}</div>
-                    <div>[2024-01-15 10:24:34] INFO: Listed 24 items</div>
-                    <div>[2024-01-15 10:25:01] WARN: Rate limit approaching: 4500/5000 requests</div>
-                    <div>[2024-01-15 10:25:15] INFO: Tool called: write_file {`{"path": "/src/test.ts"}`}</div>
-                    <div>[2024-01-15 10:25:15] INFO: File written successfully</div>
+                    <div>[2025-01-15 10:23:45] INFO: Server started successfully</div>
+                    <div>[2025-01-15 10:23:45] INFO: Listening on port 3001</div>
+                    <div>[2025-01-15 10:23:46] INFO: Connected to filesystem at /Users/liamalizadeh/code</div>
+                    <div>[2025-01-15 10:23:47] INFO: Loaded 6 tools</div>
+                    <div>[2025-01-15 10:24:12] INFO: Tool called: read_file {`{"path": "/src/index.ts"}`}</div>
+                    <div>[2025-01-15 10:24:12] INFO: Successfully read file: 2048 bytes</div>
+                    <div>[2025-01-15 10:24:34] INFO: Tool called: list_directory {`{"path": "/src/components"}`}</div>
+                    <div>[2025-01-15 10:24:34] INFO: Listed 24 items</div>
+                    <div>[2025-01-15 10:25:01] WARN: Rate limit approaching: 4500/5000 requests</div>
+                    <div>[2025-01-15 10:25:15] INFO: Tool called: write_file {`{"path": "/src/test.ts"}`}</div>
+                    <div>[2025-01-15 10:25:15] INFO: File written successfully</div>
                   </div>
                 </ScrollArea>
               </CardContent>

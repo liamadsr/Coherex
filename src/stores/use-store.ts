@@ -104,10 +104,13 @@ interface AnalyticsSlice {
 // UI slice
 interface UISlice {
   sidebarOpen: boolean
+  aiAssistantOpen: boolean
   theme: 'light' | 'dark' | 'system'
   notifications: Notification[]
   toggleSidebar: () => void
   setSidebarOpen: (open: boolean) => void
+  toggleAIAssistant: () => void
+  setAIAssistantOpen: (open: boolean) => void
   setTheme: (theme: UISlice['theme']) => void
   addNotification: (notification: Notification) => void
   removeNotification: (id: string) => void
@@ -273,10 +276,13 @@ export const useStore = create<StoreState>()(
 
         // UI state
         sidebarOpen: true,
+        aiAssistantOpen: false,
         theme: 'system',
         notifications: [],
         toggleSidebar: () => set((state) => { state.sidebarOpen = !state.sidebarOpen }),
         setSidebarOpen: (open) => set((state) => { state.sidebarOpen = open }),
+        toggleAIAssistant: () => set((state) => { state.aiAssistantOpen = !state.aiAssistantOpen }),
+        setAIAssistantOpen: (open) => set((state) => { state.aiAssistantOpen = open }),
         setTheme: (theme) => set((state) => { state.theme = theme }),
         addNotification: (notification) => set((state) => { state.notifications.push(notification) }),
         removeNotification: (id) => set((state) => {
@@ -289,6 +295,7 @@ export const useStore = create<StoreState>()(
         partialize: (state) => ({
           // Only persist UI preferences and filters
           sidebarOpen: state.sidebarOpen,
+          aiAssistantOpen: state.aiAssistantOpen,
           theme: state.theme,
           agentFilters: state.agentFilters,
           conversationFilters: state.conversationFilters,
@@ -324,9 +331,12 @@ export const useConversations = () => useStore((state) => ({
 
 export const useUI = () => useStore((state) => ({
   sidebarOpen: state.sidebarOpen,
+  aiAssistantOpen: state.aiAssistantOpen,
   theme: state.theme,
   notifications: state.notifications,
   toggleSidebar: state.toggleSidebar,
   setSidebarOpen: state.setSidebarOpen,
+  toggleAIAssistant: state.toggleAIAssistant,
+  setAIAssistantOpen: state.setAIAssistantOpen,
   setTheme: state.setTheme,
 }))

@@ -14,8 +14,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "coherex - AI Agent Platform",
+  title: "COHEREX - AI Agent Platform",
   description: "Create, orchestrate, and manage AI agents that work together as digital employees",
+  icons: {
+    icon: '/images/coherex-Dark.png',
+    shortcut: '/images/coherex-Dark.png',
+    apple: '/images/coherex-Dark.png',
+  },
 };
 
 export default function RootLayout({
