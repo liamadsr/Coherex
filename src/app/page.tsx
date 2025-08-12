@@ -222,7 +222,7 @@ export default function LandingPage() {
                 Join Waitlist
               </Button>
               <Button variant="outline" className="bg-white dark:bg-black border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900 hover:border-gray-400 dark:hover:border-gray-500 focus:ring-0 focus:ring-offset-0" asChild>
-                <Link href="/login">Sign In</Link>
+                <Link href="/auth/login">Sign In</Link>
               </Button>
               
               {/* Theme dropdown - far right */}
@@ -313,7 +313,7 @@ export default function LandingPage() {
               </div>
               <div className="pt-4 space-y-2">
                 <Button variant="outline" className="w-full bg-white dark:bg-transparent border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900" asChild>
-                  <Link href="/login">Sign In</Link>
+                  <Link href="/auth/login">Sign In</Link>
                 </Button>
                 <Button 
                   onClick={() => setWaitlistModalOpen(true)}

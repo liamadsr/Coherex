@@ -1,5 +1,4 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { mockApi } from '@/mock-data'
 import { Agent } from '@/types'
 import { toast } from 'sonner'
 
@@ -21,32 +20,26 @@ export function useAgents(filters?: {
   return useQuery({
     queryKey: agentKeys.list(filters),
     queryFn: async () => {
-      const result = await mockApi.getAgents()
-      if (!result.success || !result.data) {
-        throw new Error('Failed to fetch agents')
-      }
+      const params = new URLSearchParams()
       
-      let agents = result.data
-      
-      // Apply filters
       if (filters?.search) {
-        agents = agents.filter(agent => 
-          agent.name.toLowerCase().includes(filters.search!.toLowerCase()) ||
-          agent.email.toLowerCase().includes(filters.search!.toLowerCase())
-        )
+        params.append('search', filters.search)
       }
       
       if (filters?.status && filters.status.length > 0) {
-        agents = agents.filter(agent => filters.status!.includes(agent.status))
+        params.append('status', filters.status[0]) // API currently supports single status
       }
       
-      if (filters?.capabilities && filters.capabilities.length > 0) {
-        agents = agents.filter(agent => 
-          filters.capabilities!.some(cap => agent.capabilities.includes(cap))
-        )
+      const response = await fetch(`/api/agents?${params}`)
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch agents')
       }
       
-      return agents
+      const data = await response.json()
+      
+      // API returns data in mock format already
+      return data.data || []
     },
   })
 }
@@ -56,10 +49,15 @@ export function useAgent(id: string) {
   return useQuery({
     queryKey: agentKeys.detail(id),
     queryFn: async () => {
-      const result = await mockApi.getAgent(id)
-      if (!result.success || !result.data) {
+      const response = await fetch(`/api/agents/${id}`)
+      
+      if (!response.ok) {
         throw new Error('Failed to fetch agent')
       }
+      
+      const result = await response.json()
+      
+      // API returns data in mock format already
       return result.data
     },
     enabled: !!id,
@@ -71,11 +69,18 @@ export function useCreateAgent() {
   const queryClient = useQueryClient()
   
   return useMutation({
-    mutationFn: async (data: Partial<Agent>) => {
-      const result = await mockApi.createAgent(data)
-      if (!result.success || !result.data) {
+    mutationFn: async (data: any) => {
+      const response = await fetch('/api/agents', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+      
+      if (!response.ok) {
         throw new Error('Failed to create agent')
       }
+      
+      const result = await response.json()
       return result.data
     },
     onSuccess: (data) => {
@@ -96,10 +101,17 @@ export function useUpdateAgent() {
   
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Partial<Agent> }) => {
-      const result = await mockApi.updateAgent(id, data)
-      if (!result.success || !result.data) {
+      const response = await fetch(`/api/agents/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+      
+      if (!response.ok) {
         throw new Error('Failed to update agent')
       }
+      
+      const result = await response.json()
       return result.data
     },
     onSuccess: (data) => {
@@ -121,10 +133,14 @@ export function useDeleteAgent() {
   
   return useMutation({
     mutationFn: async (id: string) => {
-      const result = await mockApi.deleteAgent(id)
-      if (!result.success) {
+      const response = await fetch(`/api/agents/${id}`, {
+        method: 'DELETE'
+      })
+      
+      if (!response.ok) {
         throw new Error('Failed to delete agent')
       }
+      
       return id
     },
     onSuccess: (id) => {

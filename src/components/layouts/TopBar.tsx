@@ -15,7 +15,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useTheme } from 'next-themes'
-import { useAuth } from '@/contexts/auth-context'
+import { useSupabaseAuth } from '@/contexts/supabase-auth-context'
 
 interface TopBarProps {
   user?: {
@@ -28,7 +28,7 @@ interface TopBarProps {
 export function TopBar({ }: TopBarProps) {
   const [searchValue, setSearchValue] = useState('')
   const { theme, setTheme } = useTheme()
-  const { user, logout } = useAuth()
+  const { user, signOut } = useSupabaseAuth()
 
   const mockNotifications = [
     {
@@ -62,8 +62,8 @@ export function TopBar({ }: TopBarProps) {
     console.log('Searching for:', searchValue)
   }
 
-  const handleLogout = () => {
-    logout()
+  const handleLogout = async () => {
+    await signOut()
   }
 
   return (
@@ -177,9 +177,9 @@ export function TopBar({ }: TopBarProps) {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                 <Avatar className="h-10 w-10">
-                  <AvatarImage src={user?.avatar} alt={user?.name || 'User'} />
+                  <AvatarImage src={user?.user_metadata?.avatar_url} alt={user?.email || 'User'} />
                   <AvatarFallback>
-                    {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                    {user?.email ? user.email.charAt(0).toUpperCase() : 'U'}
                   </AvatarFallback>
                 </Avatar>
               </Button>
@@ -188,10 +188,10 @@ export function TopBar({ }: TopBarProps) {
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
                   <p className="text-sm font-medium leading-none">
-                    {user?.name || 'User Name'}
+                    {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'}
                   </p>
                   <p className="text-xs leading-none text-muted-foreground">
-                    {user?.email || 'user@example.com'}
+                    {user?.email || 'Loading...'}
                   </p>
                 </div>
               </DropdownMenuLabel>

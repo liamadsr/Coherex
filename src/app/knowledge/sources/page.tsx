@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { 
   Plus,
   Search,
@@ -44,14 +44,38 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { AddDataSourceDialog } from '@/components/data-sources/AddDataSourceDialog'
+import { toast } from 'sonner'
 
 export default function KnowledgeSourcesPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [filterType, setFilterType] = useState('all')
   const [filterStatus, setFilterStatus] = useState('all')
+  const [sources, setSources] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
 
-  // Mock data for sources
-  const sources = [
+  const loadDataSources = async () => {
+    setLoading(true)
+    try {
+      const response = await fetch('/api/data-sources')
+      if (response.ok) {
+        const data = await response.json()
+        setSources(data.dataSources || [])
+      }
+    } catch (error) {
+      console.error('Error loading data sources:', error)
+      toast.error('Failed to load data sources')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    loadDataSources()
+  }, [])
+
+  // Mock data for demo (will be replaced by real data)
+  const mockSources = [
     {
       id: 1,
       name: 'Product Documentation',
@@ -187,10 +211,7 @@ export default function KnowledgeSourcesPage() {
                 Configure and manage your knowledge base sources
               </p>
             </div>
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
-              Add Source
-            </Button>
+            <AddDataSourceDialog onSuccess={loadDataSources} />
           </div>
         </div>
 

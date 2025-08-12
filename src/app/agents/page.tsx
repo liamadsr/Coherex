@@ -113,11 +113,12 @@ export default function AgentsPage() {
       case 'inactive': return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
       case 'training': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400'
       case 'error': return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+      case 'draft': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400'
       default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
     }
   }
 
-  const AgentCard = ({ agent }: { agent: Agent }) => (
+  const AgentCard = ({ agent }: { agent: Agent & { current_version_id?: string | null, draft_version_id?: string | null } }) => (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -130,7 +131,14 @@ export default function AgentsPage() {
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between gap-2">
             <div className="min-w-0 flex-1">
-              <CardTitle className="text-base sm:text-lg truncate">{agent.name}</CardTitle>
+              <div className="flex items-center gap-2">
+                <CardTitle className="text-base sm:text-lg truncate">{agent.name}</CardTitle>
+                {agent.draft_version_id && (
+                  <Badge variant="secondary" className="text-xs">
+                    Draft
+                  </Badge>
+                )}
+              </div>
               <CardDescription className="text-xs sm:text-sm truncate" title={agent.email}>
                 {agent.email}
               </CardDescription>
@@ -148,7 +156,10 @@ export default function AgentsPage() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="z-50">
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuItem onClick={() => handleAgentAction('Edit', agent.name)}>
+                <DropdownMenuItem onClick={(e) => {
+                  e.stopPropagation()
+                  router.push(`/agents/new?edit=${agent.id}`)
+                }}>
                   <Edit className="w-4 h-4 mr-2" />
                   Edit Agent
                 </DropdownMenuItem>
@@ -234,7 +245,7 @@ export default function AgentsPage() {
     </motion.div>
   )
 
-  const AgentListItem = ({ agent }: { agent: Agent }) => (
+  const AgentListItem = ({ agent }: { agent: Agent & { current_version_id?: string | null, draft_version_id?: string | null } }) => (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
@@ -267,6 +278,11 @@ export default function AgentsPage() {
                   <Badge className={getStatusColor(agent.status)}>
                     {agent.status}
                   </Badge>
+                  {agent.draft_version_id && (
+                    <Badge variant="secondary" className="text-xs">
+                      Draft Available
+                    </Badge>
+                  )}
                 </div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">{agent.email}</p>
               </div>
@@ -303,7 +319,10 @@ export default function AgentsPage() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuItem onClick={() => handleAgentAction('Edit', agent.name)}>
+                <DropdownMenuItem onClick={(e) => {
+                  e.stopPropagation()
+                  router.push(`/agents/new?edit=${agent.id}`)
+                }}>
                   <Edit className="w-4 h-4 mr-2" />
                   Edit Agent
                 </DropdownMenuItem>

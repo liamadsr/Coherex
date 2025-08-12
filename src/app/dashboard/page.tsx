@@ -24,7 +24,7 @@ import { Badge } from '@/components/ui/badge'
 import { mockApi } from '@/mock-data'
 import { Agent, AnalyticsData } from '@/types'
 import { toast } from 'sonner'
-import { useAuth } from '@/contexts/auth-context'
+import { useSupabaseAuth } from '@/contexts/supabase-auth-context'
 import { AuthLoading } from '@/components/auth/auth-loading'
 
 // Mock chart data
@@ -46,7 +46,7 @@ const channelData = [
 
 export default function DashboardPage() {
   const router = useRouter()
-  const { isLoading: authLoading } = useAuth()
+  const { user, isLoading: authLoading } = useSupabaseAuth()
   const [agents, setAgents] = useState<Agent[]>([])
   const [recentActivity, setRecentActivity] = useState<Array<{id: string; type: string; title: string; description: string; time: string; icon: any; color: string}>>([])
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
@@ -55,10 +55,11 @@ export default function DashboardPage() {
   useEffect(() => {
     const loadDashboardData = async () => {
       try {
-        const [agentsResult, analyticsResult] = await Promise.all([
-          mockApi.getAgents(),
+        const [agentsResponse, analyticsResult] = await Promise.all([
+          fetch('/api/agents'),
           mockApi.getAnalytics()
         ])
+        const agentsResult = await agentsResponse.json()
 
         setAgents(agentsResult.data || [])
         setAnalytics(analyticsResult.data)
@@ -178,7 +179,7 @@ export default function DashboardPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 md:mb-8">
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-                Welcome back, John! 👋
+                Welcome back, {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'there'}! 👋
               </h1>
               <p className="text-gray-600 dark:text-gray-400 mt-1">
                 Here&apos;s what&apos;s happening with your AI agents today
@@ -228,7 +229,7 @@ export default function DashboardPage() {
                     Active Agents
                   </p>
                   <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                    {analytics?.platformStats.totalAgents || 0}
+                    {agents.filter(a => a.status === 'active').length}
                   </p>
                   <p className="text-sm text-green-600 dark:text-green-400 flex items-center mt-1">
                     <ArrowUpRight className="w-4 h-4 mr-1" />

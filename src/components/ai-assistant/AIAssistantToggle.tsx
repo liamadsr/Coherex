@@ -1,8 +1,7 @@
 'use client'
 
-import { PanelRightClose, PanelRightOpen } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { MessageSquare, X } from 'lucide-react'
 
 interface AIAssistantToggleProps {
   onClick: () => void
@@ -11,26 +10,20 @@ interface AIAssistantToggleProps {
 
 export function AIAssistantToggle({ onClick, isOpen }: AIAssistantToggleProps) {
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onClick}
-            className={isOpen ? 'bg-accent' : ''}
-          >
-            {isOpen ? (
-              <PanelRightClose className="w-5 h-5" />
-            ) : (
-              <PanelRightOpen className="w-5 h-5" />
-            )}
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>{isOpen ? 'Close' : 'Open'} AI Assistant</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Button
+      variant="ghost"
+      size="sm"
+      onClick={onClick}
+      className="flex items-center gap-2"
+    >
+      {isOpen ? (
+        <X className="w-5 h-5" />
+      ) : (
+        <MessageSquare className="w-5 h-5" />
+      )}
+      <span className="hidden sm:inline">
+        {isOpen ? 'Close' : 'AI Assistant'}
+      </span>
+    </Button>
   )
 }

@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '@/contexts/auth-context'
+import { useSupabaseAuth } from '@/contexts/supabase-auth-context'
 import { Loader2 } from 'lucide-react'
 
 interface ProtectedRouteProps {
@@ -11,7 +11,8 @@ interface ProtectedRouteProps {
 }
 
 export function ProtectedRoute({ children, redirectTo = '/login' }: ProtectedRouteProps) {
-  const { isAuthenticated, isLoading } = useAuth()
+  const { user, isLoading } = useSupabaseAuth()
+  const isAuthenticated = !!user
   const router = useRouter()
 
   useEffect(() => {

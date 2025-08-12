@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { User, Organization } from '@/types'
 import { mockApi } from '@/mock-data'
 import { toast } from 'sonner'
+import { getSafeRedirectUrl } from '@/lib/utils/url-validator'
 
 interface AuthState {
   user: User | null
@@ -100,9 +101,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         toast.success('Welcome back!')
         
-        // Check for redirect URL in query params
+        // Check for redirect URL in query params and validate it
         const searchParams = new URLSearchParams(window.location.search)
-        const redirectTo = searchParams.get('from') || '/dashboard'
+        const from = searchParams.get('from')
+        const redirectTo = getSafeRedirectUrl(from, '/dashboard')
         router.push(redirectTo)
       }
     } catch (error) {
