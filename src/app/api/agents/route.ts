@@ -5,7 +5,7 @@ import { createRouteHandlerClient } from '@/lib/supabase/api-client-production'
 export async function GET(req: NextRequest) {
   try {
     // Use authenticated client with proper cookie handling
-    const { supabase, response } = await createRouteHandlerClient(req)
+    const { supabase } = await createRouteHandlerClient(req)
     
     // Get the authenticated user
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -106,7 +106,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     // Use authenticated client with proper cookie handling
-    const { supabase, response } = await createRouteHandlerClient(req)
+    const { supabase } = await createRouteHandlerClient(req)
     const agentData = await req.json()
     
     // Get the authenticated user

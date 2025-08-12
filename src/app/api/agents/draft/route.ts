@@ -3,7 +3,7 @@ import { createRouteHandlerClient } from '@/lib/supabase/api-client-production'
 
 export async function POST(req: NextRequest) {
   try {
-    const { supabase, response } = await createRouteHandlerClient(req)
+    const { supabase } = await createRouteHandlerClient(req)
     const body = await req.json()
     
     // Get the authenticated user
@@ -56,8 +56,7 @@ export async function POST(req: NextRequest) {
       agent,
       message: 'Draft created successfully'
     }, {
-      status: 200,
-      headers: response.headers
+      status: 200
     })
   } catch (error) {
     console.error('Draft creation error:', error)
@@ -73,7 +72,7 @@ export async function POST(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
   try {
-    const { supabase, response } = await createRouteHandlerClient(req)
+    const { supabase } = await createRouteHandlerClient(req)
     const { agentId, ...updates } = await req.json()
     
     // Get the authenticated user
@@ -130,8 +129,7 @@ export async function PUT(req: NextRequest) {
       agent,
       message: 'Draft saved'
     }, {
-      status: 200,
-      headers: response.headers
+      status: 200
     })
   } catch (error) {
     console.error('Draft update error:', error)

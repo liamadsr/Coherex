@@ -46,8 +46,6 @@ export async function createApiClient() {
  * This is the recommended approach for Next.js API routes
  */
 export async function createRouteHandlerClient(request: NextRequest) {
-  const response = NextResponse.next()
-  
   const supabase = createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -58,17 +56,16 @@ export async function createRouteHandlerClient(request: NextRequest) {
         },
         async set(name: string, value: string, options: any) {
           request.cookies.set({ name, value, ...options })
-          response.cookies.set({ name, value, ...options })
+          // Note: In app route handlers, cookies are automatically included in the response
         },
         async remove(name: string, options: any) {
           request.cookies.set({ name, value: '', ...options })
-          response.cookies.set({ name, value: '', ...options })
         },
       },
     }
   )
 
-  return { supabase, response }
+  return { supabase }
 }
 
 /**
