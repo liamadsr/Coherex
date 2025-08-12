@@ -162,7 +162,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white page-guides-light dark:page-guides-dark parallax-guides">
       {/* Navigation */}
-      <nav className={`fixed top-0 w-full z-50 transition-all duration-300 bg-white dark:bg-black py-2`}>
+      <nav className={`fixed top-0 w-full z-50 transition-all duration-300 bg-white dark:bg-black pt-2`}>
         <div className="page-container">
           <div className={`panel flex items-center justify-between h-[70px] sm:h-20 px-3 sm:px-4 ${scrolled ? 'shadow-md' : ''}` }>
             <div className="flex items-center">
