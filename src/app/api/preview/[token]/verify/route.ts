@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from '@supabase/supabase-js'
 import crypto from 'crypto'
 
 // POST /api/preview/[token]/verify - Verify password for protected preview
@@ -10,7 +10,12 @@ export async function POST(
   try {
     const { token } = await params
     const { password } = await req.json()
-    const supabase = await createClient()
+    
+    // Use service role client for public preview access (bypasses RLS)
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    )
 
     if (!password) {
       return NextResponse.json({ error: 'Password is required' }, { status: 400 })

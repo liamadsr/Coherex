@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from '@supabase/supabase-js'
 
 // POST /api/preview/[token]/feedback - Submit feedback for a preview
 export async function POST(
@@ -9,7 +9,12 @@ export async function POST(
   try {
     const { token } = await params
     const body = await req.json()
-    const supabase = await createClient()
+    
+    // Use service role client for public preview access (bypasses RLS)
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    )
 
     // Find preview link by token
     const { data: previewLink, error: linkError } = await supabase

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from '@supabase/supabase-js'
 
 // GET /api/preview/[token] - Get preview data (public, no auth required)
 export async function GET(
@@ -8,7 +8,12 @@ export async function GET(
 ) {
   try {
     const { token } = await params
-    const supabase = await createClient()
+    
+    // Use service role client for public preview access (bypasses RLS)
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    )
 
     // Find preview link by token
     const { data: previewLink, error: linkError } = await supabase
@@ -17,7 +22,7 @@ export async function GET(
         *,
         agent_version:agent_versions(
           *,
-          agent:agents(*)
+          agent:agents!agent_versions_agent_id_fkey(*)
         )
       `)
       .eq('token', token)

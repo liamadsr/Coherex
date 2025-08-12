@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -78,11 +78,11 @@ export function SharePreviewModal({
   })
 
   // Load existing preview links when modal opens
-  useState(() => {
+  useEffect(() => {
     if (open) {
       loadExistingLinks()
     }
-  })
+  }, [open])
 
   const loadExistingLinks = async () => {
     try {

@@ -2166,11 +2166,16 @@ export default function NewAgentPage() {
       )}
       
       {/* Share Preview Modal */}
-      {selectedVersionForShare && (
+      {selectedVersionForShare && agentId && (
         <SharePreviewModal
           open={showShareModal}
-          onOpenChange={setShowShareModal}
-          agentId={agentId!}
+          onOpenChange={(open) => {
+            setShowShareModal(open)
+            if (!open) {
+              setSelectedVersionForShare(null)
+            }
+          }}
+          agentId={agentId}
           versionId={selectedVersionForShare.id}
           versionNumber={selectedVersionForShare.versionNumber}
         />

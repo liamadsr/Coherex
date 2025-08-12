@@ -13,6 +13,8 @@ const publicRoutes = [
   '/verify-email',
   '/reset-password',
   '/api/waitlist',  // API routes for landing page
+  '/preview',  // Preview links for shared agents
+  '/api/preview',  // API endpoints for preview functionality
 ]
 
 // Development/Test routes that should only be accessible in development
@@ -81,12 +83,15 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/', request.url))
   }
   
-  // Redirect authenticated users away from auth pages (but not from landing page or callback)
-  if (isAuthenticated && isPublicRoute && pathname !== '/' && pathname !== '/auth/callback') {
-    // If there's a 'from' parameter, redirect there instead of dashboard
-    const from = request.nextUrl.searchParams.get('from')
-    const redirectTo = from && from !== '/auth/login' ? from : '/dashboard'
-    return NextResponse.redirect(new URL(redirectTo, request.url))
+  // Redirect authenticated users away from auth pages (but not from landing page, callback, or preview pages)
+  if (isAuthenticated && isPublicRoute && pathname !== '/' && pathname !== '/auth/callback' && !pathname.startsWith('/preview')) {
+    // Only redirect if it's an auth page
+    if (pathname.startsWith('/auth/login') || pathname.startsWith('/auth/signup') || pathname.startsWith('/forgot-password')) {
+      // If there's a 'from' parameter, redirect there instead of dashboard
+      const from = request.nextUrl.searchParams.get('from')
+      const redirectTo = from && from !== '/auth/login' ? from : '/dashboard'
+      return NextResponse.redirect(new URL(redirectTo, request.url))
+    }
   }
   
   // Allow dev routes without auth in development
