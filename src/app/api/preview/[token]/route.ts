@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { createRouteHandlerClient } from '@/lib/supabase/api-client-production'
 
 // GET /api/preview/[token] - Get preview data (public, no auth required)
 export async function GET(
@@ -76,6 +77,74 @@ export async function GET(
     })
   } catch (error) {
     console.error('Error in GET /api/preview/[token]:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}
+
+// DELETE /api/preview/[token] - Revoke preview link (requires auth)
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ token: string }> }
+) {
+  try {
+    const { token } = await params
+    
+    // Use authenticated client to check user permissions
+    const { supabase } = await createRouteHandlerClient(req)
+    
+    // Get authenticated user
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    
+    // Find the preview link and check ownership
+    const { data: previewLink, error: linkError } = await supabase
+      .from('preview_links')
+      .select(`
+        *,
+        agent_version:agent_versions(
+          agent:agents!agent_versions_agent_id_fkey(
+            created_by
+          )
+        )
+      `)
+      .eq('token', token)
+      .single()
+    
+    if (linkError || !previewLink) {
+      return NextResponse.json({ error: 'Preview link not found' }, { status: 404 })
+    }
+    
+    // Check if user owns the agent
+    if (previewLink.agent_version.agent.created_by !== user.id) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+    
+    // Revoke the link
+    const { error: updateError } = await supabase
+      .from('preview_links')
+      .update({ 
+        revoked_at: new Date().toISOString(),
+        revoked_by: user.id
+      })
+      .eq('id', previewLink.id)
+    
+    if (updateError) {
+      console.error('Error revoking preview link:', updateError)
+      return NextResponse.json({ error: 'Failed to revoke link' }, { status: 500 })
+    }
+    
+    return NextResponse.json({ 
+      success: true,
+      message: 'Preview link revoked successfully' 
+    })
+  } catch (error) {
+    console.error('Error in DELETE /api/preview/[token]:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
