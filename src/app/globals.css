@@ -198,17 +198,25 @@
     content: "";
     position: absolute; inset: 0; pointer-events: none;
     background-image:
-      linear-gradient(to right, rgba(0,0,0,0.06) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(0,0,0,0.06) 1px, transparent 1px);
-    background-size: 24px 24px;
+      /* Major grid lines - thicker, every 5 squares (120px) */
+      linear-gradient(to right, rgba(0,0,0,0.035) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0,0,0,0.035) 1px, transparent 1px),
+      /* Minor grid lines - thinner */
+      linear-gradient(to right, rgba(0,0,0,0.025) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0,0,0,0.025) 1px, transparent 1px);
+    background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
   }
   .panel-grid-dark::before {
     content: "";
     position: absolute; inset: 0; pointer-events: none;
     background-image:
-      linear-gradient(to right, rgba(255,255,255,0.06) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255,255,255,0.06) 1px, transparent 1px);
-    background-size: 24px 24px;
+      /* Major grid lines - thicker, every 5 squares (120px) */
+      linear-gradient(to right, rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.035) 1px, transparent 1px),
+      /* Minor grid lines - thinner */
+      linear-gradient(to right, rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
   }
 
   /* Smaller grid variant for hero panel */
@@ -216,17 +224,25 @@
     content: "";
     position: absolute; inset: 0; pointer-events: none;
     background-image:
-      linear-gradient(to right, rgba(0,0,0,0.08) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(0,0,0,0.08) 1px, transparent 1px);
-    background-size: 12px 12px;
+      /* Major grid lines - thicker, every 5 squares (60px) */
+      linear-gradient(to right, rgba(0,0,0,0.08) 2px, transparent 2px),
+      linear-gradient(to bottom, rgba(0,0,0,0.08) 2px, transparent 2px),
+      /* Minor grid lines - thinner */
+      linear-gradient(to right, rgba(0,0,0,0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0,0,0,0.04) 1px, transparent 1px);
+    background-size: 60px 60px, 60px 60px, 12px 12px, 12px 12px;
   }
   .panel-grid-small-dark::before {
     content: "";
     position: absolute; inset: 0; pointer-events: none;
     background-image:
-      linear-gradient(to right, rgba(255,255,255,0.08) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255,255,255,0.08) 1px, transparent 1px);
-    background-size: 12px 12px;
+      /* Major grid lines - thicker, every 5 squares (60px) */
+      linear-gradient(to right, rgba(255,255,255,0.08) 2px, transparent 2px),
+      linear-gradient(to bottom, rgba(255,255,255,0.08) 2px, transparent 2px),
+      /* Minor grid lines - thinner */
+      linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 60px 60px, 60px 60px, 12px 12px, 12px 12px;
   }
 
   /* Hero section: denser small boxes */
