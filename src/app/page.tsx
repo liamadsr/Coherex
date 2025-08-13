@@ -249,7 +249,29 @@ export default function LandingPage() {
               </Button>
               <Button 
                 onClick={() => setWaitlistModalOpen(true)}
-                className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 focus:ring-0 focus:ring-offset-0 transition-colors border-2 border-dashed border-black dark:border-white btn-texture-dark dark:btn-texture-light"
+                className="text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 focus:ring-0 focus:ring-offset-0 transition-colors border-2 border-dashed border-black dark:border-white"
+                style={{
+                  backgroundColor: '#000',
+                  backgroundImage: `
+                    repeating-linear-gradient(
+                      -45deg,
+                      transparent,
+                      transparent 1px,
+                      rgba(255, 255, 255, 0.25) 1px,
+                      rgba(255, 255, 255, 0.25) 2px,
+                      transparent 2px,
+                      transparent 3px,
+                      rgba(255, 255, 255, 0.15) 3px,
+                      rgba(255, 255, 255, 0.15) 4px
+                    ),
+                    repeating-linear-gradient(
+                      -60deg,
+                      transparent,
+                      transparent 4px,
+                      rgba(255, 255, 255, 0.1) 4px,
+                      rgba(255, 255, 255, 0.1) 5px
+                    )`
+                }}
               >
                 <Mail className="w-4 h-4 mr-2" />
                 Join Waitlist
