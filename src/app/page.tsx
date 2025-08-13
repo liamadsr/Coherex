@@ -193,7 +193,7 @@ export default function LandingPage() {
       {/* Navigation */}
       <nav className={`fixed top-0 w-full z-50 transition-all duration-300 bg-white dark:bg-black pt-2`}>
         <div className="page-container">
-          <div className={`panel flex items-center justify-between h-[70px] sm:h-20 px-3 sm:px-4 ${scrolled ? 'shadow-md' : ''}` }>
+          <div className={`panel flex items-center justify-between h-[70px] sm:h-20 px-3 sm:px-4 ${scrolled ? 'shadow-md' : ''}`} style={{ borderWidth: '2px' }}>
             <div className="flex items-center">
               <Link href="/" className="flex items-center space-x-3">
                 <Image
