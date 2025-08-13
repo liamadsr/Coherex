@@ -160,7 +160,36 @@ export default function LandingPage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white page-guides-light dark:page-guides-dark parallax-guides">
+    <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white relative">
+      {/* Vertical guide lines - Light mode */}
+      <div className="fixed inset-0 pointer-events-none dark:hidden" style={{
+        backgroundImage: `
+          repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.32) 0 10px, transparent 10px 20px),
+          repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.32) 0 10px, transparent 10px 20px),
+          repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.32) 0 10px, transparent 10px 20px),
+          repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.32) 0 10px, transparent 10px 20px),
+          repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.32) 0 10px, transparent 10px 20px)
+        `,
+        backgroundSize: '2px 100%, 2px 100%, 2px 100%, 2px 100%, 2px 100%',
+        backgroundPosition: '10% 0, 30% 0, 50% 0, 70% 0, 90% 0',
+        backgroundRepeat: 'no-repeat',
+        zIndex: 0
+      }} />
+      {/* Vertical guide lines - Dark mode */}
+      <div className="fixed inset-0 pointer-events-none hidden dark:block" style={{
+        backgroundImage: `
+          repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0 10px, transparent 10px 20px),
+          repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0 10px, transparent 10px 20px),
+          repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0 10px, transparent 10px 20px),
+          repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0 10px, transparent 10px 20px),
+          repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0 10px, transparent 10px 20px)
+        `,
+        backgroundSize: '2px 100%, 2px 100%, 2px 100%, 2px 100%, 2px 100%',
+        backgroundPosition: '10% 0, 30% 0, 50% 0, 70% 0, 90% 0',
+        backgroundRepeat: 'no-repeat',
+        zIndex: 0
+      }} />
+    <div className="relative z-10">
       {/* Navigation */}
       <nav className={`fixed top-0 w-full z-50 transition-all duration-300 bg-white dark:bg-black pt-2`}>
         <div className="page-container">
@@ -214,7 +243,7 @@ export default function LandingPage() {
               </Button>
               <Button 
                 onClick={() => setWaitlistModalOpen(true)}
-                className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 focus:ring-0 focus:ring-offset-0 transition-colors border-2 border-dashed border-black dark:border-white btn-texture-light dark:btn-texture-dark"
+                className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 focus:ring-0 focus:ring-offset-0 transition-colors border-2 border-dashed border-black dark:border-white btn-texture-dark dark:btn-texture-light"
               >
                 <Mail className="w-4 h-4 mr-2" />
                 Join Waitlist
@@ -267,7 +296,7 @@ export default function LandingPage() {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="md:hidden bg-white/95 dark:bg-black/95 backdrop-blur-xl border-b border-gray-200 dark:border-neutral-800/50"
+            className="md:hidden bg-white/95 dark:bg-black/95 backdrop-blur-xl border-b-2 border-solid border-black dark:border-white"
           >
             <div className="px-4 pt-2 pb-4 space-y-2">
               <Link href="#features" className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white">
@@ -285,7 +314,7 @@ export default function LandingPage() {
                 </svg>
                 GitHub Repository
               </a>
-              <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
+              <div className="pt-2 border-t-2 border-solid border-black dark:border-white">
                 <div className="px-3 py-1 text-xs font-medium text-gray-500 dark:text-gray-400">Theme</div>
                 <button
                   onClick={() => setTheme('light')}
@@ -315,7 +344,7 @@ export default function LandingPage() {
                 </Button>
                 <Button 
                   onClick={() => setWaitlistModalOpen(true)}
-                  className="w-full bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 focus:ring-0 focus:ring-offset-0 transition-colors border-2 border-dashed border-black dark:border-white btn-texture-light dark:btn-texture-dark"
+                  className="w-full bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 focus:ring-0 focus:ring-offset-0 transition-colors border-2 border-dashed border-black dark:border-white btn-texture-dark dark:btn-texture-light"
                 >
                   <Mail className="w-4 h-4 mr-2" />
                   Join Waitlist
@@ -329,8 +358,27 @@ export default function LandingPage() {
       {/* Hero Section - blueprint/wireframe aesthetic */}
       <section className="relative h-[80vh] min-h-[600px] flex items-center overflow-hidden mt-20">
         <div className="relative z-10 page-container">
-          <div className="panel panel-grid panel-grid-light dark:panel-grid-dark w-full px-8 sm:px-12 lg:px-16 py-12 md:py-16 lg:py-20">
-            <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
+          <div className="panel relative overflow-hidden w-full px-8 sm:px-12 lg:px-16 py-12 md:py-16 lg:py-20">
+            {/* Grid pattern overlay */}
+            <div className="absolute inset-0 pointer-events-none dark:hidden" style={{
+              backgroundImage: `
+                linear-gradient(to right, rgba(0,0,0,0.045) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0,0,0,0.045) 1px, transparent 1px),
+                linear-gradient(to right, rgba(0,0,0,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0,0,0,0.03) 1px, transparent 1px)
+              `,
+              backgroundSize: '120px 120px, 120px 120px, 24px 24px, 24px 24px'
+            }} />
+            <div className="absolute inset-0 pointer-events-none hidden dark:block" style={{
+              backgroundImage: `
+                linear-gradient(to right, rgba(255,255,255,0.15) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.15) 1px, transparent 1px),
+                linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)
+              `,
+              backgroundSize: '120px 120px, 120px 120px, 24px 24px, 24px 24px'
+            }} />
+            <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12">
               {/* Left side - Text content */}
               <div className="flex-1 text-left max-w-2xl lg:max-w-xl">
                 <motion.div
@@ -392,14 +440,34 @@ export default function LandingPage() {
       <section id="features" className="py-20 relative no-flash">
         <div className="absolute inset-0" />
         <div className="max-w-7xl 2xl:max-w-[calc(100%-4rem)] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="panel panel-grid panel-grid-light dark:panel-grid-dark p-8 md:p-12">
+          <div className="panel relative overflow-hidden p-8 md:p-12">
+            {/* Grid pattern overlay */}
+            <div className="absolute inset-0 pointer-events-none dark:hidden" style={{
+              backgroundImage: `
+                linear-gradient(to right, rgba(0,0,0,0.045) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0,0,0,0.045) 1px, transparent 1px),
+                linear-gradient(to right, rgba(0,0,0,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0,0,0,0.03) 1px, transparent 1px)
+              `,
+              backgroundSize: '120px 120px, 120px 120px, 24px 24px, 24px 24px'
+            }} />
+            <div className="absolute inset-0 pointer-events-none hidden dark:block" style={{
+              backgroundImage: `
+                linear-gradient(to right, rgba(255,255,255,0.15) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.15) 1px, transparent 1px),
+                linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)
+              `,
+              backgroundSize: '120px 120px, 120px 120px, 24px 24px, 24px 24px'
+            }} />
+          <div className="relative z-10">
           <motion.div
             initial={mounted ? { opacity: 0 } : { opacity: 1 }}
             whileInView={mounted ? { opacity: 1 } : undefined}
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 relative z-10">
               What we're building
               <br />
               <span className="text-gray-600 dark:text-gray-300">
@@ -437,6 +505,7 @@ export default function LandingPage() {
             ))}
           </div>
           </div>
+          </div>
         </div>
       </section>
 
@@ -445,7 +514,27 @@ export default function LandingPage() {
         <div className="absolute inset-0" />
         
         <div className="max-w-7xl 2xl:max-w-[calc(100%-4rem)] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="panel panel-grid panel-grid-light dark:panel-grid-dark p-8 md:p-12">
+          <div className="panel relative overflow-hidden p-8 md:p-12">
+            {/* Grid pattern overlay */}
+            <div className="absolute inset-0 pointer-events-none dark:hidden" style={{
+              backgroundImage: `
+                linear-gradient(to right, rgba(0,0,0,0.045) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0,0,0,0.045) 1px, transparent 1px),
+                linear-gradient(to right, rgba(0,0,0,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0,0,0,0.03) 1px, transparent 1px)
+              `,
+              backgroundSize: '120px 120px, 120px 120px, 24px 24px, 24px 24px'
+            }} />
+            <div className="absolute inset-0 pointer-events-none hidden dark:block" style={{
+              backgroundImage: `
+                linear-gradient(to right, rgba(255,255,255,0.15) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.15) 1px, transparent 1px),
+                linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)
+              `,
+              backgroundSize: '120px 120px, 120px 120px, 24px 24px, 24px 24px'
+            }} />
+          <div className="relative z-10">
           <motion.div
             initial={mounted ? { opacity: 0 } : { opacity: 1 }}
             whileInView={mounted ? { opacity: 1 } : undefined}
@@ -513,6 +602,7 @@ export default function LandingPage() {
             </Button>
           </div>
           </div>
+          </div>
         </div>
       </section>
 
@@ -524,9 +614,28 @@ export default function LandingPage() {
             initial={mounted ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }}
             whileInView={mounted ? { opacity: 1, y: 0 } : undefined}
             viewport={{ once: true }}
-            className="panel panel-grid panel-grid-light dark:panel-grid-dark p-10 md:p-12 no-flash"
+            className="panel relative overflow-hidden p-10 md:p-12 no-flash"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+            {/* Grid pattern overlay */}
+            <div className="absolute inset-0 pointer-events-none dark:hidden" style={{
+              backgroundImage: `
+                linear-gradient(to right, rgba(0,0,0,0.045) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0,0,0,0.045) 1px, transparent 1px),
+                linear-gradient(to right, rgba(0,0,0,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0,0,0,0.03) 1px, transparent 1px)
+              `,
+              backgroundSize: '120px 120px, 120px 120px, 24px 24px, 24px 24px'
+            }} />
+            <div className="absolute inset-0 pointer-events-none hidden dark:block" style={{
+              backgroundImage: `
+                linear-gradient(to right, rgba(255,255,255,0.15) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.15) 1px, transparent 1px),
+                linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)
+              `,
+              backgroundSize: '120px 120px, 120px 120px, 24px 24px, 24px 24px'
+            }} />
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 relative z-10">
               Be part of building
               <br />
               the future of AI employees
@@ -538,7 +647,7 @@ export default function LandingPage() {
               <Button 
                 size="lg" 
                 onClick={() => setWaitlistModalOpen(true)}
-                className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 focus:ring-0 focus:ring-offset-0 transition-colors text-lg px-8 border-2 border-dashed border-black dark:border-white btn-texture-light dark:btn-texture-dark"
+                className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 focus:ring-0 focus:ring-offset-0 transition-colors text-lg px-8 border-2 border-dashed border-black dark:border-white btn-texture-dark dark:btn-texture-light"
               >
                 <Mail className="w-5 h-5 mr-2" />
                 Get Early Access
@@ -574,7 +683,7 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 border-t border-gray-200 dark:border-neutral-800/50">
+      <footer className="py-12 border-t-2 border-solid border-black dark:border-white">
         <div className="max-w-7xl 2xl:max-w-[calc(100%-4rem)] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
@@ -607,7 +716,7 @@ export default function LandingPage() {
             </div>
             
             <div>
-              <h3 className="font-semibold mb-4">Product</h3>
+              <h3 className="font-semibold mb-4 text-black dark:text-white">Product</h3>
               <ul className="space-y-2 text-gray-600 dark:text-gray-400">
                 <li><Link href="#" className="hover:text-gray-900 dark:hover:text-white">Features</Link></li>
                 <li><Link href="#" className="hover:text-gray-900 dark:hover:text-white">Integrations</Link></li>
@@ -616,7 +725,7 @@ export default function LandingPage() {
             </div>
             
             <div>
-              <h3 className="font-semibold mb-4">Company</h3>
+              <h3 className="font-semibold mb-4 text-black dark:text-white">Company</h3>
               <ul className="space-y-2 text-gray-600 dark:text-gray-400">
                 <li><Link href="#" className="hover:text-gray-900 dark:hover:text-white">About</Link></li>
                 <li><Link href="#" className="hover:text-gray-900 dark:hover:text-white">Blog</Link></li>
@@ -626,7 +735,7 @@ export default function LandingPage() {
             </div>
             
             <div>
-              <h3 className="font-semibold mb-4">Legal</h3>
+              <h3 className="font-semibold mb-4 text-black dark:text-white">Legal</h3>
               <ul className="space-y-2 text-gray-600 dark:text-gray-400">
                 <li><Link href="#" className="hover:text-gray-900 dark:hover:text-white">Privacy</Link></li>
                 <li><Link href="#" className="hover:text-gray-900 dark:hover:text-white">Terms</Link></li>
@@ -636,7 +745,7 @@ export default function LandingPage() {
             </div>
           </div>
           
-          <div className="mt-12 pt-8 border-t border-gray-200 dark:border-neutral-800/50 text-center text-gray-600 dark:text-gray-400">
+          <div className="mt-12 pt-8 border-t-2 border-solid border-black dark:border-white text-center text-gray-600 dark:text-gray-400">
             <p>&copy; 2025 COHEREX. Open Source Project.</p>
           </div>
         </div>
@@ -647,6 +756,7 @@ export default function LandingPage() {
         isOpen={waitlistModalOpen} 
         onClose={() => setWaitlistModalOpen(false)} 
       />
+    </div>
     </div>
   )
 }

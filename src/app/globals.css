@@ -206,16 +206,19 @@
       linear-gradient(to bottom, rgba(0,0,0,0.03) 1px, transparent 1px);
     background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
   }
-  .panel-grid-dark::before {
+  :is(.dark *) .panel-grid-dark::before {
     content: "";
-    position: absolute; inset: 0; pointer-events: none;
+    position: absolute; 
+    inset: 0; 
+    pointer-events: none;
+    z-index: 1;
     background-image:
       /* Major grid lines - thicker, every 5 squares (120px) */
-      linear-gradient(to right, rgba(255,255,255,0.045) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255,255,255,0.045) 1px, transparent 1px),
+      linear-gradient(to right, rgba(255,255,255,0.15) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.15) 1px, transparent 1px),
       /* Minor grid lines - thinner */
-      linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+      linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px);
     background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
   }
 
@@ -259,13 +262,13 @@
     background-size: 12px 12px;
   }
 
-  .page-guides-dark {
+  .dark .page-guides-dark {
     background-image:
-      repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.32) 0 10px, transparent 10px 20px),
-      repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.32) 0 10px, transparent 10px 20px),
-      repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.32) 0 10px, transparent 10px 20px),
-      repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.32) 0 10px, transparent 10px 20px),
-      repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.32) 0 10px, transparent 10px 20px);
+      repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0 10px, transparent 10px 20px),
+      repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0 10px, transparent 10px 20px),
+      repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0 10px, transparent 10px 20px),
+      repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0 10px, transparent 10px 20px),
+      repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0 10px, transparent 10px 20px);
     background-size: 2px 100%, 2px 100%, 2px 100%, 2px 100%, 2px 100%;
     background-position: 10% 0, 30% 0, 50% 0, 70% 0, 90% 0;
     background-repeat: no-repeat;
