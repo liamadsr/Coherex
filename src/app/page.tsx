@@ -249,7 +249,7 @@ export default function LandingPage() {
               </Button>
               <Button 
                 onClick={() => setWaitlistModalOpen(true)}
-                className="text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 focus:ring-0 focus:ring-offset-0 transition-colors border-2 border-dashed border-black dark:border-white"
+                className="text-white dark:text-white hover:bg-gray-800 dark:hover:bg-gray-200 focus:ring-0 focus:ring-offset-0 transition-colors border-2 border-dashed border-black dark:border-white"
                 style={{
                   backgroundColor: '#000',
                   backgroundImage: `
