@@ -8,14 +8,7 @@ import * as z from 'zod'
 import { 
   ArrowLeft, 
   Save, 
-  Loader2,
-  Sparkles,
-  Brain,
-  MessageSquare,
-  Zap,
-  Globe,
-  Settings2,
-  AlertCircle
+  Loader2
 } from 'lucide-react'
 
 import { MainLayout } from '@/components/layouts/MainLayout'
@@ -38,12 +31,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Slider } from '@/components/ui/slider'
-import { Switch } from '@/components/ui/switch'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { toast } from 'sonner'
 import { useAgent, useUpdateAgent } from '@/hooks/queries'
 

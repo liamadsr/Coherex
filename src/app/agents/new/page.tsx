@@ -2,22 +2,17 @@
 
 import { Suspense, useState, useRef, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { motion } from 'framer-motion'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { 
-  Bot, 
   ArrowLeft, 
-  ArrowRight,
   ArrowUp,
   Plus, 
   X, 
   Loader2,
-  Save,
   Sparkles,
   MessageSquare,
-  Brain,
   Zap,
   Users,
   Mail,
@@ -27,14 +22,9 @@ import {
   FileText,
   Database,
   Code,
-  Palette,
-  Settings,
   Sliders,
-  Paperclip,
-  ChevronRight,
   ChevronDown,
   RefreshCw,
-  Send,
   Check,
   CheckCircle,
   AlertCircle,
@@ -48,7 +38,6 @@ import {
   ThumbsUp,
   Image,
   Terminal,
-  ScrollText,
   GitBranch,
   Share2,
   Rocket
@@ -59,12 +48,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
   SelectTrigger, 
   SelectValue 
 } from '@/components/ui/select'
@@ -102,9 +87,9 @@ import { SharePreviewModal } from "@/components/agents/SharePreviewModal"
 const agentSchema = z.object({
   name: z.string().min(2, 'Agent name must be at least 2 characters'),
   description: z.string().min(10, 'Description must be at least 10 characters'),
-  executionMode: z.enum(['ephemeral', 'persistent']).default('ephemeral'),
+  executionMode: z.enum(['ephemeral', 'persistent']),
   channels: z.array(z.string()).min(1, 'Select at least one communication channel'),
-  channelConfig: z.record(z.string(), z.any()).optional(),
+  channelConfig: z.record(z.string(), z.unknown()).optional(),
   knowledgeSources: z.array(z.string()).optional(),
   mcpServers: z.array(z.string()).optional(),
   integrations: z.array(z.string()).optional(),
@@ -909,9 +894,9 @@ function NewAgentPageContent() {
     let response = `Hello! I'm ${agentName}. `
     
     // Add knowledge source awareness
-    if (knowledgeSources.length > 0) {
-      const sourceNames = knowledgeSources.map((id: string) => {
-        const source = knowledgeSources.find(ks => ks.id === id)
+    if (watchedKnowledgeSources.length > 0) {
+      const sourceNames = watchedKnowledgeSources.map((id: string) => {
+        const source = knowledgeSources.find((ks: typeof knowledgeSources[0]) => ks.id === id)
         return source?.name || id
       }).slice(0, 2).join(' and ')
       response += `I have access to ${sourceNames} to help answer your questions. `
@@ -1173,7 +1158,7 @@ function NewAgentPageContent() {
             )}
             
             <Button
-              onClick={handleSubmit(onSubmit)}
+              onClick={handleSubmit(onSubmit as (data: AgentFormData) => Promise<void>)}
               disabled={!isValid || isLoading}
               size="sm"
               className="h-8 bg-primary hover:bg-primary/90"
@@ -1673,7 +1658,7 @@ function NewAgentPageContent() {
             <div className="w-1/2 flex flex-col overflow-hidden">
               <div className="p-6 flex-1 overflow-hidden flex flex-col no-scrollbar">
                 {/* Tabs Section */}
-                <Tabs value={testPanelView} onValueChange={setTestPanelView} className="flex-1 flex flex-col min-h-0">
+                <Tabs value={testPanelView} onValueChange={(value) => setTestPanelView(value as 'chat' | 'logs')} className="flex-1 flex flex-col min-h-0">
                   <TabsList className="grid w-full grid-cols-2 h-10 bg-gray-100 dark:bg-neutral-800 p-1 rounded-lg mb-6">
                     <TabsTrigger value="chat" className="text-xs font-medium">Agent Playground</TabsTrigger>
                     <TabsTrigger value="logs" className="text-xs font-medium">
@@ -1687,7 +1672,8 @@ function NewAgentPageContent() {
                   {/* Agent Playground Tab */}
                   <TabsContent value="chat" className="flex-1 overflow-hidden flex flex-col">
                     {/* Chat Container */}
-                <ChatContainerRoot ref={scrollAreaRef} className="relative flex-1 space-y-0 overflow-y-auto no-scrollbar">
+                <div ref={scrollAreaRef} className="relative flex-1 space-y-0 overflow-y-auto no-scrollbar">
+                  <ChatContainerRoot className="h-full">
                 <ChatContainerContent className="space-y-6 px-4 py-6">
                   {messages.length === 0 && (
                     <div className="mx-auto max-w-3xl space-y-6 py-8">
@@ -1847,6 +1833,7 @@ function NewAgentPageContent() {
                   </button>
                 )}
               </ChatContainerRoot>
+                </div>
               
               {/* Input Area */}
               <div className="inset-x-0 bottom-0 mx-auto w-full shrink-0 px-3 pb-3">
