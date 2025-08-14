@@ -60,7 +60,7 @@ export function CodeViewer({
             <span className="select-none pr-4 text-gray-500 dark:text-gray-600 text-right w-12 flex-shrink-0">
               {lineIndex + 1}
             </span>
-            <span className="flex-1">
+            <span className="flex-1 whitespace-pre">
               <SyntaxHighlightedLine line={line} language={lang} />
             </span>
           </div>
@@ -108,12 +108,25 @@ function SyntaxHighlightedLine({ line, language }: { line: string; language: str
   const tokens: React.ReactNode[] = []
   let currentIndex = 0
   
-  // Check for comments first
-  if (language === 'python' && line.trimStart().startsWith('#')) {
-    return <span className="text-gray-500 dark:text-gray-400 italic">{line}</span>
+  // Check for comments first (preserve leading whitespace)
+  const trimmedLine = line.trimStart()
+  const leadingSpaces = line.length - trimmedLine.length
+  
+  if (language === 'python' && trimmedLine.startsWith('#')) {
+    return (
+      <>
+        {leadingSpaces > 0 && <span style={{ whiteSpace: 'pre' }}>{' '.repeat(leadingSpaces)}</span>}
+        <span className="text-gray-500 dark:text-gray-400 italic">{trimmedLine}</span>
+      </>
+    )
   }
-  if ((language === 'javascript' || language === 'typescript') && line.trimStart().startsWith('//')) {
-    return <span className="text-gray-500 dark:text-gray-400 italic">{line}</span>
+  if ((language === 'javascript' || language === 'typescript') && trimmedLine.startsWith('//')) {
+    return (
+      <>
+        {leadingSpaces > 0 && <span style={{ whiteSpace: 'pre' }}>{' '.repeat(leadingSpaces)}</span>}
+        <span className="text-gray-500 dark:text-gray-400 italic">{trimmedLine}</span>
+      </>
+    )
   }
 
   // Simple tokenizer
@@ -123,8 +136,16 @@ function SyntaxHighlightedLine({ line, language }: { line: string; language: str
   while ((match = regex.exec(line)) !== null) {
     const token = match[0]
     
+    // Preserve spaces by converting to non-breaking spaces
+    if (/^\s+$/.test(token)) {
+      tokens.push(
+        <span key={currentIndex} style={{ whiteSpace: 'pre' }}>
+          {token}
+        </span>
+      )
+    }
     // String literals
-    if (token.startsWith('"') || token.startsWith("'") || token.startsWith('`')) {
+    else if (token.startsWith('"') || token.startsWith("'") || token.startsWith('`')) {
       tokens.push(
         <span key={currentIndex} className="text-green-600 dark:text-green-400">
           {token}

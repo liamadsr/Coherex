@@ -26,7 +26,53 @@ export async function GET(
     
     // Handle test agent (for agent builder)
     if (agentId === 'test-agent') {
-      // For test agents, show virtual files with sample runtime code
+      // Check if there's an active sandbox
+      // Try sessionId first (most specific), then test-agent
+      let sandbox = null
+      if (sessionId) {
+        sandbox = e2bClient.getSandbox(sessionId)
+      }
+      if (!sandbox) {
+        sandbox = e2bClient.getSandbox('test-agent')
+      }
+      
+      // If we have a sandbox, treat it like a normal agent
+      if (sandbox) {
+        // List real files in the sandbox using E2B filesystem API
+        try {
+          // Use E2B's filesystem.list() method
+          const entries = await sandbox.filesystem.list(path)
+          const files: FileInfo[] = []
+          
+          for (const entry of entries) {
+            // Skip . and .. entries
+            if (entry.name === '.' || entry.name === '..') continue
+            
+            files.push({
+              name: entry.name,
+              path: path === '/' ? `/${entry.name}` : `${path}/${entry.name}`,
+              type: entry.type === 'directory' ? 'directory' : 'file',
+              size: entry.type === 'file' ? 1024 : 0, // E2B might not provide size
+              lastModified: new Date().toISOString()
+            })
+          }
+          
+          return NextResponse.json({
+            files,
+            isVirtual: false,
+            currentPath: path
+          })
+          
+        } catch (error) {
+          console.error('Error listing files:', error)
+          return NextResponse.json(
+            { error: 'Failed to list files' },
+            { status: 500 }
+          )
+        }
+      }
+      
+      // No sandbox - show virtual files
       const testConfig = {
         id: 'test-agent',
         name: 'Test Agent',
@@ -153,43 +199,22 @@ export async function GET(
       })
     }
     
-    // List files in the sandbox
+    // List files in the sandbox using E2B filesystem API
     try {
-      // E2B doesn't have a direct listFiles method, so we'll use a workaround
-      // Execute a command to list files
-      const listCommand = `ls -la ${path} 2>/dev/null || echo "[]"`
-      const result = await sandbox.runCode(listCommand)
-      
-      if (result.error) {
-        return NextResponse.json(
-          { error: 'Failed to list files', details: result.error },
-          { status: 500 }
-        )
-      }
-      
-      // Parse the ls output
-      const output = result.results?.[0]?.text || ''
-      const lines = output.split('\n').filter(line => line.trim())
+      const entries = await sandbox.filesystem.list(path)
       const files: FileInfo[] = []
       
-      // Skip the first line (total) and parse each file
-      for (let i = 1; i < lines.length; i++) {
-        const parts = lines[i].split(/\s+/)
-        if (parts.length >= 9) {
-          const permissions = parts[0]
-          const size = parseInt(parts[4]) || 0
-          const name = parts.slice(8).join(' ')
-          
-          if (name !== '.' && name !== '..') {
-            files.push({
-              name,
-              path: path === '/' ? `/${name}` : `${path}/${name}`,
-              type: permissions.startsWith('d') ? 'directory' : 'file',
-              size,
-              lastModified: new Date().toISOString()
-            })
-          }
-        }
+      for (const entry of entries) {
+        // Skip . and .. entries
+        if (entry.name === '.' || entry.name === '..') continue
+        
+        files.push({
+          name: entry.name,
+          path: path === '/' ? `/${entry.name}` : `${path}/${entry.name}`,
+          type: entry.type === 'directory' ? 'directory' : 'file',
+          size: entry.type === 'file' ? 1024 : 0, // E2B might not provide size
+          lastModified: new Date().toISOString()
+        })
       }
       
       return NextResponse.json({
@@ -227,6 +252,87 @@ export async function POST(
     
     // Handle test agent (for agent builder)
     if (agentId === 'test-agent') {
+      // Check if there's an active sandbox
+      // Try sessionId first (most specific), then test-agent
+      let sandbox = null
+      if (sessionId) {
+        sandbox = e2bClient.getSandbox(sessionId)
+      }
+      if (!sandbox) {
+        sandbox = e2bClient.getSandbox('test-agent')
+      }
+      
+      // If we have a sandbox, handle it like a normal agent
+      if (sandbox) {
+        if (action === 'read') {
+          try {
+            const content = await e2bClient.downloadFile(sandbox, path)
+            if (content === null) {
+              return NextResponse.json(
+                { error: 'File not found' },
+                { status: 404 }
+              )
+            }
+            
+            return NextResponse.json({
+              content,
+              isVirtual: false
+            })
+          } catch (error) {
+            console.error('Error reading file:', error)
+            return NextResponse.json(
+              { error: 'Failed to read file' },
+              { status: 500 }
+            )
+          }
+        } else if (action === 'write') {
+          if (!content) {
+            return NextResponse.json(
+              { error: 'Content is required for write action' },
+              { status: 400 }
+            )
+          }
+          
+          try {
+            const success = await e2bClient.uploadFile(sandbox, path, content)
+            if (!success) {
+              return NextResponse.json(
+                { error: 'Failed to write file' },
+                { status: 500 }
+              )
+            }
+            
+            return NextResponse.json({
+              success: true,
+              message: 'File saved successfully'
+            })
+          } catch (error) {
+            console.error('Error writing file:', error)
+            return NextResponse.json(
+              { error: 'Failed to write file' },
+              { status: 500 }
+            )
+          }
+        } else if (action === 'delete') {
+          try {
+            // Use E2B filesystem API to delete
+            await sandbox.filesystem.remove(path)
+            
+            return NextResponse.json({
+              success: true,
+              message: 'File deleted successfully'
+            })
+          } catch (error) {
+            console.error('Error deleting file:', error)
+            return NextResponse.json(
+              { error: 'Failed to delete file' },
+              { status: 500 }
+            )
+          }
+        }
+      }
+      
+      // No sandbox - handle virtual files
       if (action === 'read') {
         const testConfig = {
           id: 'test-agent',
@@ -263,9 +369,9 @@ export async function POST(
         }
       }
       
-      // Test agents don't support write/delete operations
+      // Virtual files don't support write/delete operations
       return NextResponse.json(
-        { error: 'Test agents do not support file modifications' },
+        { error: 'Start the agent sandbox to modify files' },
         { status: 400 }
       )
     }
@@ -393,17 +499,9 @@ export async function POST(
       }
       
     } else if (action === 'delete') {
-      // Delete file from sandbox
+      // Delete file from sandbox using E2B filesystem API
       try {
-        const deleteCommand = `rm -f ${path}`
-        const result = await sandbox.runCode(deleteCommand)
-        
-        if (result.error) {
-          return NextResponse.json(
-            { error: 'Failed to delete file' },
-            { status: 500 }
-          )
-        }
+        await sandbox.filesystem.remove(path)
         
         return NextResponse.json({
           success: true,

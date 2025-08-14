@@ -679,7 +679,7 @@ function NewAgentPageContent() {
     }, 10)
   }
 
-  const startEnvironment = () => {
+  const startEnvironment = async () => {
     if (!watchedModel) {
       toast.error('Please select an AI model first')
       return
@@ -698,42 +698,84 @@ function NewAgentPageContent() {
     setRunningTemperature(formData.temperature) // Track temperature
     setRunningMaxTokens(formData.maxTokens) // Track max tokens
     
+    const sessionId = `test-session-${Date.now()}`
+    setTestSessionId(sessionId)
+    
     if (formData.executionMode === 'persistent') {
-      const sessionId = `test-session-${Date.now()}`
-      setTestSessionId(sessionId)
       addLog('info', `Creating conversation session: ${sessionId}`)
     }
     
     addLog('info', 'Initializing E2B sandbox environment...')
     addLog('info', `Model: ${watchedModel || 'gpt-4'}`)
     addLog('info', `Mode: ${formData.executionMode === 'persistent' ? 'Conversational (maintains context)' : 'Ephemeral (stateless)'}`)
-    addLog('info', 'Installing required packages...')
     
-    // Simulate environment startup
-    setTimeout(() => {
-      addLog('success', 'Environment packages installed')
-      addLog('info', 'Loading agent configuration...')
-      addLog('success', 'Agent environment ready')
-      setEnvironmentStatus('running')
-      toast.success('Agent environment is ready! Start testing in the panel.')
+    try {
+      // Actually create an E2B sandbox
+      const response = await fetch('/api/agents/test-agent/sandbox', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          sessionId,
+          config: {
+            model: formData.model,
+            temperature: formData.temperature,
+            maxTokens: formData.maxTokens,
+            systemPrompt: formData.systemPrompt,
+            executionMode: formData.executionMode
+          }
+        })
+      })
       
-      // Focus on the test panel input
-      const testInput = document.querySelector('textarea[placeholder*="Test your agent"]') as HTMLTextAreaElement
-      if (testInput) {
-        testInput.focus()
+      if (response.ok) {
+        const data = await response.json()
+        if (data.sandboxId) {
+          addLog('success', `E2B sandbox created: ${data.sandboxId}`)
+        } else {
+          addLog('warning', 'E2B not configured - running in simulation mode')
+        }
       }
-    }, 1500)
+      
+      addLog('info', 'Installing required packages...')
+      setTimeout(() => {
+        addLog('success', 'Environment packages installed')
+        addLog('info', 'Loading agent configuration...')
+        addLog('success', 'Agent environment ready')
+        setEnvironmentStatus('running')
+        toast.success('Agent environment is ready! Start testing in the panel.')
+        
+        // Focus on the test panel input
+        const testInput = document.querySelector('textarea[placeholder*="Test your agent"]') as HTMLTextAreaElement
+        if (testInput) {
+          testInput.focus()
+        }
+      }, 1500)
+    } catch (error) {
+      console.error('Failed to start environment:', error)
+      addLog('error', 'Failed to create sandbox environment')
+      setEnvironmentStatus('idle')
+      toast.error('Failed to start environment')
+    }
   }
 
-  const stopEnvironment = (callback?: () => void) => {
+  const stopEnvironment = async (callback?: () => void) => {
     setEnvironmentStatus('stopping')
     addLog('warning', 'Shutting down environment...')
     
-    // Clear session for conversational mode
+    // Clear session and sandbox
     if (testSessionId) {
       addLog('info', `Clearing conversation session: ${testSessionId}`)
       
-      // Call cleanup endpoint to close sandbox
+      // Stop the E2B sandbox
+      try {
+        await fetch(`/api/agents/test-agent/sandbox?sessionId=${testSessionId}`, {
+          method: 'DELETE'
+        })
+        addLog('info', 'Sandbox stopped')
+      } catch (err) {
+        console.error('Sandbox cleanup error:', err)
+      }
+      
+      // Call cleanup endpoint for any additional cleanup
       fetch('/api/agents/test-cleanup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -2220,6 +2262,14 @@ function NewAgentPageContent() {
 
                   {/* Files Tab */}
                   <TabsContent value="files" className="flex-1 overflow-hidden flex flex-col">
+                    {isVirtualFiles && (
+                      <Alert className="mb-3">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertDescription className="text-xs">
+                          <strong>Read-only mode:</strong> E2B sandbox is not configured. To enable file editing, set E2B_API_KEY in your .env.local file.
+                        </AlertDescription>
+                      </Alert>
+                    )}
                     <div className="flex gap-4 h-full">
                       {/* File Browser */}
                       <div className="w-1/3 border rounded-lg p-3 overflow-y-auto">
@@ -2253,7 +2303,7 @@ function NewAgentPageContent() {
                             <div className="text-xs text-gray-500 py-4 text-center">
                               {isVirtualFiles 
                                 ? 'Generated runtime code will appear here when the agent runs'
-                                : 'No files found'}
+                                : 'No files found in sandbox'}
                             </div>
                           ) : (
                             files.map((file) => (

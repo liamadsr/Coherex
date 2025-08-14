@@ -519,7 +519,8 @@ except Exception as e:
     content: string | Buffer
   ): Promise<boolean> {
     try {
-      await sandbox.writeFile(filePath, content)
+      // E2B uses filesystem.write() not writeFile()
+      await sandbox.filesystem.write(filePath, content)
       return true
     } catch (error) {
       console.error('Failed to upload file to sandbox:', error)
@@ -532,11 +533,29 @@ except Exception as e:
    */
   async downloadFile(sandbox: Sandbox, filePath: string): Promise<string | null> {
     try {
-      const content = await sandbox.readFile(filePath)
+      // E2B uses filesystem.read() not readFile()
+      const content = await sandbox.filesystem.read(filePath)
       return content
     } catch (error) {
       console.error('Failed to download file from sandbox:', error)
       return null
+    }
+  }
+
+  /**
+   * Stop and remove a sandbox
+   */
+  async stopSandbox(sandboxId: string): Promise<void> {
+    const sandbox = this.sandboxes.get(sandboxId)
+    if (sandbox) {
+      try {
+        await sandbox.kill()
+        this.sandboxes.delete(sandboxId)
+      } catch (error) {
+        console.error('Failed to stop sandbox:', error)
+        // Still remove from map even if kill fails
+        this.sandboxes.delete(sandboxId)
+      }
     }
   }
 
