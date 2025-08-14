@@ -40,7 +40,12 @@ import {
   Terminal,
   GitBranch,
   Share2,
-  Rocket
+  Rocket,
+  FileText as FileTextIcon,
+  Folder,
+  FolderOpen,
+  Save,
+  Edit
 } from 'lucide-react'
 
 import { MainLayout } from '@/components/layouts/MainLayout'
@@ -158,9 +163,16 @@ function NewAgentPageContent() {
   const [attachedFiles, setAttachedFiles] = useState<File[]>([])
   const [environmentStatus, setEnvironmentStatus] = useState<'idle' | 'starting' | 'running' | 'stopping'>('idle')
   const [environmentStartTime, setEnvironmentStartTime] = useState<Date | null>(null)
-  const [testPanelView, setTestPanelView] = useState<'chat' | 'logs'>('chat')
+  const [testPanelView, setTestPanelView] = useState<'chat' | 'logs' | 'files'>('chat')
   const [executionLogs, setExecutionLogs] = useState<Array<{ timestamp: string, type: 'info' | 'error' | 'warning' | 'success', message: string }>>([])
   const [testSessionId, setTestSessionId] = useState<string | null>(null)
+  const [files, setFiles] = useState<any[]>([])
+  const [currentPath, setCurrentPath] = useState('/')
+  const [selectedFile, setSelectedFile] = useState<any>(null)
+  const [fileContent, setFileContent] = useState('')
+  const [isEditingFile, setIsEditingFile] = useState(false)
+  const [loadingFiles, setLoadingFiles] = useState(false)
+  const [isVirtualFiles, setIsVirtualFiles] = useState(false)
   const [runningExecutionMode, setRunningExecutionMode] = useState<'ephemeral' | 'persistent' | null>(null)
   const [runningModel, setRunningModel] = useState<string | null>(null)
   const [runningTemperature, setRunningTemperature] = useState<number | null>(null)
@@ -383,6 +395,13 @@ function NewAgentPageContent() {
       return () => clearInterval(interval)
     }
   }, [environmentStatus, environmentStartTime])
+
+  // Load files when Files tab is selected
+  useEffect(() => {
+    if (testPanelView === 'files') {
+      loadFiles()
+    }
+  }, [testPanelView, currentPath, testSessionId])
 
   // Load existing agent for editing (but don't create new draft automatically)
   useEffect(() => {
@@ -743,6 +762,95 @@ function NewAgentPageContent() {
         startEnvironment()
       }, 200)
     })
+  }
+
+  const handleFileClick = async (file: any, agentId?: string) => {
+    if (file.type === 'directory') {
+      setCurrentPath(file.path)
+      setSelectedFile(null)
+      setFileContent('')
+    } else {
+      setSelectedFile(file)
+      setLoadingFiles(true)
+      try {
+        // Use test agent ID or temporary ID for new agents
+        const effectiveAgentId = agentId || 'test-agent'
+        const sessionId = testSessionId || ''
+        const response = await fetch(`/api/agents/${effectiveAgentId}/files`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'read', path: file.path, sessionId })
+        })
+        if (response.ok) {
+          const data = await response.json()
+          setFileContent(data.content || '')
+          setIsEditingFile(false)
+        }
+      } catch (error) {
+        console.error('Error reading file:', error)
+      } finally {
+        setLoadingFiles(false)
+      }
+    }
+  }
+
+  const handleSaveFile = async (agentId?: string) => {
+    if (!selectedFile) return
+    
+    setLoadingFiles(true)
+    try {
+      const effectiveAgentId = agentId || 'test-agent'
+      const sessionId = testSessionId || ''
+      const response = await fetch(`/api/agents/${effectiveAgentId}/files`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          action: 'write', 
+          path: selectedFile.path, 
+          content: fileContent,
+          sessionId 
+        })
+      })
+      
+      if (response.ok) {
+        toast.success('File saved successfully')
+        setIsEditingFile(false)
+      }
+    } catch (error) {
+      console.error('Error saving file:', error)
+      toast.error('Failed to save file')
+    } finally {
+      setLoadingFiles(false)
+    }
+  }
+
+  const getFileIcon = (file: any) => {
+    if (file.type === 'directory') {
+      return <Folder className="w-4 h-4" />
+    }
+    const ext = file.name.split('.').pop()?.toLowerCase()
+    if (['py', 'js', 'ts', 'jsx', 'tsx', 'json', 'yml', 'yaml'].includes(ext || '')) {
+      return <Code className="w-4 h-4" />
+    }
+    return <FileTextIcon className="w-4 h-4" />
+  }
+
+  const loadFiles = async (agentId?: string) => {
+    setLoadingFiles(true)
+    try {
+      const effectiveAgentId = agentId || 'test-agent'
+      const sessionId = testSessionId || ''
+      const response = await fetch(`/api/agents/${effectiveAgentId}/files?path=${encodeURIComponent(currentPath)}&sessionId=${sessionId}`)
+      if (response.ok) {
+        const data = await response.json()
+        setFiles(data.files || [])
+        setIsVirtualFiles(data.isVirtual || false)
+      }
+    } catch (error) {
+      console.error('Error loading files:', error)
+    } finally {
+      setLoadingFiles(false)
+    }
   }
 
   const handleSendMessage = async () => {
@@ -1658,8 +1766,8 @@ function NewAgentPageContent() {
             <div className="w-1/2 flex flex-col overflow-hidden">
               <div className="p-6 flex-1 overflow-hidden flex flex-col no-scrollbar">
                 {/* Tabs Section */}
-                <Tabs value={testPanelView} onValueChange={(value) => setTestPanelView(value as 'chat' | 'logs')} className="flex-1 flex flex-col min-h-0">
-                  <TabsList className="grid w-full grid-cols-2 h-10 bg-gray-100 dark:bg-neutral-800 p-1 rounded-lg mb-6">
+                <Tabs value={testPanelView} onValueChange={(value) => setTestPanelView(value as 'chat' | 'logs' | 'files')} className="flex-1 flex flex-col min-h-0">
+                  <TabsList className="grid w-full grid-cols-3 h-10 bg-gray-100 dark:bg-neutral-800 p-1 rounded-lg mb-6">
                     <TabsTrigger value="chat" className="text-xs font-medium">Agent Playground</TabsTrigger>
                     <TabsTrigger value="logs" className="text-xs font-medium">
                       Logs
@@ -1667,6 +1775,7 @@ function NewAgentPageContent() {
                         <span className="ml-1 text-xs">({executionLogs.length})</span>
                       )}
                     </TabsTrigger>
+                    <TabsTrigger value="files" className="text-xs font-medium">Files</TabsTrigger>
                   </TabsList>
 
                   {/* Agent Playground Tab */}
@@ -2106,6 +2215,156 @@ function NewAgentPageContent() {
                     </div>
                   )}
                 </div>
+                  </TabsContent>
+
+                  {/* Files Tab */}
+                  <TabsContent value="files" className="flex-1 overflow-hidden flex flex-col">
+                    <div className="flex gap-4 h-full">
+                      {/* File Browser */}
+                      <div className="w-1/3 border rounded-lg p-3 overflow-y-auto">
+                        <div className="space-y-1">
+                          {/* Breadcrumb */}
+                          <div className="flex items-center text-xs text-gray-600 dark:text-gray-400 mb-2 pb-2 border-b">
+                            <FolderOpen className="w-3 h-3 mr-1" />
+                            <span className="font-medium">{currentPath}</span>
+                          </div>
+                          
+                          {/* Up navigation */}
+                          {currentPath !== '/' && (
+                            <button
+                              onClick={() => {
+                                const parentPath = currentPath.split('/').slice(0, -1).join('/') || '/'
+                                setCurrentPath(parentPath)
+                                setSelectedFile(null)
+                                setFileContent('')
+                              }}
+                              className="w-full flex items-center space-x-2 px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded text-left"
+                            >
+                              <Folder className="w-3 h-3" />
+                              <span className="text-xs">..</span>
+                            </button>
+                          )}
+                          
+                          {/* Files list */}
+                          {loadingFiles ? (
+                            <div className="text-xs text-gray-500 py-4 text-center">Loading files...</div>
+                          ) : files.length === 0 ? (
+                            <div className="text-xs text-gray-500 py-4 text-center">
+                              {isVirtualFiles 
+                                ? 'Generated runtime code will appear here when the agent runs'
+                                : 'No files found'}
+                            </div>
+                          ) : (
+                            files.map((file) => (
+                              <button
+                                key={file.path}
+                                onClick={() => handleFileClick(file)}
+                                className={`w-full flex items-center justify-between px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded text-left ${
+                                  selectedFile?.path === file.path ? 'bg-blue-50 dark:bg-blue-900/20' : ''
+                                }`}
+                              >
+                                <div className="flex items-center space-x-2">
+                                  {getFileIcon(file)}
+                                  <span className="text-xs truncate">{file.name}</span>
+                                </div>
+                                {file.size && file.type === 'file' && (
+                                  <span className="text-xs text-gray-500">
+                                    {(file.size / 1024).toFixed(1)}KB
+                                  </span>
+                                )}
+                              </button>
+                            ))
+                          )}
+                        </div>
+                      </div>
+                      
+                      {/* File Viewer/Editor */}
+                      <div className="flex-1 border rounded-lg overflow-hidden">
+                        {selectedFile ? (
+                          <div className="h-full flex flex-col">
+                            {/* File header */}
+                            <div className="flex items-center justify-between px-3 py-2 border-b bg-gray-50 dark:bg-gray-900">
+                              <div className="flex items-center space-x-2">
+                                {getFileIcon(selectedFile)}
+                                <span className="font-medium text-xs">{selectedFile.name}</span>
+                                {isVirtualFiles && (
+                                  <Badge variant="outline" className="text-xs">Generated</Badge>
+                                )}
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                {!isVirtualFiles && (
+                                  <>
+                                    {isEditingFile ? (
+                                      <>
+                                        <Button
+                                          size="sm"
+                                          onClick={() => handleSaveFile()}
+                                          disabled={loadingFiles}
+                                          className="h-7 text-xs"
+                                        >
+                                          <Save className="w-3 h-3 mr-1" />
+                                          Save
+                                        </Button>
+                                        <Button
+                                          size="sm"
+                                          variant="outline"
+                                          onClick={() => {
+                                            setIsEditingFile(false)
+                                            handleFileClick(selectedFile)
+                                          }}
+                                          className="h-7 text-xs"
+                                        >
+                                          <X className="w-3 h-3 mr-1" />
+                                          Cancel
+                                        </Button>
+                                      </>
+                                    ) : (
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() => setIsEditingFile(true)}
+                                        className="h-7 text-xs"
+                                      >
+                                        <Edit className="w-3 h-3 mr-1" />
+                                        Edit
+                                      </Button>
+                                    )}
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                            
+                            {/* File content */}
+                            <div className="flex-1 overflow-auto p-3">
+                              {loadingFiles ? (
+                                <div className="text-xs text-gray-500">Loading file content...</div>
+                              ) : isEditingFile ? (
+                                <Textarea
+                                  value={fileContent}
+                                  onChange={(e) => setFileContent(e.target.value)}
+                                  className="w-full h-full font-mono text-xs resize-none border-0 focus:ring-0"
+                                  placeholder="Enter file content..."
+                                />
+                              ) : (
+                                <pre className="text-xs font-mono whitespace-pre-wrap">
+                                  {fileContent || 'Empty file'}
+                                </pre>
+                              )}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="h-full flex items-center justify-center text-gray-500">
+                            <div className="text-center">
+                              <FileTextIcon className="w-10 h-10 mx-auto mb-2 opacity-20" />
+                              <p className="text-xs">Select a file to view its contents</p>
+                              {isVirtualFiles && (
+                                <p className="text-xs mt-1 opacity-70">Start the agent to see runtime files</p>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </TabsContent>
                   
                 </Tabs>
