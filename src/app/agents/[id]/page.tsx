@@ -53,6 +53,7 @@ import { ConversationDetail } from '@/components/conversations/ConversationDetai
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { CodeViewer } from '@/components/ui/code-viewer'
 
 
 const statusColors: Record<Agent['status'] | 'draft' | 'paused' | 'archived', string> = {
@@ -916,7 +917,10 @@ export default function AgentDetailPage() {
                     </CardDescription>
                   </div>
                   {isVirtualFiles && (
-                    <Badge variant="secondary">Virtual Files</Badge>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary">Virtual Files</Badge>
+                      <span className="text-xs text-gray-500">Read-only preview - Start agent to edit</span>
+                    </div>
                   )}
                 </div>
               </CardHeader>
@@ -990,6 +994,18 @@ export default function AgentDetailPage() {
                             )}
                           </div>
                           <div className="flex items-center space-x-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                navigator.clipboard.writeText(fileContent)
+                                toast.success('File content copied to clipboard')
+                              }}
+                              className="h-8"
+                            >
+                              <Copy className="w-4 h-4 mr-1" />
+                              Copy
+                            </Button>
                             {!isVirtualFiles && (
                               <>
                                 {isEditingFile ? (
@@ -1033,17 +1049,14 @@ export default function AgentDetailPage() {
                         <div className="flex-1 overflow-auto p-4">
                           {loadingFiles ? (
                             <div className="text-sm text-gray-500">Loading file content...</div>
-                          ) : isEditingFile ? (
-                            <Textarea
-                              value={fileContent}
-                              onChange={(e) => setFileContent(e.target.value)}
-                              className="w-full h-full font-mono text-sm resize-none border-0 focus:ring-0"
-                              placeholder="Enter file content..."
-                            />
                           ) : (
-                            <pre className="text-sm font-mono whitespace-pre-wrap">
-                              {fileContent || 'Empty file'}
-                            </pre>
+                            <CodeViewer
+                              content={fileContent}
+                              language={selectedFile.name.split('.').pop()?.toLowerCase()}
+                              editable={isEditingFile}
+                              onChange={setFileContent}
+                              className="h-full"
+                            />
                           )}
                         </div>
                       </div>

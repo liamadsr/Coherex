@@ -33,7 +33,6 @@ import {
   Activity,
   Play,
   Square,
-  Copy,
   ThumbsDown,
   ThumbsUp,
   Image,
@@ -45,7 +44,8 @@ import {
   Folder,
   FolderOpen,
   Save,
-  Edit
+  Edit,
+  Copy
 } from 'lucide-react'
 
 import { MainLayout } from '@/components/layouts/MainLayout'
@@ -88,6 +88,7 @@ import { PromptSuggestion } from "@/components/ui/prompt-suggestion"
 import { cn } from "@/lib/utils"
 import { VersionHistory } from "@/components/agents/VersionHistory"
 import { SharePreviewModal } from "@/components/agents/SharePreviewModal"
+import { CodeViewer } from "@/components/ui/code-viewer"
 
 const agentSchema = z.object({
   name: z.string().min(2, 'Agent name must be at least 2 characters'),
@@ -2292,6 +2293,18 @@ function NewAgentPageContent() {
                                 )}
                               </div>
                               <div className="flex items-center space-x-2">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(fileContent)
+                                    toast.success('File content copied to clipboard')
+                                  }}
+                                  className="h-7 text-xs"
+                                >
+                                  <Copy className="w-3 h-3 mr-1" />
+                                  Copy
+                                </Button>
                                 {!isVirtualFiles && (
                                   <>
                                     {isEditingFile ? (
@@ -2338,17 +2351,14 @@ function NewAgentPageContent() {
                             <div className="flex-1 overflow-auto p-3">
                               {loadingFiles ? (
                                 <div className="text-xs text-gray-500">Loading file content...</div>
-                              ) : isEditingFile ? (
-                                <Textarea
-                                  value={fileContent}
-                                  onChange={(e) => setFileContent(e.target.value)}
-                                  className="w-full h-full font-mono text-xs resize-none border-0 focus:ring-0"
-                                  placeholder="Enter file content..."
-                                />
                               ) : (
-                                <pre className="text-xs font-mono whitespace-pre-wrap">
-                                  {fileContent || 'Empty file'}
-                                </pre>
+                                <CodeViewer
+                                  content={fileContent}
+                                  language={selectedFile.name.split('.').pop()?.toLowerCase()}
+                                  editable={isEditingFile}
+                                  onChange={setFileContent}
+                                  className="h-full text-xs"
+                                />
                               )}
                             </div>
                           </div>
