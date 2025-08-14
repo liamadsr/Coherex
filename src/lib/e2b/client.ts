@@ -519,8 +519,8 @@ except Exception as e:
     content: string | Buffer
   ): Promise<boolean> {
     try {
-      // E2B uses filesystem.write() not writeFile()
-      await sandbox.filesystem.write(filePath, content)
+      // E2B uses files.write() not filesystem.write()
+      await sandbox.files.write(filePath, content)
       return true
     } catch (error) {
       console.error('Failed to upload file to sandbox:', error)
@@ -533,8 +533,8 @@ except Exception as e:
    */
   async downloadFile(sandbox: Sandbox, filePath: string): Promise<string | null> {
     try {
-      // E2B uses filesystem.read() not readFile()
-      const content = await sandbox.filesystem.read(filePath)
+      // E2B uses files.read() not filesystem.read()
+      const content = await sandbox.files.read(filePath)
       return content
     } catch (error) {
       console.error('Failed to download file from sandbox:', error)

@@ -38,10 +38,10 @@ export async function GET(
       
       // If we have a sandbox, treat it like a normal agent
       if (sandbox) {
-        // List real files in the sandbox using E2B filesystem API
+        // List real files in the sandbox using E2B files API
         try {
-          // Use E2B's filesystem.list() method
-          const entries = await sandbox.filesystem.list(path)
+          // Use E2B's files.list() method
+          const entries = await sandbox.files.list(path)
           const files: FileInfo[] = []
           
           for (const entry of entries) {
@@ -199,9 +199,9 @@ export async function GET(
       })
     }
     
-    // List files in the sandbox using E2B filesystem API
+    // List files in the sandbox using E2B files API
     try {
-      const entries = await sandbox.filesystem.list(path)
+      const entries = await sandbox.files.list(path)
       const files: FileInfo[] = []
       
       for (const entry of entries) {
@@ -315,8 +315,8 @@ export async function POST(
           }
         } else if (action === 'delete') {
           try {
-            // Use E2B filesystem API to delete
-            await sandbox.filesystem.remove(path)
+            // Use E2B runCode to delete (no direct delete API)
+            await sandbox.runCode(`import os; os.remove('${path}')`)
             
             return NextResponse.json({
               success: true,
@@ -499,9 +499,9 @@ export async function POST(
       }
       
     } else if (action === 'delete') {
-      // Delete file from sandbox using E2B filesystem API
+      // Delete file from sandbox using E2B runCode (no direct delete API)
       try {
-        await sandbox.filesystem.remove(path)
+        await sandbox.runCode(`import os; os.remove('${path}')`)
         
         return NextResponse.json({
           success: true,
