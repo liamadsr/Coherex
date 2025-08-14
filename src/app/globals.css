@@ -55,7 +55,7 @@
 }
 
 :root {
-  --radius: 0.625rem;
+  --radius: 0;
   --background: #ffffff;
   --foreground: #000000;
   --card: #ffffff;
@@ -158,6 +158,171 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+
+  /* Lightweight blueprint-style grid backgrounds for light/dark themes */
+  .blueprint-grid-light {
+    background-image:
+      linear-gradient(to right, rgba(0, 0, 0, 0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0, 0, 0, 0.06) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  .blueprint-grid-dark {
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  /* Reusable panel surface to separate sections from page background */
+  .panel {
+    @apply border-2 border-solid border-black dark:border-white bg-white dark:bg-black;
+  }
+
+  /* Dotted vertical guide columns across the page */
+  .page-guides-light {
+    background-image:
+      repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.32) 0 10px, transparent 10px 20px),
+      repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.32) 0 10px, transparent 10px 20px),
+      repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.32) 0 10px, transparent 10px 20px),
+      repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.32) 0 10px, transparent 10px 20px),
+      repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.32) 0 10px, transparent 10px 20px);
+    background-size: 2px 100%, 2px 100%, 2px 100%, 2px 100%, 2px 100%;
+    background-position: 10% 0, 30% 0, 50% 0, 70% 0, 90% 0;
+    background-repeat: no-repeat;
+  }
+
+  /* Grid inside panels (clipped to rounded corners) */
+  .panel-grid { position: relative; overflow: hidden; }
+  .panel-grid-light::before {
+    content: "";
+    position: absolute; inset: 0; pointer-events: none;
+    background-image:
+      /* Major grid lines - thicker, every 5 squares (120px) */
+      linear-gradient(to right, rgba(0,0,0,0.045) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0,0,0,0.045) 1px, transparent 1px),
+      /* Minor grid lines - thinner */
+      linear-gradient(to right, rgba(0,0,0,0.03) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0,0,0,0.03) 1px, transparent 1px);
+    background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
+  }
+  :is(.dark *) .panel-grid-dark::before {
+    content: "";
+    position: absolute; 
+    inset: 0; 
+    pointer-events: none;
+    z-index: 1;
+    background-image:
+      /* Major grid lines - thicker, every 5 squares (120px) */
+      linear-gradient(to right, rgba(255,255,255,0.15) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.15) 1px, transparent 1px),
+      /* Minor grid lines - thinner */
+      linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px);
+    background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
+  }
+
+  /* Smaller grid variant for hero panel */
+  .panel-grid-small-light::before {
+    content: "";
+    position: absolute; inset: 0; pointer-events: none;
+    background-image:
+      /* Major grid lines - thicker, every 5 squares (60px) */
+      linear-gradient(to right, rgba(0,0,0,0.08) 2px, transparent 2px),
+      linear-gradient(to bottom, rgba(0,0,0,0.08) 2px, transparent 2px),
+      /* Minor grid lines - thinner */
+      linear-gradient(to right, rgba(0,0,0,0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0,0,0,0.04) 1px, transparent 1px);
+    background-size: 60px 60px, 60px 60px, 12px 12px, 12px 12px;
+  }
+  .panel-grid-small-dark::before {
+    content: "";
+    position: absolute; inset: 0; pointer-events: none;
+    background-image:
+      /* Major grid lines - thicker, every 5 squares (60px) */
+      linear-gradient(to right, rgba(255,255,255,0.08) 2px, transparent 2px),
+      linear-gradient(to bottom, rgba(255,255,255,0.08) 2px, transparent 2px),
+      /* Minor grid lines - thinner */
+      linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 60px 60px, 60px 60px, 12px 12px, 12px 12px;
+  }
+
+  /* Hero section: denser small boxes */
+  .hero-boxes-light {
+    background-image:
+      linear-gradient(to right, rgba(0,0,0,0.08) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0,0,0,0.08) 1px, transparent 1px);
+    background-size: 12px 12px;
+  }
+  .hero-boxes-dark {
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,0.08) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.08) 1px, transparent 1px);
+    background-size: 12px 12px;
+  }
+
+  .dark .page-guides-dark {
+    background-image:
+      repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0 10px, transparent 10px 20px),
+      repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0 10px, transparent 10px 20px),
+      repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0 10px, transparent 10px 20px),
+      repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0 10px, transparent 10px 20px),
+      repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0 10px, transparent 10px 20px);
+    background-size: 2px 100%, 2px 100%, 2px 100%, 2px 100%, 2px 100%;
+    background-position: 10% 0, 30% 0, 50% 0, 70% 0, 90% 0;
+    background-repeat: no-repeat;
+  }
+
+  /* Parallax effect for background guides (fixed to viewport) */
+  .parallax-guides {
+    background-attachment: fixed, fixed, fixed, fixed, fixed;
+  }
+  
+  /* Crosshatch texture for filled buttons */
+  .btn-texture-light {
+    background-image: 
+      repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 1px,
+        rgba(255, 255, 255, 0.25) 1px,
+        rgba(255, 255, 255, 0.25) 2px,
+        transparent 2px,
+        transparent 3px,
+        rgba(255, 255, 255, 0.15) 3px,
+        rgba(255, 255, 255, 0.15) 4px
+      ),
+      repeating-linear-gradient(
+        -60deg,
+        transparent,
+        transparent 4px,
+        rgba(255, 255, 255, 0.1) 4px,
+        rgba(255, 255, 255, 0.1) 5px
+      );
+  }
+  
+  .btn-texture-dark {
+    background-image: 
+      repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 1px,
+        rgba(0, 0, 0, 0.25) 1px,
+        rgba(0, 0, 0, 0.25) 2px,
+        transparent 2px,
+        transparent 3px,
+        rgba(0, 0, 0, 0.15) 3px,
+        rgba(0, 0, 0, 0.15) 4px
+      ),
+      repeating-linear-gradient(
+        -60deg,
+        transparent,
+        transparent 4px,
+        rgba(0, 0, 0, 0.1) 4px,
+        rgba(0, 0, 0, 0.1) 5px
+      );
+  }
 }
 
 /* Fix for Framer Motion flashing */
@@ -169,5 +334,28 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* Unify header/hero container width and padding */
+.page-container {
+  width: 100%;
+  max-width: 80rem; /* Keep default for smaller screens */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem; /* px-4 */
+  padding-right: 1rem;
+}
+@media (min-width: 640px) { /* sm */
+  .page-container { padding-left: 1.5rem; padding-right: 1.5rem; } /* px-6 */
+}
+@media (min-width: 1024px) { /* lg */
+  .page-container { padding-left: 2rem; padding-right: 2rem; } /* px-8 */
+}
+@media (min-width: 1536px) { /* 2xl - full size screens */
+  .page-container { 
+    max-width: calc(100% - 4rem); /* Almost full width with 2rem padding on each side */
+    padding-left: 2rem; 
+    padding-right: 2rem;
   }
 }

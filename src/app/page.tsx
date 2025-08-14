@@ -160,13 +160,40 @@ export default function LandingPage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white">
+    <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white relative">
+      {/* Vertical guide lines - Light mode */}
+      <div className="fixed inset-0 pointer-events-none dark:hidden" style={{
+        backgroundImage: `
+          repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.32) 0 10px, transparent 10px 20px),
+          repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.32) 0 10px, transparent 10px 20px),
+          repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.32) 0 10px, transparent 10px 20px),
+          repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.32) 0 10px, transparent 10px 20px),
+          repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.32) 0 10px, transparent 10px 20px)
+        `,
+        backgroundSize: '2px 100%, 2px 100%, 2px 100%, 2px 100%, 2px 100%',
+        backgroundPosition: '10% 0, 30% 0, 50% 0, 70% 0, 90% 0',
+        backgroundRepeat: 'no-repeat',
+        zIndex: 0
+      }} />
+      {/* Vertical guide lines - Dark mode */}
+      <div className="fixed inset-0 pointer-events-none hidden dark:block" style={{
+        backgroundImage: `
+          repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0 10px, transparent 10px 20px),
+          repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0 10px, transparent 10px 20px),
+          repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0 10px, transparent 10px 20px),
+          repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0 10px, transparent 10px 20px),
+          repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0 10px, transparent 10px 20px)
+        `,
+        backgroundSize: '2px 100%, 2px 100%, 2px 100%, 2px 100%, 2px 100%',
+        backgroundPosition: '10% 0, 30% 0, 50% 0, 70% 0, 90% 0',
+        backgroundRepeat: 'no-repeat',
+        zIndex: 0
+      }} />
+    <div className="relative z-10">
       {/* Navigation */}
-      <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        scrolled ? 'bg-white/80 dark:bg-black/80 backdrop-blur-xl border-b border-gray-200 dark:border-neutral-800/50' : 'bg-transparent'
-      }`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+      <nav className={`fixed top-0 w-full z-50 transition-all duration-300 bg-white dark:bg-black pt-2`}>
+        <div className="page-container">
+          <div className={`panel flex items-center justify-between h-[70px] sm:h-20 px-3 sm:px-4 ${scrolled ? 'shadow-md' : ''}`} style={{ borderWidth: '2px' }}>
             <div className="flex items-center">
               <Link href="/" className="flex items-center space-x-3">
                 <Image
@@ -179,59 +206,19 @@ export default function LandingPage() {
                 <span className="text-xl font-bold text-black dark:text-white">COHEREX</span>
               </Link>
               
-              <div className="hidden md:flex items-center ml-10 space-x-8">
-                <Link href="#features" className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">
-                  Features
-                </Link>
-                <Link href="#integrations" className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">
-                  Integrations
-                </Link>
-                <Link href="#solutions" className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">
-                  Solutions
-                </Link>
+              <div className="hidden md:flex items-center ml-4">
+                <span className="text-gray-600 dark:text-gray-400 text-sm">// by BridgeBound Studio</span>
               </div>
             </div>
             
             <div className="hidden md:flex items-center space-x-4">
-              <Button variant="outline" size="icon" className="bg-white dark:bg-black border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900 hover:border-gray-400 dark:hover:border-gray-500 focus:ring-0 focus:ring-offset-0" asChild>
-                <a href="https://github.com/liamadsr/Coherex" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
-                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                  </svg>
-                </a>
-              </Button>
-              <Button variant="outline" size="icon" className="bg-white dark:bg-black border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900 hover:border-gray-400 dark:hover:border-gray-500 focus:ring-0 focus:ring-offset-0" asChild>
-                <a href="https://discord.gg/6V64wxyf" target="_blank" rel="noopener noreferrer" aria-label="Discord">
-                  <img 
-                    src="https://cdn.simpleicons.org/discord/000000"
-                    alt="Discord logo"
-                    className="w-5 h-5 dark:hidden"
-                  />
-                  <img 
-                    src="https://cdn.simpleicons.org/discord/FFFFFF"
-                    alt="Discord logo"
-                    className="w-5 h-5 hidden dark:block"
-                  />
-                </a>
-              </Button>
-              <Button 
-                onClick={() => setWaitlistModalOpen(true)}
-                className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 focus:ring-0 focus:ring-offset-0 transition-colors"
-              >
-                <Mail className="w-4 h-4 mr-2" />
-                Join Waitlist
-              </Button>
-              <Button variant="outline" className="bg-white dark:bg-black border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900 hover:border-gray-400 dark:hover:border-gray-500 focus:ring-0 focus:ring-offset-0" asChild>
-                <Link href="/auth/login">Sign In</Link>
-              </Button>
-              
-              {/* Theme dropdown - far right */}
+              {/* Theme dropdown - moved to left */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="outline"
                     size="icon"
-                    className="bg-white dark:bg-black border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900 hover:border-gray-400 dark:hover:border-gray-500 focus:ring-0 focus:ring-offset-0"
+                    className="bg-white dark:bg-black border-2 border-dashed border-black dark:border-white text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900 focus:ring-0 focus:ring-offset-0"
                   >
                     <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
                     <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
@@ -253,6 +240,45 @@ export default function LandingPage() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
+              <Button variant="outline" size="icon" className="bg-white dark:bg-black border-2 border-dashed border-black dark:border-white text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900 focus:ring-0 focus:ring-offset-0" asChild>
+                <a href="https://github.com/liamadsr/Coherex" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                  </svg>
+                </a>
+              </Button>
+              <Button 
+                onClick={() => setWaitlistModalOpen(true)}
+                className="text-white dark:text-white hover:bg-gray-800 dark:hover:bg-gray-200 focus:ring-0 focus:ring-offset-0 transition-colors border-2 border-dashed border-black dark:border-white"
+                style={{
+                  backgroundColor: '#000',
+                  backgroundImage: `
+                    repeating-linear-gradient(
+                      -45deg,
+                      transparent,
+                      transparent 1px,
+                      rgba(255, 255, 255, 0.25) 1px,
+                      rgba(255, 255, 255, 0.25) 2px,
+                      transparent 2px,
+                      transparent 3px,
+                      rgba(255, 255, 255, 0.15) 3px,
+                      rgba(255, 255, 255, 0.15) 4px
+                    ),
+                    repeating-linear-gradient(
+                      -60deg,
+                      transparent,
+                      transparent 4px,
+                      rgba(255, 255, 255, 0.1) 4px,
+                      rgba(255, 255, 255, 0.1) 5px
+                    )`
+                }}
+              >
+                <Mail className="w-4 h-4 mr-2" />
+                Join Waitlist
+              </Button>
+              <Button variant="outline" className="bg-white dark:bg-black border-2 border-dashed border-black dark:border-white text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900 focus:ring-0 focus:ring-offset-0" asChild>
+                <Link href="/auth/login">Sign In</Link>
+              </Button>
             </div>
             
             <button
@@ -269,25 +295,19 @@ export default function LandingPage() {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="md:hidden bg-white/95 dark:bg-black/95 backdrop-blur-xl border-b border-gray-200 dark:border-neutral-800/50"
+            className="md:hidden bg-white/95 dark:bg-black/95 backdrop-blur-xl border-b-2 border-solid border-black dark:border-white"
           >
             <div className="px-4 pt-2 pb-4 space-y-2">
-              <Link href="#features" className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white">
-                Features
-              </Link>
-              <Link href="#integrations" className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white">
-                Integrations
-              </Link>
-              <Link href="#solutions" className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white">
-                Solutions
-              </Link>
+              <div className="px-3 py-2">
+                <span className="text-gray-600 dark:text-gray-400 text-sm">// by BridgeBound Studio</span>
+              </div>
               <a href="https://github.com/liamadsr/Coherex" target="_blank" rel="noopener noreferrer" className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white">
                 <svg className="inline w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
                 </svg>
                 GitHub Repository
               </a>
-              <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
+              <div className="pt-2 border-t-2 border-solid border-black dark:border-white">
                 <div className="px-3 py-1 text-xs font-medium text-gray-500 dark:text-gray-400">Theme</div>
                 <button
                   onClick={() => setTheme('light')}
@@ -312,12 +332,12 @@ export default function LandingPage() {
                 </button>
               </div>
               <div className="pt-4 space-y-2">
-                <Button variant="outline" className="w-full bg-white dark:bg-transparent border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900" asChild>
+                <Button variant="outline" className="w-full bg-white dark:bg-transparent border-2 border-dashed border-black dark:border-white text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900" asChild>
                   <Link href="/auth/login">Sign In</Link>
                 </Button>
                 <Button 
                   onClick={() => setWaitlistModalOpen(true)}
-                  className="w-full bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 focus:ring-0 focus:ring-offset-0 transition-colors"
+                  className="w-full bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 focus:ring-0 focus:ring-offset-0 transition-colors border-2 border-dashed border-black dark:border-white btn-texture-dark dark:btn-texture-light"
                 >
                   <Mail className="w-4 h-4 mr-2" />
                   Join Waitlist
@@ -328,86 +348,119 @@ export default function LandingPage() {
         )}
       </nav>
 
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-100/50 dark:from-gray-900/20 via-white dark:via-black to-gray-200/50 dark:to-gray-800/20" />
-        
-        {/* Grid pattern */}
-        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]" />
-        
-        {/* Animated gradient orbs - removed animate-pulse to reduce flashing */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gray-500 rounded-full filter blur-[128px] opacity-20 blur-stable" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gray-600 rounded-full filter blur-[128px] opacity-20 blur-stable" />
-        
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.div
-            initial={mounted ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }}
-            animate={mounted ? { opacity: 1, y: 0 } : undefined}
-            transition={mounted ? { duration: 0.8 } : undefined}
-          >
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-gray-900 dark:from-white to-gray-600 dark:to-gray-400 bg-clip-text text-transparent">
-              The Open Source Platform
-              <br />
-              for AI Employees
-            </h1>
-            <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-400 mb-8 max-w-3xl mx-auto">
-              We're building a community-driven, open source platform for creating, deploying, and managing intelligent AI employees.
-              Join us in shaping the future of AI automation.
-            </p>
-            
-            <div className="flex flex-col items-center gap-4">
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" variant="outline" className="text-lg px-8 bg-white dark:bg-transparent border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900 hover:border-gray-400 dark:hover:border-gray-500 focus:ring-0 focus:ring-offset-0" asChild>
-                  <a href="https://github.com/liamadsr/Coherex" target="_blank" rel="noopener noreferrer">
-                    <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                    </svg>
-                    Star on GitHub
-                  </a>
-                </Button>
-                <Button 
-                  size="lg" 
-                  onClick={() => setWaitlistModalOpen(true)}
-                  className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 focus:ring-0 focus:ring-offset-0 transition-colors text-lg px-8"
+      {/* Hero Section - blueprint/wireframe aesthetic */}
+      <section className="relative h-[80vh] min-h-[600px] flex items-center overflow-hidden mt-20">
+        <div className="relative z-10 page-container">
+          <div className="panel relative overflow-hidden w-full px-8 sm:px-12 lg:px-16 py-12 md:py-16 lg:py-20">
+            {/* Grid pattern overlay */}
+            <div className="absolute inset-0 pointer-events-none dark:hidden" style={{
+              backgroundImage: `
+                linear-gradient(to right, rgba(0,0,0,0.045) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0,0,0,0.045) 1px, transparent 1px),
+                linear-gradient(to right, rgba(0,0,0,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0,0,0,0.03) 1px, transparent 1px)
+              `,
+              backgroundSize: '120px 120px, 120px 120px, 24px 24px, 24px 24px'
+            }} />
+            <div className="absolute inset-0 pointer-events-none hidden dark:block" style={{
+              backgroundImage: `
+                linear-gradient(to right, rgba(255,255,255,0.15) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.15) 1px, transparent 1px),
+                linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)
+              `,
+              backgroundSize: '120px 120px, 120px 120px, 24px 24px, 24px 24px'
+            }} />
+            <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12">
+              {/* Left side - Text content */}
+              <div className="flex-1 text-left max-w-2xl lg:max-w-xl">
+                <motion.div
+                  initial={mounted ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }}
+                  animate={mounted ? { opacity: 1, y: 0 } : undefined}
+                  transition={mounted ? { duration: 0.8 } : undefined}
                 >
-                  <Mail className="w-5 h-5 mr-2" />
-                  Join Waitlist
-                </Button>
+                  <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 leading-tight">
+                    The Open Source Platform
+                    <br />
+                    for AI Employees
+                  </h1>
+                  <p className="text-lg md:text-xl text-gray-700 dark:text-gray-300 mb-10">
+                    We're building a community-driven, open source platform for creating, deploying, and managing intelligent AI employees.
+                  </p>
+                  
+                  <div className="flex flex-row gap-4">
+                    <Button 
+                      size="lg" 
+                      className="bg-[#F7941C] text-black hover:bg-[#E5861A] focus:ring-0 focus:ring-offset-0 transition-colors px-6 py-3 text-base font-medium btn-texture-light"
+                      asChild
+                    >
+                      <Link href="/auth/login">
+                        Get started
+                        <ChevronRight className="w-4 h-4 ml-1" />
+                      </Link>
+                    </Button>
+                    <Button 
+                      size="lg" 
+                      variant="outline"
+                      className="bg-white dark:bg-transparent border-2 border-dashed border-black dark:border-white text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900 focus:ring-0 focus:ring-offset-0 px-6 py-3 text-base"
+                      asChild
+                    >
+                      <a href="https://github.com/liamadsr/Coherex" target="_blank" rel="noopener noreferrer">
+                        github.com/coherex
+                        <svg className="w-4 h-4 ml-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <rect x="3" y="3" width="18" height="18" />
+                          <polyline points="8 12 12 16 16 12" />
+                        </svg>
+                      </a>
+                    </Button>
+                  </div>
+                </motion.div>
               </div>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
-                Get early access and help shape the future of AI agents
-              </p>
+              
+              {/* Right side - Placeholder for graphic */}
+              <div className="flex-1 flex items-center justify-center">
+                <div className="relative">
+                  {/* TODO: Add isometric graphic here */}
+                  <div className="w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96"></div>
+                </div>
+              </div>
             </div>
-            
-            <div className="mt-12 flex items-center justify-center space-x-8 text-gray-600 dark:text-gray-500">
-              <div className="flex items-center">
-                <Check className="w-5 h-5 mr-2 text-black dark:text-white" />
-                <span>100% Open Source</span>
-              </div>
-              <div className="flex items-center">
-                <Check className="w-5 h-5 mr-2 text-black dark:text-white" />
-                <span>Community Driven</span>
-              </div>
-              <div className="flex items-center">
-                <Check className="w-5 h-5 mr-2 text-black dark:text-white" />
-                <span>Easy to Use</span>
-              </div>
-            </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* Features Section: dashed cards */}
       <section id="features" className="py-20 relative no-flash">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="absolute inset-0" />
+        <div className="max-w-7xl 2xl:max-w-[calc(100%-4rem)] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="panel relative overflow-hidden p-8 md:p-12">
+            {/* Grid pattern overlay */}
+            <div className="absolute inset-0 pointer-events-none dark:hidden" style={{
+              backgroundImage: `
+                linear-gradient(to right, rgba(0,0,0,0.045) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0,0,0,0.045) 1px, transparent 1px),
+                linear-gradient(to right, rgba(0,0,0,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0,0,0,0.03) 1px, transparent 1px)
+              `,
+              backgroundSize: '120px 120px, 120px 120px, 24px 24px, 24px 24px'
+            }} />
+            <div className="absolute inset-0 pointer-events-none hidden dark:block" style={{
+              backgroundImage: `
+                linear-gradient(to right, rgba(255,255,255,0.15) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.15) 1px, transparent 1px),
+                linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)
+              `,
+              backgroundSize: '120px 120px, 120px 120px, 24px 24px, 24px 24px'
+            }} />
+          <div className="relative z-10">
           <motion.div
             initial={mounted ? { opacity: 0 } : { opacity: 1 }}
             whileInView={mounted ? { opacity: 1 } : undefined}
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 relative z-10">
               What we're building
               <br />
               <span className="text-gray-600 dark:text-gray-300">
@@ -432,26 +485,49 @@ export default function LandingPage() {
                   delay: index * 0.1,
                   ease: "easeOut"
                 } : undefined}
-                className="group relative bg-gray-50 dark:bg-[#050505] rounded-2xl p-8 hover:bg-gray-100 dark:hover:bg-[#0a0a0a] transition-all duration-300 no-flash border border-gray-200 dark:border-neutral-800/50"
+                className="group relative bg-white dark:bg-black p-8 hover:bg-gray-50 dark:hover:bg-gray-900 transition-all duration-300 no-flash border-2 border-solid border-black dark:border-white"
                 style={{ minHeight: '250px' }}
               >
-                <div className="w-14 h-14 rounded-xl p-3 mb-6">
+                <div className="w-14 h-14 p-3 mb-6">
                   <feature.icon className="w-full h-full text-gray-700 dark:text-white" />
                 </div>
                 <h3 className="text-2xl font-bold mb-3">{feature.title}</h3>
                 <p className="text-gray-600 dark:text-gray-400">{feature.description}</p>
-                <ChevronRight className="absolute bottom-8 right-8 w-5 h-5 text-gray-400 dark:text-gray-600 group-hover:text-gray-600 dark:group-hover:text-gray-400 transition-colors" />
+                <ChevronRight className="absolute bottom-8 right-8 w-5 h-5 text-gray-500 dark:text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors" />
               </motion.div>
             ))}
+          </div>
+          </div>
           </div>
         </div>
       </section>
 
-      {/* Integrations Section */}
+      {/* Integrations Section: blueprint band */}
       <section id="integrations" className="py-20 relative overflow-hidden no-flash">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-gray-100/50 dark:via-gray-900/10 to-transparent" />
+        <div className="absolute inset-0" />
         
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="max-w-7xl 2xl:max-w-[calc(100%-4rem)] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="panel relative overflow-hidden p-8 md:p-12">
+            {/* Grid pattern overlay */}
+            <div className="absolute inset-0 pointer-events-none dark:hidden" style={{
+              backgroundImage: `
+                linear-gradient(to right, rgba(0,0,0,0.045) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0,0,0,0.045) 1px, transparent 1px),
+                linear-gradient(to right, rgba(0,0,0,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0,0,0,0.03) 1px, transparent 1px)
+              `,
+              backgroundSize: '120px 120px, 120px 120px, 24px 24px, 24px 24px'
+            }} />
+            <div className="absolute inset-0 pointer-events-none hidden dark:block" style={{
+              backgroundImage: `
+                linear-gradient(to right, rgba(255,255,255,0.15) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.15) 1px, transparent 1px),
+                linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)
+              `,
+              backgroundSize: '120px 120px, 120px 120px, 24px 24px, 24px 24px'
+            }} />
+          <div className="relative z-10">
           <motion.div
             initial={mounted ? { opacity: 0 } : { opacity: 1 }}
             whileInView={mounted ? { opacity: 1 } : undefined}
@@ -483,12 +559,12 @@ export default function LandingPage() {
                   delay: index * 0.05,
                   ease: "easeOut"
                 } : undefined}
-                className="bg-gray-50 dark:bg-[#050505] rounded-xl p-6 text-center hover:bg-gray-100 dark:hover:bg-[#0a0a0a] transition-all duration-300 hover:scale-105 no-flash border border-gray-200 dark:border-neutral-800/50"
+                className="bg-white dark:bg-black p-6 text-center hover:bg-gray-50 dark:hover:bg-gray-900 transition-all duration-300 hover:scale-105 no-flash border-2 border-solid border-black dark:border-white"
               >
                 <div className="mb-3 w-12 h-12 flex items-center justify-center mx-auto">
                   {(integration.name === 'Teams' || integration.name === 'SharePoint') ? (
                     // Use fallback text for Teams and SharePoint since they might not be available
-                    <div className="w-12 h-12 bg-gray-200 dark:bg-gray-800 rounded-lg flex items-center justify-center text-gray-800 dark:text-white font-bold text-sm">
+                    <div className="w-12 h-12 bg-gray-200 dark:bg-gray-800 flex items-center justify-center text-gray-800 dark:text-white font-bold text-sm">
                       {integration.name === 'Teams' ? 'T' : 'SP'}
                     </div>
                   ) : (
@@ -512,25 +588,47 @@ export default function LandingPage() {
           </div>
 
           <div className="text-center">
-            <p className="text-gray-600 dark:text-gray-400 mb-4">And 100+ more integrations</p>
-            <Button variant="outline" className="bg-white dark:bg-transparent border-gray-300 dark:border-gray-500 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 hover:border-gray-400 dark:hover:border-white/30 focus:ring-0 focus:ring-offset-0 transition-all">
+            <p className="text-gray-700 dark:text-gray-300 mb-4">And 100+ more integrations</p>
+            <Button variant="outline" className="bg-white dark:bg-transparent border-2 border-dashed border-gray-400 dark:border-gray-600 text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 focus:ring-0 focus:ring-offset-0 transition-all">
               View All Integrations
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
+          </div>
+          </div>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
       <section className="py-20 relative">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="absolute inset-0" />
+        <div className="max-w-4xl 2xl:max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={mounted ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }}
             whileInView={mounted ? { opacity: 1, y: 0 } : undefined}
             viewport={{ once: true }}
-            className="bg-gray-50 dark:bg-[#050505] rounded-3xl p-12 border border-gray-200 dark:border-neutral-800/50 no-flash"
+            className="panel relative overflow-hidden p-10 md:p-12 no-flash"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+            {/* Grid pattern overlay */}
+            <div className="absolute inset-0 pointer-events-none dark:hidden" style={{
+              backgroundImage: `
+                linear-gradient(to right, rgba(0,0,0,0.045) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0,0,0,0.045) 1px, transparent 1px),
+                linear-gradient(to right, rgba(0,0,0,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0,0,0,0.03) 1px, transparent 1px)
+              `,
+              backgroundSize: '120px 120px, 120px 120px, 24px 24px, 24px 24px'
+            }} />
+            <div className="absolute inset-0 pointer-events-none hidden dark:block" style={{
+              backgroundImage: `
+                linear-gradient(to right, rgba(255,255,255,0.15) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.15) 1px, transparent 1px),
+                linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)
+              `,
+              backgroundSize: '120px 120px, 120px 120px, 24px 24px, 24px 24px'
+            }} />
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 relative z-10">
               Be part of building
               <br />
               the future of AI employees
@@ -542,13 +640,13 @@ export default function LandingPage() {
               <Button 
                 size="lg" 
                 onClick={() => setWaitlistModalOpen(true)}
-                className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 focus:ring-0 focus:ring-offset-0 transition-colors text-lg px-8"
+                className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 focus:ring-0 focus:ring-offset-0 transition-colors text-lg px-8 border-2 border-dashed border-black dark:border-white btn-texture-dark dark:btn-texture-light"
               >
                 <Mail className="w-5 h-5 mr-2" />
                 Get Early Access
               </Button>
               <div className="flex gap-4">
-                <Button size="lg" variant="outline" className="text-lg px-8 bg-white dark:bg-transparent border-gray-300 dark:border-gray-500 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 hover:border-gray-400 dark:hover:border-white/30 focus:ring-0 focus:ring-offset-0 transition-all" asChild>
+                <Button size="lg" variant="outline" className="text-lg px-8 bg-white dark:bg-transparent border-2 border-dashed border-gray-400 dark:border-gray-600 text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 focus:ring-0 focus:ring-offset-0 transition-all" asChild>
                   <a href="https://github.com/liamadsr/Coherex" target="_blank" rel="noopener noreferrer">
                     <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
@@ -556,7 +654,7 @@ export default function LandingPage() {
                     Star on GitHub
                   </a>
                 </Button>
-                <Button size="lg" variant="outline" className="text-lg px-8 bg-white dark:bg-transparent border-gray-300 dark:border-gray-500 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 hover:border-gray-400 dark:hover:border-white/30 focus:ring-0 focus:ring-offset-0 transition-all" asChild>
+                <Button size="lg" variant="outline" className="text-lg px-8 bg-white dark:bg-transparent border-2 border-dashed border-gray-400 dark:border-gray-600 text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 focus:ring-0 focus:ring-offset-0 transition-all" asChild>
                   <a href="https://discord.gg/6V64wxyf" target="_blank" rel="noopener noreferrer">
                     <img 
                       src="https://cdn.simpleicons.org/discord/000000"
@@ -578,8 +676,8 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 border-t border-gray-200 dark:border-neutral-800/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <footer className="py-12 border-t-2 border-solid border-black dark:border-white">
+        <div className="max-w-7xl 2xl:max-w-[calc(100%-4rem)] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-3 mb-4">
@@ -611,7 +709,7 @@ export default function LandingPage() {
             </div>
             
             <div>
-              <h3 className="font-semibold mb-4">Product</h3>
+              <h3 className="font-semibold mb-4 text-black dark:text-white">Product</h3>
               <ul className="space-y-2 text-gray-600 dark:text-gray-400">
                 <li><Link href="#" className="hover:text-gray-900 dark:hover:text-white">Features</Link></li>
                 <li><Link href="#" className="hover:text-gray-900 dark:hover:text-white">Integrations</Link></li>
@@ -620,7 +718,7 @@ export default function LandingPage() {
             </div>
             
             <div>
-              <h3 className="font-semibold mb-4">Company</h3>
+              <h3 className="font-semibold mb-4 text-black dark:text-white">Company</h3>
               <ul className="space-y-2 text-gray-600 dark:text-gray-400">
                 <li><Link href="#" className="hover:text-gray-900 dark:hover:text-white">About</Link></li>
                 <li><Link href="#" className="hover:text-gray-900 dark:hover:text-white">Blog</Link></li>
@@ -630,7 +728,7 @@ export default function LandingPage() {
             </div>
             
             <div>
-              <h3 className="font-semibold mb-4">Legal</h3>
+              <h3 className="font-semibold mb-4 text-black dark:text-white">Legal</h3>
               <ul className="space-y-2 text-gray-600 dark:text-gray-400">
                 <li><Link href="#" className="hover:text-gray-900 dark:hover:text-white">Privacy</Link></li>
                 <li><Link href="#" className="hover:text-gray-900 dark:hover:text-white">Terms</Link></li>
@@ -640,7 +738,7 @@ export default function LandingPage() {
             </div>
           </div>
           
-          <div className="mt-12 pt-8 border-t border-gray-200 dark:border-neutral-800/50 text-center text-gray-600 dark:text-gray-400">
+          <div className="mt-12 pt-8 border-t-2 border-solid border-black dark:border-white text-center text-gray-600 dark:text-gray-400">
             <p>&copy; 2025 COHEREX. Open Source Project.</p>
           </div>
         </div>
@@ -651,6 +749,7 @@ export default function LandingPage() {
         isOpen={waitlistModalOpen} 
         onClose={() => setWaitlistModalOpen(false)} 
       />
+    </div>
     </div>
   )
 }
