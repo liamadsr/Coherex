@@ -44,7 +44,7 @@ export const useConversationStore = () => {
       store.updateConversation(id, { status })
       
       // Mock API call
-      await mockApi.delay(500)
+      await new Promise(resolve => setTimeout(resolve, 500))
       toast.success(`Conversation marked as ${status}`)
     } catch (error) {
       console.error('Failed to update conversation:', error)

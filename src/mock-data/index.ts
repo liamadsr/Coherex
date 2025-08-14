@@ -10,7 +10,6 @@ import {
   Evaluation,
   EvaluationCriteria,
   IntegrationChannel,
-  CodeExecution,
   AnalyticsData,
   UserSettings,
   ApiKey,
@@ -180,7 +179,7 @@ export const generateMockKnowledgeSources = (count: number = 25): KnowledgeSourc
     name: faker.company.buzzNoun(),
     type: faker.helpers.arrayElement(['document', 'website', 'database', 'api', 'integration'] as const),
     status: faker.helpers.arrayElement(['connected', 'syncing', 'error', 'disconnected'] as const),
-    lastSync: faker.helpers.maybe(() => faker.date.recent({ days: 1 })),
+    lastSync: faker.helpers.maybe(() => faker.date.recent({ days: 1 })) || null,
     documentsCount: faker.number.int({ min: 10, max: 1000 }),
     sizeBytes: faker.number.int({ min: 1024, max: 1073741824 }), // 1KB to 1GB
     metadata: {
@@ -338,8 +337,8 @@ export const generateMockApiKeys = (count: number = 5): ApiKey[] => {
     name: faker.lorem.words(2),
     key: `sk-${faker.string.alphanumeric(48)}`,
     permissions: faker.helpers.arrayElements(['read', 'write', 'admin'], { min: 1, max: 3 }),
-    lastUsed: faker.helpers.maybe(() => faker.date.recent({ days: 30 })),
-    expiresAt: faker.helpers.maybe(() => faker.date.future({ years: 1 })),
+    lastUsed: faker.helpers.maybe(() => faker.date.recent({ days: 30 })) || null,
+    expiresAt: faker.helpers.maybe(() => faker.date.future({ years: 1 })) || null,
     isActive: faker.datatype.boolean({ probability: 0.8 }),
     createdAt: faker.date.recent({ days: 90 })
   }))
@@ -464,7 +463,7 @@ export const mockApi = {
     }
   },
 
-  forgotPassword: async (email: string) => {
+  forgotPassword: async (_email: string) => {
     await delay(1000)
     return {
       success: true,
@@ -472,7 +471,7 @@ export const mockApi = {
     }
   },
 
-  verifyEmail: async (token: string) => {
+  verifyEmail: async (_token: string) => {
     await delay(800)
     return {
       success: true,
@@ -480,7 +479,7 @@ export const mockApi = {
     }
   },
 
-  validateToken: async (token: string) => {
+  validateToken: async (_token: string) => {
     await delay(500)
     const mockData = generateMockData()
     return {
@@ -490,7 +489,7 @@ export const mockApi = {
   },
 
   // Agents
-  getAgents: async (filters?: any) => {
+  getAgents: async (_filters?: Record<string, unknown>) => {
     await delay(800)
     return {
       success: true,

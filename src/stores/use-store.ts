@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { devtools, persist } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
-import type { Agent, AgentTeam, Conversation, KnowledgeSource, Integration, Template, AnalyticsData, Notification } from '@/types'
+import type { Agent, AgentTeam, Conversation, KnowledgeSource, Integration, AgentTemplate, AnalyticsData, Notification } from '@/types'
 
 // Agent slice
 interface AgentSlice {
@@ -80,14 +80,14 @@ interface IntegrationSlice {
 
 // Template slice
 interface TemplateSlice {
-  templates: Template[]
-  selectedTemplate: Template | null
+  templates: AgentTemplate[]
+  selectedTemplate: AgentTemplate | null
   isLoadingTemplates: boolean
-  setTemplates: (templates: Template[]) => void
-  addTemplate: (template: Template) => void
-  updateTemplate: (id: string, updates: Partial<Template>) => void
+  setTemplates: (templates: AgentTemplate[]) => void
+  addTemplate: (template: AgentTemplate) => void
+  updateTemplate: (id: string, updates: Partial<AgentTemplate>) => void
   deleteTemplate: (id: string) => void
-  selectTemplate: (template: Template | null) => void
+  selectTemplate: (template: AgentTemplate | null) => void
   setLoadingTemplates: (loading: boolean) => void
 }
 
@@ -249,13 +249,13 @@ export const useStore = create<StoreState>()(
         setTemplates: (templates) => set((state) => { state.templates = templates }),
         addTemplate: (template) => set((state) => { state.templates.push(template) }),
         updateTemplate: (id, updates) => set((state) => {
-          const index = state.templates.findIndex(t => t.id === id)
+          const index = state.templates.findIndex((t: AgentTemplate) => t.id === id)
           if (index !== -1) {
             state.templates[index] = { ...state.templates[index], ...updates }
           }
         }),
         deleteTemplate: (id) => set((state) => {
-          state.templates = state.templates.filter(t => t.id !== id)
+          state.templates = state.templates.filter((t: AgentTemplate) => t.id !== id)
           if (state.selectedTemplate?.id === id) {
             state.selectedTemplate = null
           }

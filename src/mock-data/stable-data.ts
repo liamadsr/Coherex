@@ -26,20 +26,28 @@ export const stableAgents: Agent[] = Array.from({ length: 20 }, (_, i) => ({
     'translation'
   ], 4),
   channels: faker.helpers.arrayElements(['email', 'slack', 'teams', 'sms', 'voice', 'web-chat'], 2),
+  integrations: faker.helpers.arrayElements(['slack', 'zendesk', 'salesforce', 'hubspot', 'intercom'], 2),
+  knowledgeSources: faker.helpers.arrayElements(['ks-1', 'ks-2', 'ks-3'], 2),
   model: faker.helpers.arrayElement(['gpt-4', 'gpt-3.5-turbo', 'claude-3-opus', 'claude-3-sonnet']),
   temperature: faker.number.float({ min: 0, max: 1, fractionDigits: 1 }),
   maxTokens: faker.helpers.arrayElement([1000, 2000, 4000, 8000]),
   systemPrompt: faker.lorem.paragraph(),
+  executionMode: faker.helpers.arrayElement(['ephemeral', 'persistent'] as const),
   avatar: botAvatars[i % botAvatars.length],
   metrics: {
+    conversationsHandled: faker.number.int({ min: 100, max: 5000 }),
+    averageResponseTime: `${faker.number.float({ min: 0.5, max: 5, fractionDigits: 1 })}s`,
+    satisfactionScore: faker.number.float({ min: 3.5, max: 5, fractionDigits: 1 }),
+    accuracyScore: faker.number.float({ min: 0.8, max: 1.0, fractionDigits: 2 }),
+    uptime: faker.number.float({ min: 98, max: 99.9, fractionDigits: 1 }),
+    totalMessages: faker.number.int({ min: 200, max: 2000 }),
+    successfulResolutions: faker.number.int({ min: 80, max: 95 }),
     totalConversations: faker.number.int({ min: 100, max: 5000 }),
     avgResponseTime: faker.number.float({ min: 0.5, max: 5, fractionDigits: 1 }),
-    satisfactionScore: faker.number.float({ min: 3.5, max: 5, fractionDigits: 1 }),
     successRate: faker.number.int({ min: 85, max: 99 }),
-    uptime: faker.number.float({ min: 98, max: 99.9, fractionDigits: 1 }),
+    activeUsers: faker.number.int({ min: 10, max: 100 }),
     errorsCount: faker.number.int({ min: 0, max: 10 })
   },
-  integrations: faker.helpers.arrayElements(['slack', 'zendesk', 'salesforce', 'hubspot', 'intercom'], 2),
   createdAt: faker.date.past(),
   updatedAt: faker.date.recent(),
   organizationId: 'org-1',
@@ -61,7 +69,7 @@ export const stableUsers: User[] = [
     id: `user-${i + 2}`,
     email: faker.internet.email().toLowerCase(),
     name: faker.person.fullName(),
-    role: faker.helpers.arrayElement(['admin', 'manager', 'member'] as const),
+    role: faker.helpers.arrayElement(['admin', 'user', 'viewer'] as const),
     avatar: faker.image.avatar(),
     organizationId: 'org-1',
     createdAt: faker.date.past(),
@@ -72,14 +80,10 @@ export const stableUsers: User[] = [
 export const stableOrganization: Organization = {
   id: 'org-1',
   name: 'coherex Demo',
-  domain: 'coherex.ai',
+  slug: 'coherex-demo',
   logo: faker.image.url(),
   plan: 'enterprise',
-  settings: {
-    allowedDomains: ['coherex.ai'],
-    ssoEnabled: true,
-    mfaRequired: false
-  },
+  billingStatus: 'active',
   createdAt: faker.date.past(),
   updatedAt: faker.date.recent()
 }
@@ -203,17 +207,16 @@ export const stableConversations: Conversation[] = Array.from({ length: 50 }, (_
 export const stableKnowledgeSources: KnowledgeSource[] = Array.from({ length: 10 }, (_, i) => ({
   id: `ks-${i + 1}`,
   name: faker.company.name() + ' Knowledge Base',
-  type: faker.helpers.arrayElement(['confluence', 'notion', 'google-drive', 'sharepoint', 'github', 'custom'] as const),
+  type: faker.helpers.arrayElement(['document', 'website', 'database', 'api', 'integration'] as const),
   status: faker.helpers.arrayElement(['connected', 'syncing', 'error', 'disconnected'] as const),
-  description: faker.lorem.sentence(),
-  config: {
+  lastSync: faker.date.recent(),
+  documentsCount: faker.number.int({ min: 10, max: 1000 }),
+  sizeBytes: faker.number.int({ min: 1024, max: 1073741824 }),
+  metadata: {
     url: faker.internet.url(),
     apiKey: faker.string.alphanumeric(32),
     syncInterval: faker.helpers.arrayElement([300, 900, 1800, 3600])
   },
-  documentsCount: faker.number.int({ min: 10, max: 1000 }),
-  lastSynced: faker.date.recent(),
-  organizationId: 'org-1',
   createdAt: faker.date.past(),
   updatedAt: faker.date.recent()
 }))

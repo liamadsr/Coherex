@@ -32,6 +32,14 @@ export interface AgentMetrics {
   uptime: number
   totalMessages: number
   successfulResolutions: number
+  // Additional metrics used in agent detail page
+  totalConversations?: number
+  activeConversations?: number
+  avgResponseTime?: number
+  successRate?: number
+  activeUsers?: number
+  errorsCount?: number
+  lastActive?: Date
 }
 
 export interface Agent {
@@ -49,6 +57,7 @@ export interface Agent {
   temperature: number
   maxTokens: number
   systemPrompt: string
+  executionMode?: 'ephemeral' | 'persistent'
   avatar?: string
   metrics: AgentMetrics
   createdAt: Date
@@ -294,6 +303,47 @@ export interface AgentTemplate {
   usageCount: number
   rating: number
   createdAt: Date
+}
+
+// Execution and Testing Types
+export interface ExecutionResult {
+  id: string
+  agentId: string
+  input: string
+  output: string
+  status: 'success' | 'error' | 'timeout'
+  executionTime: number
+  sessionId?: string
+  timestamp: Date
+  error?: string
+}
+
+export interface ExecutionHistory {
+  id: string
+  agentId: string
+  sessionId?: string
+  results: ExecutionResult[]
+  createdAt: Date
+}
+
+export interface DataSource {
+  id: string
+  name: string
+  type: string
+  description: string
+  isConnected: boolean
+  config: Record<string, unknown>
+  lastSync?: Date
+  documentsCount?: number
+}
+
+export interface ActiveSession {
+  id: string
+  agentId: string
+  status: 'active' | 'idle' | 'terminated'
+  createdAt: Date
+  lastActivity: Date
+  metadata?: Record<string, unknown>
 }
 
 // State Management Types
