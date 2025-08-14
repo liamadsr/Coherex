@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { Suspense, useState, useRef, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { useForm } from 'react-hook-form'
@@ -158,7 +158,7 @@ const aiModels = [
   { id: 'gemini-pro', label: 'Gemini Pro', description: 'Google\'s most capable model' },
 ]
 
-export default function NewAgentPage() {
+function NewAgentPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const editId = searchParams.get('edit')
@@ -2181,5 +2181,13 @@ export default function NewAgentPage() {
         />
       )}
     </MainLayout>
+  )
+}
+
+export default function NewAgentPage() {
+  return (
+    <Suspense fallback={<MainLayout><div className="flex items-center justify-center h-screen"><Loader2 className="w-8 h-8 animate-spin" /></div></MainLayout>}>
+      <NewAgentPageContent />
+    </Suspense>
   )
 }
